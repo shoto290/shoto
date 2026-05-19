@@ -23,7 +23,9 @@ Your script exited with a non-zero, non-2 code.
 3. "jq: command not found" — install jq (`brew install jq` / `apt-get install jq`) or rewrite the parsing in Python or Node.
 4. "permission denied" — `chmod +x ./your-hook.sh`. The script must be executable.
 
-## JSON validation failed (even though my stdout is valid JSON)
+## JSON validation failed
+
+Even when your hook prints valid JSON, shell profile output can make the full stdout invalid.
 
 When a shell-form `command` hook runs, Claude Code spawns `sh -c` (or Git Bash on Windows). Some shells source your profile, and any unconditional `echo` in `~/.zshrc` / `~/.bashrc` gets prepended to your hook's stdout, breaking JSON parsing:
 

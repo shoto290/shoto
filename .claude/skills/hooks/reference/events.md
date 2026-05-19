@@ -19,11 +19,11 @@ Each event has a key under the top-level `hooks` block in `settings.json`. The v
 | Event | Fires when | Matcher filters | Blockable with `exit 2`? |
 | :-- | :-- | :-- | :-- |
 | `PreToolUse` | Before a tool call executes | tool name (e.g. `Bash`, `Edit&#124;Write`, `mcp__.*`) | **Yes** — most useful for policy. Supports `if` field |
-| `PermissionRequest` | When a permission dialog is about to appear | tool name | Special — return `hookSpecificOutput.decision.behavior` to allow/deny. Doesn't fire in `-p` mode |
+| `PermissionRequest` | When a permission dialog is about to appear | tool name | Yes — `exit 2` denies, or return `hookSpecificOutput.decision.behavior` to allow/deny. Doesn't fire in `-p` mode |
 | `PermissionDenied` | A tool call was denied by the auto-mode classifier | tool name | Return `{retry: true}` to let the model retry |
 | `PostToolUse` | After a tool call succeeds | tool name | Cannot undo the call; `decision: "block"` only feeds reason back |
 | `PostToolUseFailure` | After a tool call fails | tool name | Same as `PostToolUse` |
-| `PostToolBatch` | After a batch of parallel tool calls resolves, before next model call | none | `decision: "block"` returns reason as warning |
+| `PostToolBatch` | After a batch of parallel tool calls resolves, before next model call | none | Yes — `exit 2` or `decision: "block"` stops the agentic loop before the next model call |
 
 ## Compaction
 

@@ -55,6 +55,7 @@ A single-turn LLM call. The model receives your `prompt` plus the hook input JSO
   - `Stop`, `SubagentStop` — `reason` is fed to Claude so it keeps working
   - `PreToolUse` — tool call is denied, `reason` returned as tool error
   - `PostToolUse`, `PostToolBatch`, `UserPromptSubmit`, `UserPromptExpansion` — turn ends, `reason` shown as warning line
+  - `PermissionRequest` — `ok: false` has no effect; use a `command` hook with `hookSpecificOutput.decision.behavior: "deny"` to deny
 
 ## `agent` (experimental)
 

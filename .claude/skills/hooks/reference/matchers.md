@@ -47,7 +47,9 @@ MCP tools follow the pattern `mcp__<server>__<tool>` where `<server>` and `<tool
 - `mcp__filesystem__read_file`
 - `mcp__notion__create_page`
 
-## The `if` field (v2.1.85+)
+## The `if` field
+
+Requires Claude Code v2.1.85+.
 
 `matcher` filters at the **group** level by tool name only. `if` filters at the **handler** level by tool name AND arguments, using permission-rule syntax. The hook process only spawns when the call matches the `if` pattern (or when the Bash command is too complex to parse into subcommands).
 

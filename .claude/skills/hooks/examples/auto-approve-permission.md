@@ -8,7 +8,7 @@
 
 **Matcher.** **As narrow as possible.** `ExitPlanMode` here; never `.*` or empty unless you really want to auto-approve every prompt.
 
-**Output mode.** Stdout JSON. `PermissionRequest` requires `hookSpecificOutput.decision.behavior` to take effect — exit codes alone can't answer the prompt.
+**Output mode.** Stdout JSON for approvals. `PermissionRequest` can be denied with `exit 2`, but allowing or changing permissions requires `hookSpecificOutput.decision.behavior`.
 
 ## Minimal: auto-approve `ExitPlanMode`
 

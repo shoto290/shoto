@@ -82,7 +82,7 @@ If the settings file already has a `hooks` key, **add the new event as a sibling
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write" }
+          { "type": "command", "command": "FILE=$(jq -r '.tool_input.file_path'); npx prettier --write \"$FILE\"" }
         ]
       }
     ]
@@ -130,13 +130,13 @@ Read the settings file and any referenced hook scripts. Don't propose changes bl
 | :-- | :-- |
 | Switch event (`PreToolUse` ↔ `PostToolUse`, add `SessionEnd`, etc.) | [reference/events.md](./reference/events.md) |
 | Adjust `matcher` (tool regex, session source, MCP tool pattern) | [reference/matchers.md](./reference/matchers.md) |
-| Add `if` filter (`Bash(git *)`, `Edit(*.ts)`) | [reference/matchers.md](./reference/matchers.md#if-field) |
+| Add `if` filter (`Bash(git *)`, `Edit(*.ts)`) | [reference/matchers.md](./reference/matchers.md#the-if-field) |
 | Switch between `exit 2` and JSON output | [reference/io.md](./reference/io.md) |
 | Add `additionalContext`, `decision`, `permissionDecision`, `updatedInput`, `updatedPermissions` | [reference/io.md](./reference/io.md#decision-control) |
 | Change hook `type` (command → prompt / agent / http / mcp_tool) | [reference/types.md](./reference/types.md) |
 | Override `timeout` | [reference/types.md](./reference/types.md#timeouts) |
 | Move scope (user ↔ project ↔ local ↔ managed ↔ plugin) | [reference/locations.md](./reference/locations.md) |
-| HTTP `headers` / `allowedEnvVars` | [reference/types.md](./reference/types.md#http-hooks) |
+| HTTP `headers` / `allowedEnvVars` | [reference/types.md](./reference/types.md#http) |
 | Handle `stop_hook_active` to avoid Stop block-cap | [reference/troubleshooting.md](./reference/troubleshooting.md#stop-hook-hits-the-block-cap) |
 | Hook isn't firing / matcher never matches | [reference/troubleshooting.md](./reference/troubleshooting.md) |
 | JSON parse errors from leaked shell-profile output | [reference/troubleshooting.md](./reference/troubleshooting.md#json-validation-failed) |
