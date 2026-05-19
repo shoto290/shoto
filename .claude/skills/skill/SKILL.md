@@ -7,6 +7,25 @@ argument-hint: '[skill-name]'
 
 A skill is a `SKILL.md` file with YAML frontmatter + markdown instructions. Users invoke it with `/skill-name`; Claude auto-loads it when the `description` matches the request.
 
+## Skill structure (canonical)
+
+A skill is a directory. Only `SKILL.md` is required. Every other file is optional and serves a precise role per the official docs:
+
+```
+my-skill/
+├── SKILL.md            # required — frontmatter + instructions (entry point)
+├── template.md         # optional — a single fill-in template Claude uses to produce output
+├── examples/           # optional — sample outputs / complete reference SKILL.md files
+│   └── sample.md
+├── reference.md        # optional — detailed docs Claude loads on demand
+│   (or reference/      #   may be a directory for larger reference sets)
+├── scripts/            # optional — files Claude executes (referenced via ${CLAUDE_SKILL_DIR})
+│   └── helper.py
+└── assets/             # optional — static resources like templates, schemas, images, lookup tables
+```
+
+**Use documented resource folders.** Prefer the slots above for supporting material. Avoid `templates/` (plural) and `docs/`; use `template.md`, `reference.md` / `reference/`, `examples/`, `scripts/`, or `assets/` instead. Every supporting file must be linked from `SKILL.md` so Claude knows what it contains and when to load it.
+
 ## Detect intent
 
 If invoked as `/skill <name>`, treat `$ARGUMENTS` as the target name.
@@ -55,13 +74,15 @@ Propose defaults from the user's request; confirm before writing:
 | **Subagent** | Run in an isolated fork (`context: fork`)? |
 | **Pre-approved tools** | List for `allowed-tools` |
 
-### 2. Pick a template
+### 2. Pick an example
 
-Start from [templates/](./templates/):
-- `basic.md` — minimal (description + instructions)
-- `task.md` — action skill (deploy, commit), often with `disable-model-invocation: true`
-- `reference.md` — knowledge skill (style guide, conventions)
-- `advanced.md` — dynamic context + arguments + fork + tools
+Start from a complete reference in [examples/](./examples/):
+
+- [examples/summarize-changes.md](./examples/summarize-changes.md) — auto-invocable + dynamic context (`` !`command` ``)
+- [examples/deploy.md](./examples/deploy.md) — task action + `disable-model-invocation` + `allowed-tools` + `$ARGUMENTS`
+- [examples/fix-issue.md](./examples/fix-issue.md) — single argument via `$ARGUMENTS`; positional via `$0` / `$1`
+- [examples/pr-summary.md](./examples/pr-summary.md) — `context: fork` + `agent: Explore` + multiple `` !`command` `` injections
+- [examples/codebase-visualizer.md](./examples/codebase-visualizer.md) — bundled script + `${CLAUDE_SKILL_DIR}`
 
 ### 3. Create the directory and `SKILL.md`
 
@@ -83,13 +104,15 @@ description: <what the skill does + when to use it, with trigger phrases>
 
 ### 4. Add supporting files (only if needed)
 
-Keep `SKILL.md` under 500 lines. Move detail into:
-- `reference/*.md` — docs Claude loads on demand
-- `examples/*.md` — sample outputs
-- `scripts/*` — files Claude executes (reference via `${CLAUDE_SKILL_DIR}`)
-- `templates/*.md` — fill-in templates
+Keep `SKILL.md` under 500 lines. Move detail into documented resource folders:
 
-Always reference supporting files from `SKILL.md` so Claude knows when to load them.
+- `reference.md` (or `reference/*.md`) — detailed docs Claude loads on demand
+- `examples/*.md` — sample outputs or complete SKILL.md examples
+- `scripts/*` — files Claude executes (reference via `${CLAUDE_SKILL_DIR}`)
+- `assets/*` — static resources such as templates, schemas, images, or lookup tables
+- `template.md` — a single fill-in template (rare; only if the skill produces output from a template)
+
+Always reference supporting files from `SKILL.md` so Claude knows when to load them. Do **not** create a `templates/` directory — it is not part of the official skill layout.
 
 ### 5. Test
 
@@ -112,7 +135,7 @@ If matches exist in multiple scopes, ask which one (enterprise > personal > proj
 
 ### 2. Read current state
 
-Read `SKILL.md` and every supporting file it references (`reference/`, `examples/`, `templates/`, `scripts/`). Don't propose changes blind.
+Read `SKILL.md` and every supporting file it references (`reference/`, `examples/`, `template.md`, `scripts/`). Don't propose changes blind.
 
 ### 3. Identify the change
 
@@ -153,6 +176,7 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 - **Side effects → manual** — `disable-model-invocation: true` for skills like deploy, commit, send-message.
 - **Knowledge → background** — `user-invocable: false` for context-only skills (e.g. `legacy-system-context`).
 - **Pre-approve carefully** — `allowed-tools` skips approval prompts. Review before committing project skills.
+- **Stick to documented resource folders** — use the slots above (`SKILL.md`, `template.md`, `examples/`, `reference.md` or `reference/`, `scripts/`, `assets/`). Don't invent new top-level folders.
 
 ## Common gotchas
 
@@ -174,4 +198,4 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 
 ## Examples
 
-[examples/](./examples/) contains complete `SKILL.md` files for each pattern. Read the matching one before drafting a new skill or refactoring an existing one of that type.
+See [examples/](./examples/) for complete SKILL.md files covering each common pattern.
