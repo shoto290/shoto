@@ -1,4 +1,4 @@
-# Pattern: fix-issue
+# Example: fix-issue
 
 **Pattern**: Single argument via `$ARGUMENTS`
 

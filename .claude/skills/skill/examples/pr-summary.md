@@ -1,4 +1,4 @@
-# Pattern: pr-summary
+# Example: pr-summary
 
 **Pattern**: Subagent execution + multiple dynamic-context injections + pre-approved tools
 
