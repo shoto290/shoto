@@ -19,11 +19,12 @@ my-skill/
 │   └── sample.md
 ├── reference.md        # optional — detailed docs Claude loads on demand
 │   (or reference/      #   may be a directory for larger reference sets)
-└── scripts/            # optional — files Claude executes (referenced via ${CLAUDE_SKILL_DIR})
-    └── helper.py
+├── scripts/            # optional — files Claude executes (referenced via ${CLAUDE_SKILL_DIR})
+│   └── helper.py
+└── assets/             # optional — static resources like templates, schemas, images, lookup tables
 ```
 
-**Do not invent other top-level folders.** No `templates/` (plural), no `docs/`, no `assets/`. If you need supporting material, fit it into the slots above. Every supporting file must be linked from `SKILL.md` so Claude knows what it contains and when to load it.
+**Use documented resource folders.** Prefer the slots above for supporting material. Avoid `templates/` (plural) and `docs/`; use `template.md`, `reference.md` / `reference/`, `examples/`, `scripts/`, or `assets/` instead. Every supporting file must be linked from `SKILL.md` so Claude knows what it contains and when to load it.
 
 ## Detect intent
 
@@ -103,11 +104,12 @@ description: <what the skill does + when to use it, with trigger phrases>
 
 ### 4. Add supporting files (only if needed)
 
-Keep `SKILL.md` under 500 lines. Move detail into the canonical slots only:
+Keep `SKILL.md` under 500 lines. Move detail into documented resource folders:
 
 - `reference.md` (or `reference/*.md`) — detailed docs Claude loads on demand
 - `examples/*.md` — sample outputs or complete SKILL.md examples
 - `scripts/*` — files Claude executes (reference via `${CLAUDE_SKILL_DIR}`)
+- `assets/*` — static resources such as templates, schemas, images, or lookup tables
 - `template.md` — a single fill-in template (rare; only if the skill produces output from a template)
 
 Always reference supporting files from `SKILL.md` so Claude knows when to load them. Do **not** create a `templates/` directory — it is not part of the official skill layout.
@@ -174,7 +176,7 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 - **Side effects → manual** — `disable-model-invocation: true` for skills like deploy, commit, send-message.
 - **Knowledge → background** — `user-invocable: false` for context-only skills (e.g. `legacy-system-context`).
 - **Pre-approve carefully** — `allowed-tools` skips approval prompts. Review before committing project skills.
-- **Stick to the canonical layout** — only the slots above (`SKILL.md`, `template.md`, `examples/`, `reference.md` or `reference/`, `scripts/`). Don't invent new top-level folders.
+- **Stick to documented resource folders** — use the slots above (`SKILL.md`, `template.md`, `examples/`, `reference.md` or `reference/`, `scripts/`, `assets/`). Don't invent new top-level folders.
 
 ## Common gotchas
 
