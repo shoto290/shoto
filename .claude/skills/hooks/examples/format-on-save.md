@@ -38,7 +38,7 @@
 ## Variations
 
 - **Different formatter:** swap `npx prettier --write` for `ruff format -`, `cargo fmt --`, `gofmt -w`, etc.
-- **Multiple matchers:** `"matcher": "Edit|Write|NotebookEdit"` to catch notebook edits too.
+- **Multiple matchers:** `"matcher": "Edit|MultiEdit|Write|NotebookEdit"` to catch multi-edits and notebook edits too.
 - **Per-extension:** wrap in a script and switch on file extension. Save as `.claude/hooks/format.sh`:
   ```bash
   #!/bin/bash

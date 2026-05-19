@@ -103,7 +103,7 @@ Each event uses a slightly different shape inside `hookSpecificOutput` or at the
 | `PreToolUse` | `hookSpecificOutput.updatedInput` | object | Replace the tool's arguments before execution |
 | `PostToolUse`, `PostToolBatch`, `Stop`, `SubagentStop` | `decision` (top-level) | `"block"` | Feeds `reason` back to Claude (Stop keeps it working) |
 | `PostToolUse`, `PostToolBatch`, `Stop`, `SubagentStop` | `reason` (top-level) | string | The text Claude sees |
-| `PermissionRequest` | `hookSpecificOutput.decision.behavior` | `"allow"`, `"deny"`, `"ask"` | Answer the permission dialog |
+| `PermissionRequest` | `hookSpecificOutput.decision.behavior` | `"allow"`, `"deny"` | Answer the permission dialog |
 | `PermissionRequest` | `hookSpecificOutput.decision.updatedPermissions` | array | Apply a `setMode` (e.g. `acceptEdits`) to the session |
 | `UserPromptSubmit`, `SessionStart` | `hookSpecificOutput.additionalContext` | string | Append text to Claude's context |
 | `UserPromptSubmit`, `UserPromptExpansion` | `decision` | `"block"` | Block the prompt with `reason` |
@@ -144,7 +144,7 @@ A `PermissionRequest` hook can change the active permission mode for the rest of
 When several hooks match the same event:
 
 1. All run in parallel to completion. One hook's deny does **not** stop another from running.
-2. `PreToolUse` permission decisions: most restrictive wins. `deny` > `ask` > `allow`.
+2. `PreToolUse` permission decisions: most restrictive wins. `deny` > `defer` > `ask` > `allow`.
 3. `additionalContext` strings: concatenated, all delivered to Claude.
 4. `updatedInput`: last finisher wins. Order is non-deterministic. Don't have two hooks mutate the same call's input.
 5. Identical hook commands are auto-deduplicated.

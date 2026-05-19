@@ -49,7 +49,7 @@ Propose defaults from the user's request; confirm before writing:
 | Decision | Options |
 | :-- | :-- |
 | **Event** | One of `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `UserPromptExpansion`, `Notification`, `Stop`, `StopFailure`, `PreCompact`, `PostCompact`, `SubagentStart`, `SubagentStop`, `PermissionRequest`, `PermissionDenied`, `ConfigChange`, `CwdChanged`, `FileChanged`, `TaskCreated`, `TaskCompleted`, `WorktreeCreate`, `WorktreeRemove`, `Setup`, `InstructionsLoaded`, `PostToolBatch`, `Elicitation`, `ElicitationResult`, `TeammateIdle` — see [reference/events.md](./reference/events.md) |
-| **Type** | `command` (shell, default), `prompt` (single-turn LLM), `agent` (multi-turn LLM with tools, experimental), `http` (POST to URL), `mcp_tool` (call a connected MCP tool) — see [reference/types.md](./reference/types.md) |
+| **Type** | `command` (shell, default), `prompt` (single-turn LLM), `agent` (multi-turn LLM with tools, experimental), `http` (POST to URL), `mcp_tool` (call a connected MCP tool). Support varies by event; check [reference/types.md](./reference/types.md#event-support) before choosing. |
 | **Matcher** | Empty string fires on every occurrence. Otherwise depends on event: tool name regex (`Bash`, `Edit&#124;Write`, `mcp__.*`), session source (`startup`, `compact`), notification kind, etc. — see [reference/matchers.md](./reference/matchers.md) |
 | **`if` filter** | For tool events only: permission-rule syntax to filter by tool name + arguments (`Bash(git *)`, `Edit(*.ts)`). Requires Claude Code v2.1.85+ |
 | **Output mode** | Exit code (0 = allow, 2 = block + stderr fed back to Claude) **or** stdout JSON (`hookSpecificOutput`, `additionalContext`, `decision`). Don't mix |

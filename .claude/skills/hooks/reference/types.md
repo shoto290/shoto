@@ -117,3 +117,13 @@ Call a tool on an already-connected MCP server, passing the hook input as the to
 | `agent` | 60 s | Hard cap of 50 tool-use turns |
 
 Override per handler with `"timeout": <seconds>`. A timed-out hook reports a non-zero result and the action proceeds (the transcript shows a `<event> hook error` notice).
+
+## Event support
+
+Not every event supports every hook type:
+
+| Events | Supported types |
+| :-- | :-- |
+| `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PostToolBatch`, `Stop`, `SubagentStop`, `PermissionRequest`, `TaskCreated`, `TaskCompleted`, `UserPromptSubmit`, `UserPromptExpansion` | `command`, `http`, `mcp_tool`, `prompt`, `agent` |
+| `ConfigChange`, `CwdChanged`, `Elicitation`, `ElicitationResult`, `FileChanged`, `InstructionsLoaded`, `Notification`, `PermissionDenied`, `PostCompact`, `PreCompact`, `SessionEnd`, `StopFailure`, `SubagentStart`, `TeammateIdle`, `WorktreeCreate`, `WorktreeRemove` | `command`, `http`, `mcp_tool` |
+| `SessionStart`, `Setup` | `command`, `mcp_tool` |

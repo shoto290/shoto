@@ -99,7 +99,7 @@ For per-subcommand routing, use `if` at the handler level so the script only run
 }
 ```
 
-Compound Bash like `rm -rf /tmp && git push` triggers **both** handlers (each subcommand evaluated independently). The most restrictive answer wins per `deny > ask > allow`.
+Compound Bash like `rm -rf /tmp && git push` triggers **both** handlers (each subcommand evaluated independently). The most restrictive answer wins per `deny > defer > ask > allow`.
 
 ## Unit-test it
 

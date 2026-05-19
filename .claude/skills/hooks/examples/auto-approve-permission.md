@@ -71,8 +71,8 @@ LINES=$(echo "$PLAN" | wc -l)
 if [ "$LINES" -le 20 ]; then
   echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}'
 else
-  # Long plan — fall through to user
-  echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"ask"}}}'
+  # Long plan — no decision, so the normal permission prompt appears.
+  exit 0
 fi
 ```
 

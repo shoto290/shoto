@@ -31,7 +31,7 @@ Tool-event matchers are full regex. Common patterns:
 | :-- | :-- |
 | One tool | `Bash` |
 | A few tools | `Edit&#124;Write` |
-| All built-in file tools | `Edit&#124;Write&#124;NotebookEdit` |
+| All built-in file tools | `Edit&#124;MultiEdit&#124;Write&#124;NotebookEdit` |
 | All MCP tools | `mcp__.*` |
 | One MCP server's tools | `mcp__github__.*` |
 | Write-shaped tools across servers | `mcp__.*__write.*` |
