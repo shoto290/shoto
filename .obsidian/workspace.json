@@ -11,10 +11,14 @@
             "id": "5a7f25379878a563",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "README"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "flow.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for flow"
             }
           },
           {
@@ -108,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "flow.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from flow"
             }
           },
           {
@@ -150,12 +156,23 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "flow.canvas",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of flow"
+            }
+          },
+          {
+            "id": "3b8d67fbfd5399c5",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
             }
           }
         ]
@@ -167,18 +184,43 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "random-note:Open random note": false,
+      "audio-recorder:Start/stop recording": false,
+      "workspaces:Manage workspace layouts": false,
+      "publish:Publish changes...": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "bases:Create new base": false,
+      "obsidian-kanban:Create new board": false,
+      "terminal:Open terminal": false,
+      "obsidian42-brat:BRAT": false
     }
   },
   "active": "5a7f25379878a563",
   "lastOpenFiles": [
-    "Method \"Shoto\" v2.canvas",
-    "flow.canvas"
+    ".claude/agents/README.md",
+    ".claude/skills/README.md",
+    ".claude/settings.json",
+    ".claude/skills",
+    ".claude/agents",
+    ".gitignore",
+    "gi.md",
+    "README.md",
+    "CLAUDE.md",
+    "AGENTS.md",
+    ".docs/flow.canvas",
+    ".concept/flow.canvas",
+    ".concept",
+    ".docs",
+    "Untitled",
+    "AGENT.md.md",
+    ".obsidian/plugins/show-hidden-files/manifest.json",
+    ".obsidian/plugins/terminal/styles.css",
+    ".obsidian/plugins/terminal/main.js",
+    "Method \"Shoto\" v2.canvas"
   ]
 }

@@ -1,11 +1,14 @@
 [
-  "obsidian-link-embed",
-  "obsidian-icon-folder",
   "calendar",
   "obsidian-hider",
+  "obsidian-icon-folder",
   "obsidian-kanban",
+  "obsidian-link-embed",
   "obsidian-minimal-settings",
-  "obsidian-outliner",
   "open-in-terminal",
-  "terminal"
+  "obsidian-outliner",
+  "terminal",
+  "obsidian42-brat",
+  "hidden-folders-access",
+  "show-hidden-files"
 ]
