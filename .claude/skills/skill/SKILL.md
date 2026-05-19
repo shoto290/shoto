@@ -15,8 +15,8 @@ A skill is a directory. Only `SKILL.md` is required. Every other file is optiona
 my-skill/
 ├── SKILL.md            # required — frontmatter + instructions (entry point)
 ├── template.md         # optional — a single fill-in template Claude uses to produce output
-├── examples/           # optional — sample outputs / complete reference SKILL.md files
-│   └── sample.md
+├── examples/           # optional — sample outputs showing the expected format
+│   └── create-skill-output.md
 ├── reference.md        # optional — detailed docs Claude loads on demand
 │   (or reference/      #   may be a directory for larger reference sets)
 ├── scripts/            # optional — files Claude executes (referenced via ${CLAUDE_SKILL_DIR})
@@ -24,7 +24,9 @@ my-skill/
 └── assets/             # optional — static resources like templates, schemas, images, lookup tables
 ```
 
-**Use documented resource folders.** Prefer the slots above for supporting material. Avoid `templates/` (plural) and `docs/`; use `template.md`, `reference.md` / `reference/`, `examples/`, `scripts/`, or `assets/` instead. Every supporting file must be linked from `SKILL.md` so Claude knows what it contains and when to load it.
+**Use documented resource folders.** Prefer the slots above for supporting material. Avoid `templates/` (plural) and `docs/`; use `template.md`, `reference.md` / `reference/`, `examples/`, `scripts/`, or `assets/` instead. Reserve `examples/` for expected output examples only; put prompt recipes, complete sample `SKILL.md` files, API notes, and workflow patterns in `reference/`. Every supporting file must be linked from `SKILL.md` so Claude knows what it contains and when to load it.
+
+For this skill's own expected outputs, use [examples/create-reference-skill-output.md](./examples/create-reference-skill-output.md), [examples/create-task-skill-output.md](./examples/create-task-skill-output.md), and [examples/update-skill-output.md](./examples/update-skill-output.md).
 
 ## Detect intent
 
@@ -74,15 +76,15 @@ Propose defaults from the user's request; confirm before writing:
 | **Subagent** | Run in an isolated fork (`context: fork`)? |
 | **Pre-approved tools** | List for `allowed-tools` |
 
-### 2. Pick an example
+### 2. Pick a reference pattern
 
-Start from a complete reference in [examples/](./examples/):
+Start from a complete pattern reference:
 
-- [examples/summarize-changes.md](./examples/summarize-changes.md) — auto-invocable + dynamic context (`` !`command` `` substitution)
-- [examples/deploy.md](./examples/deploy.md) — task action + `disable-model-invocation` + `allowed-tools` + `$ARGUMENTS`
-- [examples/fix-issue.md](./examples/fix-issue.md) — single argument via `$ARGUMENTS`; positional via `$0` / `$1`
-- [examples/pr-summary.md](./examples/pr-summary.md) — `context: fork` + `agent: Explore` + multiple `` !`command` `` injections
-- [examples/codebase-visualizer.md](./examples/codebase-visualizer.md) — bundled script + `${CLAUDE_SKILL_DIR}`
+- [reference/pattern-summarize-changes.md](./reference/pattern-summarize-changes.md) — auto-invocable + dynamic context (`` !`command` `` substitution)
+- [reference/pattern-deploy.md](./reference/pattern-deploy.md) — task action + `disable-model-invocation` + `allowed-tools` + `$ARGUMENTS`
+- [reference/pattern-fix-issue.md](./reference/pattern-fix-issue.md) — single argument via `$ARGUMENTS`; positional via `$0` / `$1`
+- [reference/pattern-pr-summary.md](./reference/pattern-pr-summary.md) — `context: fork` + `agent: Explore` + multiple `` !`command` `` injections
+- [reference/pattern-codebase-visualizer.md](./reference/pattern-codebase-visualizer.md) — bundled script + `${CLAUDE_SKILL_DIR}`
 
 ### 3. Create the directory and `SKILL.md`
 
@@ -107,12 +109,12 @@ description: <what the skill does + when to use it, with trigger phrases>
 Keep `SKILL.md` under 500 lines. Move detail into documented resource folders:
 
 - `reference.md` (or `reference/*.md`) — detailed docs Claude loads on demand
-- `examples/*.md` — sample outputs or complete SKILL.md examples
+- `examples/*.md` — sample outputs showing the expected format only
 - `scripts/*` — files Claude executes (reference via `${CLAUDE_SKILL_DIR}`)
 - `assets/*` — static resources such as templates, schemas, images, or lookup tables
 - `template.md` — a single fill-in template (rare; only if the skill produces output from a template)
 
-Always reference supporting files from `SKILL.md` so Claude knows when to load them. Do **not** create a `templates/` directory — it is not part of the official skill layout.
+Put complete sample `SKILL.md` files, prompt recipes, and workflow patterns in `reference/`, not `examples/`. Always reference supporting files from `SKILL.md` so Claude knows when to load them. Do **not** create a `templates/` directory — it is not part of the official skill layout.
 
 ### 5. Test
 
@@ -135,7 +137,7 @@ If matches exist in multiple scopes, ask which one (enterprise > personal > proj
 
 ### 2. Read current state
 
-Read `SKILL.md` and every supporting file it references (`reference/`, `examples/`, `template.md`, `scripts/`). Don't propose changes blind.
+Read `SKILL.md` and every supporting file it references (`reference/`, `examples/` for output samples, `template.md`, `scripts/`). Don't propose changes blind.
 
 ### 3. Identify the change
 
@@ -144,10 +146,10 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 | Change | Where to look |
 | :-- | :-- |
 | Description, `name`, `when_to_use`, `argument-hint`, `arguments`, `model`, `effort`, `paths`, `shell`, `hooks` | [reference/frontmatter.md](./reference/frontmatter.md) |
-| Add / change `$ARGUMENTS` / `$N` / `$name` | [reference/frontmatter.md](./reference/frontmatter.md) + [examples/fix-issue.md](./examples/fix-issue.md) |
-| Inject `!command` (dynamic context) | [reference/advanced.md](./reference/advanced.md) + [examples/summarize-changes.md](./examples/summarize-changes.md) |
-| Convert to `context: fork` | [reference/advanced.md](./reference/advanced.md) + [examples/pr-summary.md](./examples/pr-summary.md) |
-| Bundle a script (`${CLAUDE_SKILL_DIR}`) | [reference/advanced.md](./reference/advanced.md) + [examples/codebase-visualizer.md](./examples/codebase-visualizer.md) |
+| Add / change `$ARGUMENTS` / `$N` / `$name` | [reference/frontmatter.md](./reference/frontmatter.md) + [reference/pattern-fix-issue.md](./reference/pattern-fix-issue.md) |
+| Inject `!command` (dynamic context) | [reference/advanced.md](./reference/advanced.md) + [reference/pattern-summarize-changes.md](./reference/pattern-summarize-changes.md) |
+| Convert to `context: fork` | [reference/advanced.md](./reference/advanced.md) + [reference/pattern-pr-summary.md](./reference/pattern-pr-summary.md) |
+| Bundle a script (`${CLAUDE_SKILL_DIR}`) | [reference/advanced.md](./reference/advanced.md) + [reference/pattern-codebase-visualizer.md](./reference/pattern-codebase-visualizer.md) |
 | `allowed-tools` / `disable-model-invocation` / `user-invocable` / `skillOverrides` | [reference/invocation.md](./reference/invocation.md) |
 | Split long SKILL.md into supporting files | [reference/locations.md](./reference/locations.md) (directory layout section) |
 | Rename the skill | Rename the directory — the new name becomes the command unless `name:` overrides it |
@@ -176,7 +178,7 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 - **Side effects → manual** — `disable-model-invocation: true` for skills like deploy, commit, send-message.
 - **Knowledge → background** — `user-invocable: false` for context-only skills (e.g. `legacy-system-context`).
 - **Pre-approve carefully** — `allowed-tools` skips approval prompts. Review before committing project skills.
-- **Stick to documented resource folders** — use the slots above (`SKILL.md`, `template.md`, `examples/`, `reference.md` or `reference/`, `scripts/`, `assets/`). Don't invent new top-level folders.
+- **Stick to documented resource folders** — use the slots above (`SKILL.md`, `template.md`, `examples/`, `reference.md` or `reference/`, `scripts/`, `assets/`). `examples/` is for output samples; workflow and prompt patterns belong in `reference/`. Don't invent new top-level folders.
 
 ## Common gotchas
 
@@ -196,6 +198,16 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 - [reference/advanced.md](./reference/advanced.md) — dynamic context, subagent execution, bundled scripts
 - [reference/troubleshooting.md](./reference/troubleshooting.md) — when skills don't trigger
 
-## Examples
+## Pattern References
 
-See [examples/](./examples/) for complete SKILL.md files covering each common pattern.
+- [reference/pattern-summarize-changes.md](./reference/pattern-summarize-changes.md) — dynamic context injection
+- [reference/pattern-deploy.md](./reference/pattern-deploy.md) — manual task action
+- [reference/pattern-fix-issue.md](./reference/pattern-fix-issue.md) — arguments and positional substitutions
+- [reference/pattern-pr-summary.md](./reference/pattern-pr-summary.md) — subagent execution
+- [reference/pattern-codebase-visualizer.md](./reference/pattern-codebase-visualizer.md) — bundled script
+
+## Output Examples
+
+- [examples/create-reference-skill-output.md](./examples/create-reference-skill-output.md) — expected output for a compact reference skill
+- [examples/create-task-skill-output.md](./examples/create-task-skill-output.md) — expected output for a manually invoked task skill
+- [examples/update-skill-output.md](./examples/update-skill-output.md) — expected final response after updating a skill
