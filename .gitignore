@@ -1,2 +1,6 @@
+# Local Global Rules
 CLAUDE.local.md
 AGENTS.local.md
+
+# Local Settings
+.claude/settings.local.json
