@@ -1,0 +1,13 @@
+{
+  "accentColor": "#6e6e6e",
+  "cssTheme": "AnuPpuccin",
+  "translucency": false,
+  "nativeMenus": true,
+  "showViewHeader": true,
+  "baseFontSizeAction": true,
+  "theme": "system",
+  "interfaceFontFamily": "iA Writer Quattro S",
+  "baseFontSize": 16,
+  "textFontFamily": "iA Writer Quattro S",
+  "monospaceFontFamily": "Geist Mono"
+}
