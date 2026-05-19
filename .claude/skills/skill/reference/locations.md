@@ -22,14 +22,15 @@ Each skill is a directory with `SKILL.md` as the entrypoint. Optional supporting
 ```text
 my-skill/
 ├── SKILL.md           # required, main instructions
-├── reference.md       # loaded on demand
+├── template.md        # optional, single fill-in template for Claude to populate
+├── reference.md       # optional, loaded on demand (or use reference/ for larger sets)
 ├── examples/
 │   └── sample.md
-├── templates/
-│   └── output.md
 └── scripts/
     └── helper.py      # executed, not loaded
 ```
+
+The slots above are the **only** ones documented. No `templates/` (plural) directory: if you need a fill-in template, use a single `template.md` file. Larger reference material can live in a `reference/` directory.
 
 Reference supporting files from `SKILL.md` so Claude knows when to read them.
 

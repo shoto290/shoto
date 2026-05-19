@@ -60,9 +60,9 @@ Propose defaults from the user's request; confirm before writing:
 | **Preloaded skills** | `skills:` injects full skill content at startup |
 | **Run mode** | `background: true` to always background; `isolation: worktree` for an isolated git worktree |
 
-### 2. Pick a template
+### 2. Pick an example
 
-Start from [templates/](./templates/):
+Start from [examples/](./examples/):
 
 - `basic.md` — minimum viable subagent (description + body)
 - `code-reviewer.md` — read-only review (`tools: Read, Grep, Glob, Bash`)
@@ -197,6 +197,6 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 - [reference/context.md](./reference/context.md) — what loads at startup, `skills` preload, `mcpServers`, `memory`, resume, compaction
 - [reference/invocation.md](./reference/invocation.md) — automatic delegation, `@-mention`, `--agent`, foreground/background, fork mode, chaining
 
-## Templates
+## Examples
 
-[templates/](./templates/) — copy-paste starting points. Read the matching one before drafting a new subagent.
+[examples/](./examples/) — complete subagent files for each common pattern. Read the matching one before drafting a new subagent.
