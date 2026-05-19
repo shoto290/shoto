@@ -1,4 +1,4 @@
-# Example: codebase-visualizer
+# Pattern: codebase-visualizer
 
 **Pattern**: Bundled script + `${CLAUDE_SKILL_DIR}` + visual output
 
@@ -57,4 +57,4 @@ The skill's directory path varies by scope:
 
 Any script the user's environment can run — bash, node, python, ruby, deno. Visual outputs are popular (dependency graphs, coverage reports, schema diagrams) but the pattern works for any bundled tooling.
 
-Use Python with standard-library-only when possible — no install step. The complete script for this example is in the Claude Code docs (≈100 lines, no third-party deps).
+Use Python with standard-library-only when possible — no install step. The complete script for this pattern is in the Claude Code docs (≈100 lines, no third-party deps).
