@@ -70,7 +70,7 @@ Propose defaults from the user's request; confirm before writing:
 | **Type** | Reference (knowledge) or Task (action) |
 | **Invoker** | User only, Claude only, or both (default: both) |
 | **Arguments** | None, free-form (`$ARGUMENTS`), or positional (`$0`, `$1`...) |
-| **Live context** | Shell output to inject with `` !`<command>` ``? |
+| **Live context** | Shell output to inject via the `!command` substitution? |
 | **Subagent** | Run in an isolated fork (`context: fork`)? |
 | **Pre-approved tools** | List for `allowed-tools` |
 
@@ -78,10 +78,10 @@ Propose defaults from the user's request; confirm before writing:
 
 Start from a complete reference in [examples/](./examples/):
 
-- [examples/summarize-changes.md](./examples/summarize-changes.md) — auto-invocable + dynamic context (`` !`command` ``)
+- [examples/summarize-changes.md](./examples/summarize-changes.md) — auto-invocable + dynamic context (`!command` substitution)
 - [examples/deploy.md](./examples/deploy.md) — task action + `disable-model-invocation` + `allowed-tools` + `$ARGUMENTS`
 - [examples/fix-issue.md](./examples/fix-issue.md) — single argument via `$ARGUMENTS`; positional via `$0` / `$1`
-- [examples/pr-summary.md](./examples/pr-summary.md) — `context: fork` + `agent: Explore` + multiple `` !`command` `` injections
+- [examples/pr-summary.md](./examples/pr-summary.md) — `context: fork` + `agent: Explore` + multiple `!command` injections
 - [examples/codebase-visualizer.md](./examples/codebase-visualizer.md) — bundled script + `${CLAUDE_SKILL_DIR}`
 
 ### 3. Create the directory and `SKILL.md`
