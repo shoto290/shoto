@@ -6,7 +6,7 @@
 
 **Scope.** Project — `.claude/settings.json` plus a script at `.claude/hooks/protect-files.sh`.
 
-**Matcher.** `Edit|Write` so we only check file-editing tools.
+**Matcher.** `Edit|MultiEdit|Write` so we only check file-editing tools.
 
 ## Script
 
@@ -42,7 +42,7 @@ chmod +x .claude/hooks/protect-files.sh
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Edit|MultiEdit|Write",
         "hooks": [
           {
             "type": "command",
@@ -57,7 +57,7 @@ chmod +x .claude/hooks/protect-files.sh
 
 ## How it works
 
-1. Before the `Edit` or `Write` runs, Claude Code pipes the event JSON to the script.
+1. Before the `Edit`, `MultiEdit`, or `Write` runs, Claude Code pipes the event JSON to the script.
 2. The script extracts `tool_input.file_path` with `jq`.
 3. If the path matches any protected pattern, the script writes the reason to stderr and `exit 2`s — Claude Code blocks the call and shows Claude the stderr.
 4. Otherwise `exit 0` and the edit proceeds.
@@ -77,14 +77,14 @@ echo $?   # 2
 For pure path-based blocks, **permission `deny` rules** are simpler and unbypassable:
 
 ```json
-{ "permissions": { "deny": ["Edit(.env)", "Write(.env)", "Edit(.git/**)"] } }
+{ "permissions": { "deny": ["Edit(.env)", "MultiEdit(.env)", "Write(.env)", "Edit(.git/**)", "MultiEdit(.git/**)", "Write(.git/**)"] } }
 ```
 
 Hooks are the better fit when the decision involves logic the rule engine can't express — e.g. "block edits to any file matching `*.lock` *unless* the user is in the `infra` group".
 
 ## Catching Bash-driven file writes
 
-This hook only guards `Edit` and `Write`. If you want to also block `Bash`-driven writes (`sed -i`, `cat >`, …), add a second handler:
+This hook only guards `Edit`, `MultiEdit`, and `Write`. If you want to also block `Bash`-driven writes (`sed -i`, `cat >`, …), add a second handler:
 
 ```json
 {

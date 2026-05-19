@@ -31,7 +31,7 @@ deny() {
 }
 
 # Patterns to block
-if echo "$CMD" | grep -qE '\brm\b.*-r[fF]?\b'; then
+if echo "$CMD" | grep -qE '\brm\b.*-[^-[:space:]]*[rR]'; then
   deny "rm -r/-rf is blocked. Use a script that lists files for review first."
 fi
 

@@ -19,7 +19,7 @@
           {
             "type": "prompt",
             "model": "haiku",
-            "prompt": "Review the conversation. Did Claude complete every task the user asked for? If yes, respond exactly with {\"ok\": true}. If something is missing or unresolved, respond with {\"ok\": false, \"reason\": \"<concrete next step Claude should take>\"}."
+            "prompt": "Review the conversation and hook input. If stop_hook_active is true, respond exactly with {\"ok\": true}. Otherwise, did Claude complete every task the user asked for? If yes, respond exactly with {\"ok\": true}. If something is missing or unresolved, respond with {\"ok\": false, \"reason\": \"<concrete next step Claude should take>\"}."
           }
         ]
       }
@@ -34,7 +34,7 @@ For `Stop` and `SubagentStop`, the model's `reason` is fed to Claude as instruct
 
 ## Avoiding the block-cap surprise
 
-If your hook returns `ok: false` more than 8 times in a row without Claude making progress, Claude Code overrides it to let the session end. For `prompt`-typed hooks, you don't need to handle `stop_hook_active` yourself — the runtime tracks it and provides it in the hook input automatically.
+If your hook returns `ok: false` more than 8 times in a row without Claude making progress, Claude Code overrides it to let the session end. For `prompt`-typed hooks, include a `stop_hook_active` check in the prompt so the model returns `{"ok": true}` after it has already triggered a continuation once.
 
 If you switch this to a `command` hook later, check it manually:
 

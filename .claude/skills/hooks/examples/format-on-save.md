@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write"
+            "command": "FILE=$(jq -r '.tool_input.file_path'); npx prettier --write \"$FILE\""
           }
         ]
       }
@@ -32,7 +32,7 @@
 
 1. After the `Edit` or `Write` succeeds, Claude Code feeds the event JSON to the hook's stdin.
 2. `jq -r '.tool_input.file_path'` extracts just the path.
-3. `xargs npx prettier --write` formats that file in place.
+3. `npx prettier --write "$FILE"` formats that file in place, preserving paths with spaces.
 4. The hook exits 0; the formatted file replaces the edited one.
 
 ## Variations
@@ -55,4 +55,4 @@
 
 - `PostToolUse` cannot undo a write that already happened — this hook reformats, but if the write was destructive the change is already on disk.
 - The hook runs after every edit, including many tiny ones. If your formatter is slow, consider a `Stop` hook that formats once per turn instead.
-- `Bash`-driven file changes (Claude using `sed`, `cat >`, etc.) don't trigger `Edit|Write`. To catch those too, add a `Stop` hook that runs `git status --porcelain | awk '{print $2}' | xargs npx prettier --write`.
+- `Bash`-driven file changes (Claude using `sed`, `cat >`, etc.) don't trigger `Edit|Write`. To catch those too, add a `Stop` hook that formats changed files from a script with proper path quoting.
