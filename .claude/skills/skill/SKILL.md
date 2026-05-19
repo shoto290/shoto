@@ -11,7 +11,7 @@ A skill is a `SKILL.md` file with YAML frontmatter + markdown instructions. User
 
 If invoked as `/skill <name>`, treat `$ARGUMENTS` as the target name.
 
-1. **Search for the name** in personal (`~/.claude/skills/<name>/SKILL.md`) and project (`.claude/skills/<name>/SKILL.md` from CWD up to repo root) scopes
+1. **Search for the name** in personal (`~/.claude/skills/<name>/SKILL.md`), project (`.claude/skills/<name>/SKILL.md` from CWD up to repo root), and enabled plugin (`<plugin>/skills/<name>/SKILL.md`) scopes
 2. **Match found** → propose **update flow** (confirm with user before editing)
 3. **No match** → propose **create flow** (validate the name: lowercase + digits + hyphens, max 64 chars)
 4. **Empty / ambiguous** → ask the user
