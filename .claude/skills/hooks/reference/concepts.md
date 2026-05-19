@@ -62,7 +62,7 @@ See [events.md](./events.md) for the full catalog with firing conditions, matche
 
 When several hooks match the same event, they all run in parallel to completion. Their outputs are then merged:
 
-- `PreToolUse` permission decisions: most restrictive wins (`deny` > `ask` > `allow`).
+- `PreToolUse` permission decisions: most restrictive wins — `deny` overrides `ask`, which overrides `allow`.
 - `additionalContext` strings: concatenated and passed to Claude.
 - `updatedInput` for tool args: last finisher wins — non-deterministic. Avoid more than one hook mutating the same call's input.
 - Identical hook commands are auto-deduplicated.

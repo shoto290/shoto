@@ -87,18 +87,6 @@ But for *always-on* context, prefer `CLAUDE.md` — it's the documented mechanis
 
 `UserPromptSubmit` fires on every prompt — using it for context injection makes Claude re-read the same text dozens of times per session and tanks context efficiency. Reserve it for *prompt-specific* context (e.g. "if the user mentions X, also include Y").
 
-## Use `additionalContext` for structured injection
+## Plain stdout is the documented path
 
-For longer contexts, switch to JSON output with `hookSpecificOutput.additionalContext`:
-
-```bash
-#!/bin/bash
-jq -n --rawfile ctx /tmp/context.md '{
-  hookSpecificOutput: {
-    hookEventName: "SessionStart",
-    additionalContext: $ctx
-  }
-}'
-```
-
-Functionally similar to plain stdout, but explicit and easier to read in debug logs.
+For `SessionStart`, the official docs describe stdout becoming Claude's context. Stick to `echo` / scripts that print to stdout. `additionalContext` is documented for `UserPromptSubmit`; if you want similar behavior for `SessionStart`, check the live `/en/hooks` reference first.

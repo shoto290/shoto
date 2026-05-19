@@ -10,7 +10,7 @@ Each event has a key under the top-level `hooks` block in `settings.json`. The v
 | `Setup` | `--init-only`, `--init`, or `--maintenance` (used in CI / scripts) | `init`, `maintenance` | No |
 | `UserPromptSubmit` | User submits a prompt, before Claude sees it | none | Yes — blocks the prompt. stdout becomes context |
 | `UserPromptExpansion` | A user-typed `/command` expands into a prompt | command name | Yes — blocks the expansion |
-| `Stop` | Claude finishes responding (not on user interrupts) | none | Yes for the `Stop` event itself; `decision: "block"` keeps Claude working |
+| `Stop` | Claude finishes responding (not on user interrupts) | none | Use `decision: "block"` (top-level JSON) to keep Claude working; `reason` is fed back so it continues |
 | `StopFailure` | Turn ends due to API error | error type (`rate_limit`, `server_error`, …) | Output and exit code **ignored** |
 | `SessionEnd` | Session terminates | `clear`, `resume`, `logout`, `prompt_input_exit`, `bypass_permissions_disabled`, `other` | No |
 
@@ -23,7 +23,7 @@ Each event has a key under the top-level `hooks` block in `settings.json`. The v
 | `PermissionDenied` | A tool call was denied by the auto-mode classifier | tool name | Return `{retry: true}` to let the model retry |
 | `PostToolUse` | After a tool call succeeds | tool name | Cannot undo the call; `decision: "block"` only feeds reason back |
 | `PostToolUseFailure` | After a tool call fails | tool name | Same as `PostToolUse` |
-| `PostToolBatch` | After a batch of parallel tool calls resolves, before next model call | none | Yes — `exit 2` or `decision: "block"` stops the agentic loop before the next model call |
+| `PostToolBatch` | After a batch of parallel tool calls resolves, before next model call | none | Use `decision: "block"` (JSON output) to feed `reason` back to Claude before the next model call |
 
 ## Compaction
 
@@ -38,9 +38,9 @@ Each event has a key under the top-level `hooks` block in `settings.json`. The v
 | :-- | :-- | :-- | :-- |
 | `SubagentStart` | A subagent is spawned | agent type (`general-purpose`, `Explore`, `Plan`, or custom) | No — can inject context, not block creation |
 | `SubagentStop` | A subagent finishes | agent type | Same semantics as `Stop` |
-| `TaskCreated` | A task is being created via `TaskCreate` | none | Yes |
-| `TaskCompleted` | A task is being marked completed | none | Same as `Stop` |
-| `TeammateIdle` | An agent-team teammate is about to idle | none | Same as `Stop` |
+| `TaskCreated` | A task is being created via `TaskCreate` | none | Not documented as blockable; treat as observational |
+| `TaskCompleted` | A task is being marked completed | none | Same as `Stop` (`decision: "block"` feeds reason back) |
+| `TeammateIdle` | An agent-team teammate is about to idle | none | Same as `Stop` (`decision: "block"` feeds reason back) |
 
 ## Filesystem and config
 
@@ -57,8 +57,8 @@ Each event has a key under the top-level `hooks` block in `settings.json`. The v
 | Event | Fires when | Matcher filters | Blockable? |
 | :-- | :-- | :-- | :-- |
 | `Notification` | Claude Code emits a notification | `permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`, `elicitation_complete`, `elicitation_response` | No |
-| `Elicitation` | An MCP server requests user input during a tool call | MCP server name | Yes |
-| `ElicitationResult` | After user responds to an MCP elicitation, before sending back | MCP server name | Yes |
+| `Elicitation` | An MCP server requests user input during a tool call | MCP server name | Behavior not explicitly documented — verify against the live `/en/hooks` reference if you intend to block |
+| `ElicitationResult` | After user responds to an MCP elicitation, before sending back | MCP server name | Behavior not explicitly documented — verify against the live `/en/hooks` reference if you intend to block |
 
 ## Instructions loading
 
@@ -74,6 +74,7 @@ For most events, `exit 2` blocks the action and feeds stderr back to Claude. For
 - `Notification`
 - `SubagentStart`
 - `PostToolUse`, `PostToolUseFailure` (tool already ran; use `decision: "block"` to feed reason to Claude)
+- `PermissionDenied` (denial already happened; use `hookSpecificOutput.retry: true` to let the model retry)
 - `StopFailure` (API error already happened)
 - `CwdChanged`, `FileChanged`
 - `ConfigChange` only for `policy_settings` sources; other sources can be blocked — see table

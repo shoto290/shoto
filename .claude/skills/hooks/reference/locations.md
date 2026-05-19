@@ -92,4 +92,4 @@ There is no per-event disable switch — to silence one event, remove or comment
 
 - **Plugin hooks** in `<plugin>/hooks/hooks.json` use the same shape as `settings.json`'s `hooks` value.
 - **Skill frontmatter** can declare lifecycle hooks that run only while the skill is active. See the [skill](../../skill/SKILL.md) skill for layout.
-- **Agent frontmatter** can declare `PreToolUse`, `PostToolUse`, and `Stop` hooks inline. `SubagentStart` / `SubagentStop` for that agent must live in `settings.json`. Plugin-sourced agents **silently ignore** `hooks` — copy the agent file out into `.claude/agents/` or `~/.claude/agents/` if you need them.
+- **Agent frontmatter** can declare lifecycle hooks inline. For exact behavior (which events are supported, plugin-sourced agent caveats), check the [subagent](../../subagent/SKILL.md) skill and the `/en/sub-agents` reference.

@@ -176,7 +176,7 @@ If the user is asking how hooks work rather than wiring one up, skip create/upda
 
 - **Hooks are policy, not suggestions.** A `PreToolUse` hook that returns `permissionDecision: "deny"` blocks the tool even in `bypassPermissions` or `--dangerously-skip-permissions` mode. Use this when you genuinely don't want users to bypass.
 - **Hooks tighten, never loosen.** A hook returning `"allow"` does **not** override `deny` rules from settings. Permission deny rules always win.
-- **Most restrictive wins.** When several `PreToolUse` hooks fire on the same call, `deny` beats `ask` beats `allow`. All hooks still run to completion — don't rely on one hook's `deny` to suppress another hook's side effects.
+- **Most restrictive wins.** When several `PreToolUse` hooks fire on the same call, `deny` overrides `ask`, which overrides `allow`. All hooks still run to completion — don't rely on one hook's `deny` to suppress another hook's side effects.
 - **`exit 2` and JSON output are mutually exclusive.** Use exit 2 with stderr for a simple block; use exit 0 + stdout JSON for structured control (`additionalContext`, `updatedPermissions`, `decision: "block"`). Mixing them = JSON ignored.
 - **Hooks run in non-interactive shells.** Any `echo` in your `~/.zshrc` or `~/.bashrc` that always prints will be prepended to your hook's stdout and break JSON parsing. Guard those with `if [[ $- == *i* ]]; then …`.
 - **`PostToolUse` can't undo.** The tool already ran. For pre-execution policy, use `PreToolUse`.

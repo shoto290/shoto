@@ -121,10 +121,4 @@ Override per handler with `"timeout": <seconds>`. A timed-out hook reports a non
 
 ## Event support
 
-Not every event supports every hook type:
-
-| Events | Supported types |
-| :-- | :-- |
-| `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PostToolBatch`, `Stop`, `SubagentStop`, `PermissionRequest`, `TaskCreated`, `TaskCompleted`, `UserPromptSubmit`, `UserPromptExpansion` | `command`, `http`, `mcp_tool`, `prompt`, `agent` |
-| `ConfigChange`, `CwdChanged`, `Elicitation`, `ElicitationResult`, `FileChanged`, `InstructionsLoaded`, `Notification`, `PermissionDenied`, `PostCompact`, `PreCompact`, `SessionEnd`, `StopFailure`, `SubagentStart`, `TeammateIdle`, `WorktreeCreate`, `WorktreeRemove` | `command`, `http`, `mcp_tool` |
-| `SessionStart`, `Setup` | `command`, `mcp_tool` |
+Not every event supports every hook type. The doc explicitly documents `prompt` and `agent` for `Stop`, `SubagentStop`, `PreToolUse`, `PostToolUse`, `PostToolBatch`, `UserPromptSubmit`, `UserPromptExpansion`, and `PermissionRequest`. For events outside that list (observational events like `ConfigChange`, `FileChanged`, `SessionStart`, etc.), assume only `command`, `http`, and `mcp_tool` are supported unless the live reference at `/en/hooks` says otherwise.

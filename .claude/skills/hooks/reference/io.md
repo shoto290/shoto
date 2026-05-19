@@ -105,7 +105,7 @@ Each event uses a slightly different shape inside `hookSpecificOutput` or at the
 | `PostToolUse`, `PostToolBatch`, `Stop`, `SubagentStop` | `reason` (top-level) | string | The text Claude sees |
 | `PermissionRequest` | `hookSpecificOutput.decision.behavior` | `"allow"`, `"deny"` | Answer the permission dialog |
 | `PermissionRequest` | `hookSpecificOutput.decision.updatedPermissions` | array | Apply a `setMode` (e.g. `acceptEdits`) to the session |
-| `UserPromptSubmit`, `SessionStart` | `hookSpecificOutput.additionalContext` | string | Append text to Claude's context |
+| `UserPromptSubmit` | `hookSpecificOutput.additionalContext` | string | Append text to Claude's context. For `SessionStart`, write to stdout instead — anything printed is added to Claude's context |
 | `UserPromptSubmit`, `UserPromptExpansion` | `decision` | `"block"` | Block the prompt with `reason` |
 | `PermissionDenied` | `hookSpecificOutput.retry` | bool | Tell the model it may retry the denied call |
 | `ConfigChange` | `decision` | `"block"` | Reject the configuration change, except for `policy_settings` |
@@ -137,14 +137,14 @@ A `PermissionRequest` hook can change the active permission mode for the rest of
 }
 ```
 
-`mode` can be `default`, `acceptEdits`, `bypassPermissions`, or `plan`. `destination: "session"` applies only to this session — never persisted as the default. `bypassPermissions` only works if the session was launched with bypass already available (`--dangerously-skip-permissions`, etc.).
+`mode` is any permission mode like `default`, `acceptEdits`, or `bypassPermissions`. `destination: "session"` applies only to this session — never persisted as the default. `bypassPermissions` only works if the session was launched with bypass already available (`--dangerously-skip-permissions`, etc.).
 
 ## Combine results from multiple hooks
 
 When several hooks match the same event:
 
 1. All run in parallel to completion. One hook's deny does **not** stop another from running.
-2. `PreToolUse` permission decisions: most restrictive wins. `deny` > `defer` > `ask` > `allow`.
+2. `PreToolUse` permission decisions: most restrictive wins. `deny` > `ask` > `allow`. (`defer` is a separate headless-only behavior, not part of the standard hierarchy.)
 3. `additionalContext` strings: concatenated, all delivered to Claude.
 4. `updatedInput`: last finisher wins. Order is non-deterministic. Don't have two hooks mutate the same call's input.
 5. Identical hook commands are auto-deduplicated.
