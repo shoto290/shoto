@@ -33,7 +33,7 @@ After install, run `/help` to see the `shoto:` skills and `/agents` to confirm t
 | Agent | When it fires |
 | :--- | :--- |
 | `skill-architect` | Auto-delegates when the user asks to create or modify a skill. |
-| `agent-architect` | Auto-delegates when the user asks to create or modify a sub-agent. |
+| `subagent-architect` | Auto-delegates when the user asks to create or modify a sub-agent. |
 
 Both own the writing flow end-to-end: search-by-`name:`, scope selection, frontmatter, validation gate.
 
@@ -41,7 +41,7 @@ Both own the writing flow end-to-end: search-by-`name:`, scope selection, frontm
 
 1. Describe the capability — e.g. `/shoto:evolve add a CI-failure triage workflow`.
 2. `evolve` inventories what already exists and proposes a plan touching skill / sub-agent / hook.
-3. After approval, it delegates the writes to `skill-architect`, `agent-architect`, and/or the `hooks` skill. Restart Claude Code to load the new artifacts.
+3. After approval, it delegates the writes to `skill-architect`, `subagent-architect`, and/or the `hooks` skill. Restart Claude Code to load the new artifacts.
 
 ## Repo
 

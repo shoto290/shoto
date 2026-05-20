@@ -74,7 +74,7 @@ Route each approved entry per [reference/delegation-routing.md](./reference/dele
 | Artifact | Executor |
 | :-- | :-- |
 | Skill (create or update) | `skill-architect` subagent |
-| Subagent (create or update) | `agent-architect` subagent |
+| Subagent (create or update) | `subagent-architect` subagent |
 | Hook (create or update) | `hooks` skill via the Skill tool |
 
 Pass a full spec so the executor never has to ask the user follow-ups. Spawn architects in parallel only when their work is independent.
@@ -92,7 +92,7 @@ List the test commands the user should run.
 
 ## Critical principles
 
-- **Never write artifact files directly** — always delegate to `skill-architect`, `agent-architect`, or the `hooks` skill.
+- **Never write artifact files directly** — always delegate to `skill-architect`, `subagent-architect`, or the `hooks` skill.
 - **Always inventory before proposing** — read what exists; do not guess.
 - **Prefer reuse or update over create** when overlap is ≥70%.
 - **Order the plan by dependency** so the executor chain runs cleanly.

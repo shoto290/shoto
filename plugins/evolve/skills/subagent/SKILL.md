@@ -7,6 +7,19 @@ argument-hint: '[agent-name]'
 
 A **subagent** is a Markdown file with YAML frontmatter that defines a specialized AI assistant. It runs in its own isolated context window with a custom system prompt, restricted tools, and independent permissions. Claude delegates to it automatically when its `description` matches the task, or you invoke it explicitly with `@agent-<name>`, natural language, or `claude --agent <name>`.
 
+## Subagent file structure (canonical)
+
+A subagent is a **single Markdown file** — there is no directory layout, no supporting files, no scripts. The frontmatter declares the agent; the markdown body is its system prompt.
+
+```
+.claude/agents/
+└── my-agent.md         # frontmatter + system prompt
+```
+
+Only `name` and `description` are required in the frontmatter. Everything else (`tools`, `model`, `permissionMode`, `memory`, `skills`, `mcpServers`, `hooks`, `isolation`, `background`, …) is optional. The full field reference lives at [reference/frontmatter.md](./reference/frontmatter.md).
+
+Use the pattern recipes in [reference/](./reference/) as starting points when drafting a new agent, and the [examples/](./examples/) directory as a guide to the response shape the architect produces.
+
 ## Detect intent
 
 If invoked as `/subagent <name>`, treat `$ARGUMENTS` as the target name.
@@ -60,16 +73,18 @@ Propose defaults from the user's request; confirm before writing:
 | **Preloaded skills** | `skills:` injects full skill content at startup |
 | **Run mode** | `background: true` to always background; `isolation: worktree` for an isolated git worktree |
 
-### 2. Pick an example
+See [reference/decision-questions.md](./reference/decision-questions.md) for the canonical list of decisions to surface to the user, with options, implications, and recommended defaults. `subagent-architect` uses it to drive `AskUserQuestion` calls.
 
-Start from [examples/](./examples/):
+### 2. Pick a pattern recipe
 
-- `basic.md` — minimum viable subagent (description + body)
-- `code-reviewer.md` — read-only review (`tools: Read, Grep, Glob, Bash`)
-- `debugger.md` — analyze + fix (`Edit` allowed)
-- `data-scientist.md` — domain specialist with `model: sonnet` pinned
-- `db-reader-hooks.md` — `PreToolUse` hook whitelists SELECT-only SQL
-- `coordinator.md` — main-thread agent that spawns specific workers via `Agent(worker, researcher)`
+Start from a complete pattern reference in [reference/](./reference/):
+
+- [reference/basic.md](./reference/basic.md) — minimum viable subagent (description + body)
+- [reference/code-reviewer.md](./reference/code-reviewer.md) — read-only review (`tools: Read, Grep, Glob, Bash`)
+- [reference/debugger.md](./reference/debugger.md) — analyze + fix (`Edit` allowed)
+- [reference/data-scientist.md](./reference/data-scientist.md) — domain specialist with `model: sonnet` pinned
+- [reference/db-reader-hooks.md](./reference/db-reader-hooks.md) — `PreToolUse` hook whitelists SELECT-only SQL
+- [reference/coordinator.md](./reference/coordinator.md) — main-thread agent that spawns specific workers via `Agent(worker, researcher)`
 
 ### 3. Create the file
 
@@ -127,6 +142,8 @@ If matches exist in multiple scopes, ask which one. Precedence (highest → lowe
 
 Frontmatter AND body matter equally — the body is the system prompt. Read both before proposing changes. If the agent preloads skills (`skills:` field), also read those.
 
+See [reference/decision-questions.md](./reference/decision-questions.md) for the update-flow decisions (target scope when multiple matches, fields to change, rename / scope-move confirmation, destructive-delete confirmation).
+
 ### 3. Route the change
 
 | Change | Where to look |
@@ -178,6 +195,7 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 - **CLAUDE.md and git status load** for every subagent except built-in `Explore` and `Plan`. You can't opt a custom subagent out.
 - **Subagents can't spawn subagents.** Only a main-thread agent (`--agent`) can spawn workers via `Agent(<name>)`. For nested delegation, chain subagents from the main conversation or use skills.
 - **Loaded at session start.** Edit on disk → restart. `/agents` UI edits propagate immediately.
+- **Interactive by default** — when invoked via `subagent-architect`, every key decision is surfaced to the user via `AskUserQuestion` with options + recommendation + implications. See [reference/decision-questions.md](./reference/decision-questions.md).
 
 ## Common gotchas
 
@@ -197,6 +215,17 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 - [reference/context.md](./reference/context.md) — what loads at startup, `skills` preload, `mcpServers`, `memory`, resume, compaction
 - [reference/invocation.md](./reference/invocation.md) — automatic delegation, `@-mention`, `--agent`, foreground/background, fork mode, chaining
 
-## Examples
+## Pattern References
 
-[examples/](./examples/) — complete subagent files for each common pattern. Read the matching one before drafting a new subagent.
+- [reference/basic.md](./reference/basic.md) — minimum viable subagent
+- [reference/code-reviewer.md](./reference/code-reviewer.md) — read-only review with restricted tools
+- [reference/debugger.md](./reference/debugger.md) — analyze + fix with `Edit` allowed
+- [reference/data-scientist.md](./reference/data-scientist.md) — domain specialist with `model: sonnet` pinned
+- [reference/db-reader-hooks.md](./reference/db-reader-hooks.md) — `PreToolUse` hook gates SELECT-only SQL
+- [reference/coordinator.md](./reference/coordinator.md) — main-thread agent that restricts spawnable workers via `Agent(...)`
+
+## Output Examples
+
+- [examples/create-basic-subagent-output.md](./examples/create-basic-subagent-output.md) — expected output for a minimal subagent
+- [examples/create-restricted-subagent-output.md](./examples/create-restricted-subagent-output.md) — expected output for a subagent with restricted tools and a pinned model
+- [examples/update-subagent-output.md](./examples/update-subagent-output.md) — expected final response after updating a subagent
