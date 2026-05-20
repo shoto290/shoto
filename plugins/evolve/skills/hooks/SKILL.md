@@ -49,12 +49,13 @@ Propose defaults from the user's request; confirm before writing:
 | Decision | Options |
 | :-- | :-- |
 | **Event** | One of `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `UserPromptExpansion`, `Notification`, `Stop`, `StopFailure`, `PreCompact`, `PostCompact`, `SubagentStart`, `SubagentStop`, `PermissionRequest`, `PermissionDenied`, `ConfigChange`, `CwdChanged`, `FileChanged`, `TaskCreated`, `TaskCompleted`, `WorktreeCreate`, `WorktreeRemove`, `Setup`, `InstructionsLoaded`, `PostToolBatch`, `Elicitation`, `ElicitationResult`, `TeammateIdle` — see [reference/events.md](./reference/events.md) |
-| **Type** | `command` (shell, default), `prompt` (single-turn LLM), `agent` (multi-turn LLM with tools, experimental), `http` (POST to URL), `mcp_tool` (call a connected MCP tool). Support varies by event; check [reference/types.md](./reference/types.md#event-support) before choosing. |
+| **Type** | `command` (shell, default), `prompt` (single-turn LLM), `agent` (multi-turn LLM with tools, experimental), `http` (POST to URL), `mcp_tool` (call a connected MCP tool). Support varies by event; check [reference/types.md](./reference/types.md#event-support) before choosing. `command` hooks accept either exec form (`args` set, no shell tokenization) or shell form (`args` omitted) — see [reference/types.md](./reference/types.md#exec-form-vs-shell-form) |
 | **Matcher** | Empty string fires on every occurrence. Otherwise depends on event: tool name regex (`Bash`, `Edit&#124;Write`, `mcp__.*`), session source (`startup`, `compact`), notification kind, etc. — see [reference/matchers.md](./reference/matchers.md) |
 | **`if` filter** | For tool events only: permission-rule syntax to filter by tool name + arguments (`Bash(git *)`, `Edit(*.ts)`). Requires Claude Code v2.1.85+ |
+| **Run mode** | `async: true` runs the hook in the background; output is delivered on the next conversation turn. `asyncRewake: true` is the same but exit code 2 wakes Claude immediately and surfaces stderr (or stdout if stderr is empty). Only `command` hooks support async; async hooks cannot return `decision`, `permissionDecision`, or `continue` |
 | **Output mode** | Exit code (0 = allow, 2 = block + stderr fed back to Claude) **or** stdout JSON (`hookSpecificOutput`, `additionalContext`, `decision`). Don't mix |
 | **Scope** | User `~/.claude/settings.json`, Project `.claude/settings.json` (shareable), Local `.claude/settings.local.json` (gitignored), Managed (org policy), Plugin `hooks/hooks.json`, or Skill/agent frontmatter |
-| **Timeout** | Defaults: `command`/`http`/`mcp_tool` = 10 min (UserPromptSubmit lowers to 30 s), `prompt` = 30 s, `agent` = 60 s. Override per-hook with `"timeout"` (seconds) |
+| **Timeout** | Defaults: `command`/`http`/`mcp_tool` = 600 s (10 min); `UserPromptSubmit` lowers them to 30 s; `SessionEnd` is 1.5 s (override with `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` or per-hook `timeout`, up to 60 s; plugin timeouts do not raise the budget); `prompt` = 30 s; `agent` = 60 s. Override per-hook with `"timeout"` (seconds) |
 
 ### 2. Pick an example
 
@@ -93,6 +94,14 @@ If the settings file already has a `hooks` key, **add the new event as a sibling
 ```
 
 For shell scripts longer than one line, write them to `.claude/hooks/<name>.sh`, `chmod +x`, and reference via `"$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh` so the path resolves regardless of Claude's working directory.
+
+Use path placeholders when bundling hook scripts with a project, plugin, or persistent data directory:
+
+- `${CLAUDE_PROJECT_DIR}` — project root.
+- `${CLAUDE_PLUGIN_ROOT}` — the plugin's install directory (changes on each plugin update). Use for scripts bundled with a plugin.
+- `${CLAUDE_PLUGIN_DATA}` — the plugin's persistent data directory (survives plugin updates). Use for installed dependencies and runtime state.
+
+Prefer exec form (`args` set) with placeholders so paths with spaces or special characters need no quoting.
 
 ### 4. Test
 
@@ -178,8 +187,10 @@ If the user is asking how hooks work rather than wiring one up, skip create/upda
 
 - **Hooks are policy, not suggestions.** A `PreToolUse` hook that returns `permissionDecision: "deny"` blocks the tool even in `bypassPermissions` or `--dangerously-skip-permissions` mode. Use this when you genuinely don't want users to bypass.
 - **Hooks tighten, never loosen.** A hook returning `"allow"` does **not** override `deny` rules from settings. Permission deny rules always win.
-- **Most restrictive wins.** When several `PreToolUse` hooks fire on the same call, `deny` overrides `ask`, which overrides `allow`. All hooks still run to completion — don't rely on one hook's `deny` to suppress another hook's side effects.
+- **Most restrictive wins.** When several `PreToolUse` hooks fire on the same call, precedence is `deny > defer > ask > allow`. All hooks still run to completion — don't rely on one hook's `deny` to suppress another hook's side effects.
 - **`exit 2` and JSON output are mutually exclusive.** Use exit 2 with stderr for a simple block; use exit 0 + stdout JSON for structured control (`additionalContext`, `updatedPermissions`, `decision: "block"`). Mixing them = JSON ignored.
+- **Hooks have no controlling terminal (v2.1.139+).** To trigger a desktop notification, set a window title, or ring the bell, return [`terminalSequence`](./reference/io.md#emit-terminal-notifications) in JSON output. Do not write to `/dev/tty`; it is unavailable to hooks on all platforms.
+- **Hook stdout/stderr is capped at 10,000 characters.** Larger output is spilled to a file and replaced with a short preview plus the file path, the same way large tool results are handled.
 - **Hooks run in non-interactive shells.** Any `echo` in your `~/.zshrc` or `~/.bashrc` that always prints will be prepended to your hook's stdout and break JSON parsing. Guard those with `if [[ $- == *i* ]]; then …`.
 - **`PostToolUse` can't undo.** The tool already ran. For pre-execution policy, use `PreToolUse`.
 - **`PermissionRequest` doesn't fire in `-p` mode.** For automated permission decisions in headless / CI, use `PreToolUse` instead.
@@ -196,6 +207,9 @@ If the user is asking how hooks work rather than wiring one up, skip create/upda
 - Stop hooks fire on every "I'm done responding" — including mid-task pauses. Always check `stop_hook_active` in JSON input and exit 0 if true, or you'll hit the 8-blocks-in-a-row cap.
 - HTTP status codes alone cannot block a tool call — only the JSON response body's `hookSpecificOutput` does.
 - `bypassPermissions` mode in a `PermissionRequest` hook's `updatedPermissions` only takes effect if the session was launched with bypass already available.
+- Use [`terminalSequence`](./reference/io.md#emit-terminal-notifications) (OSC `0`/`1`/`2`/`9`/`99`/`777` or bare BEL only) to fire desktop notifications or set window titles. `/dev/tty` is unavailable to hooks since v2.1.139.
+- `hookSpecificOutput` requires `hookEventName` set to the firing event name. Without it, the JSON is inert and Claude Code falls back to the default behavior.
+- Identical command hooks are auto-deduplicated by `command` + `args`. Identical HTTP hooks are auto-deduplicated by `url`. A subtle whitespace or env-var difference defeats dedup.
 
 ## Reference
 
@@ -209,7 +223,9 @@ If the user is asking how hooks work rather than wiring one up, skip create/upda
 
 ## Examples
 
-[examples/hook-config-output.md](./examples/hook-config-output.md) — minimal output sample (the JSON block Claude produces).
+- [examples/hook-config-output.md](./examples/hook-config-output.md) — minimal `hooks` block in `settings.json`
+- [examples/async-hook-output.md](./examples/async-hook-output.md) — JSON stdout from an async `PostToolUse` hook delivered on the next turn
+- [examples/terminal-sequence-output.md](./examples/terminal-sequence-output.md) — `terminalSequence` JSON for an OSC 777 desktop notification
 
 ## Recipes
 

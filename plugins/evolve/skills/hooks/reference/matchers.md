@@ -49,9 +49,9 @@ MCP tools follow the pattern `mcp__<server>__<tool>` where `<server>` and `<tool
 
 ## The `if` field
 
-Requires Claude Code v2.1.85+.
+Requires Claude Code v2.1.85+. Earlier versions silently ignore the field and fire on every matched call.
 
-`matcher` filters at the **group** level by tool name only. `if` filters at the **handler** level by tool name AND arguments, using permission-rule syntax. The hook process only spawns when the call matches the `if` pattern (or when the Bash command is too complex to parse into subcommands).
+`matcher` filters at the **group** level by tool name only. `if` filters at the **handler** level by tool name AND arguments, using permission-rule syntax. The hook process only spawns when the call matches the `if` pattern (or when a Bash command is too complex to parse — fail-open, so a hook always sees ambiguous commands).
 
 ```json
 {
@@ -79,13 +79,15 @@ Patterns:
 - `Edit(*.ts)` — `Edit` calls on `.ts` files
 - `Write(.env*)` — `Write` calls to `.env` family files
 
-For compound Bash like `npm test && git push`, Claude Code evaluates each subcommand; the hook fires if **any** subcommand matches.
+### Rules and constraints
+
+- **Exactly one permission rule per `if`.** There is no `&&`, `||`, or list syntax. To combine conditions, define a separate handler for each.
+- **Bash subcommand matching strips leading `VAR=value` assignments.** `if: "Bash(git push *)"` matches both `FOO=bar git push` and `npm test && git push`.
+- **Runs if ANY subcommand matches.** For compound commands like `npm test && git push`, Claude Code evaluates each subcommand and the hook fires if any match.
+- **Runs when the Bash command is too complex to parse.** Fail-open: ambiguous commands always reach the hook so policy is never silently bypassed.
+- **Tool events only.** `if` is honored on `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest`, `PermissionDenied`. **Adding `if` to any other event prevents the handler from firing at all** — silently. Don't put `if` on `SessionStart`, `Notification`, etc.
 
 To match multiple tool names with `if`, use separate handlers each with their own `if`, or alternate at the `matcher` level (matcher supports `|`, `if` does not).
-
-### Where `if` applies
-
-`if` is honored only on tool events: `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest`, `PermissionDenied`. **Adding `if` to any other event prevents the handler from firing at all** — silently. Don't put `if` on `SessionStart`, `Notification`, etc.
 
 ## Multiple groups, multiple handlers
 
