@@ -20,6 +20,14 @@
     ]
   },
   "enabledPlugins": {
-    "shoto@shoto": true
+    "evolve@shoto": true
+  },
+  "extraKnownMarketplaces": {
+    "shoto": {
+      "source": {
+        "source": "github",
+        "repo": "shoto290/shoto"
+      }
+    }
   }
 }

@@ -5,8 +5,8 @@
   },
   "plugins": [
     {
-      "name": "shoto",
-      "source": "./"
+      "name": "evolve",
+      "source": "./plugins/evolve"
     }
   ]
 }
