@@ -1,4 +1,5 @@
 ---
+name: agent-team
 description: Understand and orchestrate a Claude Code agent team — multiple Claude Code instances coordinated by a lead, sharing a task list and messaging each other directly. Use when the user wants to enable agent teams, spawn or steer a team, draft a spawn prompt, talk to a specific teammate, assign or claim tasks, require plan approval, shut down or clean up the team, wire a teammate hook, or decide between a team and subagents. Triggers on, agent team, agent teams, team lead, teammate, spawn a team, spawn teammates, teammateMode, CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS, SendMessage, mailbox, shared task list, TeammateIdle, TaskCreated, TaskCompleted, plan approval, parallel review, competing hypotheses, scientific debate, cross-layer feature, split panes, in-process, tmux teammates, clean up team, shutdown teammate.
 argument-hint: '[task]'
 ---

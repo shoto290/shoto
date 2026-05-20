@@ -1,4 +1,5 @@
 ---
+name: evolve
 description: Analyze the project's existing skills, subagents, and hooks to propose what to create or update for a new capability. Use when the user describes a high-level need ("I want to add X", "how should I structure Y", "what's the cleanest way to evolve our setup for Z") or when a feature spans multiple artifact types (skill + agent + hook). When invoked without arguments, infers the capability from the current conversation context so the user does not have to repeat themselves.
 argument-hint: '[capability or feature description — optional; inferred from conversation if omitted]'
 ---
@@ -22,15 +23,15 @@ argument-hint: '[capability or feature description — optional; inferred from c
 
 ## Phase 1 — Inventory (read-only)
 
-Delegate the inventory to the `explore-codebase` skill so the raw frontmatter dumps stay out of the main thread. Invoke it via the `Skill` tool with a topic targeted at `.claude/`:
+Delegate the inventory to the `utils:explore` skill so the raw frontmatter dumps stay out of the main thread. Invoke it via the `Skill` tool with a topic targeted at `.claude/`:
 
 ```
-Skill({ skill: "explore-codebase", args: "inventory all skills under .claude/skills/*/SKILL.md (description, argument-hint, disable-model-invocation, user-invocable, context, agent, flow type), all subagents under .claude/agents/*.md (name, description, tools, model), and hooks + permissions in .claude/settings.json and .claude/settings.local.json" })
+Skill({ skill: "utils:explore", args: "inventory all skills under .claude/skills/*/SKILL.md (description, argument-hint, disable-model-invocation, user-invocable, context, agent, flow type), all subagents under .claude/agents/*.md (name, description, tools, model), and hooks + permissions in .claude/settings.json and .claude/settings.local.json" })
 ```
 
-`explore-codebase` runs in `context: fork` and returns a compact location-anchored report. Use that report as the inventory for Phases 2-3.
+`utils:explore` runs in `context: fork` and returns a compact location-anchored report. Use that report as the inventory for Phases 2-3.
 
-Fallback: if `explore-codebase` is unavailable or the `.claude/` directory is tiny (<3 skills, <2 agents, no hooks), run the inline Glob/Read steps in [reference/inventory-checklist.md](./reference/inventory-checklist.md) instead. Do not modify any file during this phase.
+Fallback: if `utils:explore` is unavailable or the `.claude/` directory is tiny (<3 skills, <2 agents, no hooks), run the inline Glob/Read steps in [reference/inventory-checklist.md](./reference/inventory-checklist.md) instead. Do not modify any file during this phase.
 
 ## Phase 2 — Classify
 

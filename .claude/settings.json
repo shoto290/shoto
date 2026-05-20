@@ -20,7 +20,8 @@
     ]
   },
   "enabledPlugins": {
-    "evolve@shoto": true
+    "core@shoto": true,
+    "utils@shoto": true
   },
   "extraKnownMarketplaces": {
     "shoto": {

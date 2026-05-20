@@ -1,6 +1,6 @@
 {
-  "name": "evolve",
-  "description": "Meta-tooling to create and evolve Claude Code skills, sub-agents and hooks",
+  "name": "utils",
+  "description": "Shared utility skills used by other shoto plugins.",
   "version": "0.1.0",
   "author": {
     "name": "shoto290"
