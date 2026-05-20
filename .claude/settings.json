@@ -3,6 +3,17 @@
 		"commit": "",
 		"pr": ""
 	},
+	"extraKnownMarketplaces": {
+		"shoto-method": {
+			"source": {
+				"source": "github",
+				"repo": "shoto290/shoto-method"
+			}
+		}
+	},
+	"enabledPlugins": {
+		"shoto@shoto-method": true
+	},
 	"permissions": {
 		"deny": [
 			"Bash(curl:*)",
