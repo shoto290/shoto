@@ -1,0 +1,12 @@
+{
+  "name": "shoto-method",
+  "owner": {
+    "name": "shoto290"
+  },
+  "plugins": [
+    {
+      "name": "shoto",
+      "source": "."
+    }
+  ]
+}
