@@ -2,12 +2,12 @@
 
 All AI agents working in this repo must follow these instructions.
 
-This repo is the **shoto** Claude Code plugin. It contains markdown artifacts only — no runtime, no build step.
+This repo is the **shoto** Claude Code marketplace hosting one or more plugins under `plugins/`. It contains markdown artifacts only — no runtime, no build step.
 
-- `skills/<name>/SKILL.md` — skill definitions (+ supporting files)
-- `agents/<name>.md` — sub-agent definitions (frontmatter + body)
-- `.claude-plugin/plugin.json` — plugin manifest
-- `.claude-plugin/marketplace.json` — marketplace entry
+- `plugins/<plugin>/skills/<name>/SKILL.md` — skill definitions (+ supporting files)
+- `plugins/<plugin>/agents/<name>.md` — sub-agent definitions (frontmatter + body)
+- `plugins/<plugin>/.claude-plugin/plugin.json` — plugin manifest
+- `.claude-plugin/marketplace.json` — marketplace entry listing every plugin
 
 ## SIMPLE — Core Principles (Absolute Priority)
 
@@ -83,8 +83,8 @@ This repo exists to build skills, sub-agents, and hooks for Claude Code. **Use t
 
 | Artifact | Author |
 |----------|--------|
-| Skill (`skills/<name>/SKILL.md`) | `/shoto:skill` or the `skill-architect` sub-agent |
-| Sub-agent (`agents/<name>.md`) | `/shoto:subagent` or the `agent-architect` sub-agent |
+| Skill (`plugins/<plugin>/skills/<name>/SKILL.md`) | `/shoto:skill` or the `skill-architect` sub-agent |
+| Sub-agent (`plugins/<plugin>/agents/<name>.md`) | `/shoto:subagent` or the `agent-architect` sub-agent |
 | Hook (`.claude/hooks/*`) | `/shoto:hooks` skill |
 | Coordinated multi-artifact change | `/shoto:evolve` (plans across skill / sub-agent / hook) |
 
@@ -94,8 +94,8 @@ The architects own frontmatter, scope selection, and the validation gate. Don't 
 
 - **Check before creating** — Search for existing skills/agents/hooks before adding new ones. Reuse over duplication.
 - **One concern per commit** — Each commit addresses a single logical change.
-- **Keep the manifest in sync** — When adding or renaming a skill/agent, update `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
-- **Match `name:` to the path** — A skill at `skills/foo/SKILL.md` must have `name: foo`. Same for agents.
+- **Keep the manifest in sync** — When adding or renaming a skill/agent, update the relevant `plugins/<plugin>/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
+- **Match `name:` to the path** — A skill at `plugins/<plugin>/skills/foo/SKILL.md` must have `name: foo`. Same for agents.
 
 ## Enforced Rules
 
@@ -127,7 +127,7 @@ The architects own frontmatter, scope selection, and the validation gate. Don't 
 ### Protected Files
 
 - **Never read/modify:** `.env`, `.env.*`, `secrets/`, `*.pem`, `*.key`, `*.cert`
-- **Confirm before modifying:** `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.github/workflows/`
+- **Confirm before modifying:** `plugins/<plugin>/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.github/workflows/`
 
 ### Branch Protection
 
