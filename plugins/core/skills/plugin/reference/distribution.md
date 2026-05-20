@@ -48,9 +48,7 @@ Two strategies:
 | Explicit `version` in `plugin.json` | Stable releases, semver discipline | Users only see updates when the field is bumped. |
 | Omit `version` | Trunk-style continuous delivery | Commit SHA becomes the version — every commit is a release. |
 
-Recommendation: pin `version` for shared plugins, omit it for personal experiments.
-
-For tagging releases on git so semver constraints resolve correctly, use `claude plugin tag` — see [reference/cli-commands.md](./cli-commands.md).
+For semver rules, how to map Conventional Commits to a bump, and the automated PR workflow, see the [`utils:versioning`](../../../../utils/skills/versioning/SKILL.md) skill. For tagging releases on git, use `claude plugin tag` — see [reference/cli-commands.md](./cli-commands.md).
 
 ## Community Marketplace Submission
 
