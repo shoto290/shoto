@@ -10,8 +10,8 @@ Distribution is **private**: the repo is hosted privately on GitHub, so only peo
 
 ```bash
 # inside Claude Code
-/plugin marketplace add shoto290/shoto-method
-/plugin install shoto@shoto-method
+/plugin marketplace add shoto290/shoto
+/plugin install shoto@shoto
 ```
 
 Updates flow through the same channel: when the marketplace refreshes, Claude Code re-fetches via Git. Revoking a user's repo access stops their future updates.
@@ -19,8 +19,8 @@ Updates flow through the same channel: when the marketplace refreshes, Claude Co
 ### Local clone (`--plugin-dir`)
 
 ```bash
-git clone git@github.com:shoto290/shoto-method.git
-claude --plugin-dir ./shoto-method
+git clone git@github.com:shoto290/shoto.git
+claude --plugin-dir ./shoto
 ```
 
 ### Single session (`--plugin-url`)
@@ -28,7 +28,7 @@ claude --plugin-dir ./shoto-method
 Works with a GitHub-generated zip URL for the private repo (requires a token with `repo` scope in the URL or via `gh auth`):
 
 ```bash
-claude --plugin-url https://github.com/shoto290/shoto-method/archive/refs/heads/main.zip
+claude --plugin-url https://github.com/shoto290/shoto/archive/refs/heads/main.zip
 ```
 
 Once loaded, run `/help` to see the skills under the `shoto:` namespace and `/agents` to confirm the sub-agents are registered.
@@ -72,4 +72,4 @@ skills/                           # skill, subagent, hooks, agent-team, evolve, 
 
 ## Repo
 
-[github.com/shoto290/shoto-method](https://github.com/shoto290/shoto-method)
+[github.com/shoto290/shoto](https://github.com/shoto290/shoto)
