@@ -58,16 +58,18 @@ Propose defaults from the user's request; confirm before writing:
 
 ### 2. Pick an example
 
-Start from a complete reference in [examples/](./examples/):
+Start from a complete recipe in [reference/](./reference/):
 
-- [examples/notify-on-idle.md](./examples/notify-on-idle.md) — `Notification` hook, desktop alert (macOS / Linux / Windows)
-- [examples/format-on-save.md](./examples/format-on-save.md) — `PostToolUse` + `Edit|Write` matcher, runs Prettier on the edited file
-- [examples/block-protected-files.md](./examples/block-protected-files.md) — `PreToolUse` + external script + `exit 2`
-- [examples/bash-command-validator.md](./examples/bash-command-validator.md) — `PreToolUse` + `Bash` matcher + JSON `permissionDecision: "deny"`
-- [examples/inject-context-on-compact.md](./examples/inject-context-on-compact.md) — `SessionStart` with `matcher: "compact"`, stdout becomes Claude's context
-- [examples/audit-config-changes.md](./examples/audit-config-changes.md) — `ConfigChange` writes JSON line to audit log
-- [examples/auto-approve-permission.md](./examples/auto-approve-permission.md) — `PermissionRequest` + matcher + `hookSpecificOutput.decision.behavior: "allow"`
-- [examples/prompt-stop-check.md](./examples/prompt-stop-check.md) — `Stop` hook of `type: "prompt"`, model returns `{ok: false, reason}` to keep Claude working
+- [reference/notify-on-idle.md](./reference/notify-on-idle.md) — `Notification` hook, desktop alert (macOS / Linux / Windows)
+- [reference/format-on-save.md](./reference/format-on-save.md) — `PostToolUse` + `Edit|Write` matcher, runs Prettier on the edited file
+- [reference/block-protected-files.md](./reference/block-protected-files.md) — `PreToolUse` + external script + `exit 2`
+- [reference/bash-command-validator.md](./reference/bash-command-validator.md) — `PreToolUse` + `Bash` matcher + JSON `permissionDecision: "deny"`
+- [reference/inject-context-on-compact.md](./reference/inject-context-on-compact.md) — `SessionStart` with `matcher: "compact"`, stdout becomes Claude's context
+- [reference/audit-config-changes.md](./reference/audit-config-changes.md) — `ConfigChange` writes JSON line to audit log
+- [reference/auto-approve-permission.md](./reference/auto-approve-permission.md) — `PermissionRequest` + matcher + `hookSpecificOutput.decision.behavior: "allow"`
+- [reference/prompt-stop-check.md](./reference/prompt-stop-check.md) — `Stop` hook of `type: "prompt"`, model returns `{ok: false, reason}` to keep Claude working
+
+For a minimal output sample (the JSON Claude produces), see [examples/hook-config-output.md](./examples/hook-config-output.md).
 
 ### 3. Add it to the right settings file
 
@@ -207,4 +209,8 @@ If the user is asking how hooks work rather than wiring one up, skip create/upda
 
 ## Examples
 
-[examples/](./examples/) — complete working hook configurations for each common pattern. Read the matching one before drafting a new hook.
+[examples/hook-config-output.md](./examples/hook-config-output.md) — minimal output sample (the JSON block Claude produces).
+
+## Recipes
+
+[reference/](./reference/) — complete working hook recipes for each common pattern. Read the matching one before drafting a new hook.

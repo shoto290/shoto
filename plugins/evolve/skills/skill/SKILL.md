@@ -81,11 +81,11 @@ See [reference/decision-questions.md](./reference/decision-questions.md) for the
 
 Start from a complete pattern reference:
 
-- [examples/summarize-changes.md](./examples/summarize-changes.md) — auto-invocable + dynamic context (`` !`command` `` substitution)
-- [examples/deploy.md](./examples/deploy.md) — task action + `disable-model-invocation` + `allowed-tools` + `$ARGUMENTS`
-- [examples/fix-issue.md](./examples/fix-issue.md) — single argument via `$ARGUMENTS`; positional via `$0` / `$1`
-- [examples/pr-summary.md](./examples/pr-summary.md) — `context: fork` + `agent: Explore` + multiple `` !`command` `` injections
-- [examples/codebase-visualizer.md](./examples/codebase-visualizer.md) — bundled script + `${CLAUDE_SKILL_DIR}`
+- [reference/summarize-changes.md](./reference/summarize-changes.md) — auto-invocable + dynamic context (`` !`command` `` substitution)
+- [reference/deploy.md](./reference/deploy.md) — task action + `disable-model-invocation` + `allowed-tools` + `$ARGUMENTS`
+- [reference/fix-issue.md](./reference/fix-issue.md) — single argument via `$ARGUMENTS`; positional via `$0` / `$1`
+- [reference/pr-summary.md](./reference/pr-summary.md) — `context: fork` + `agent: Explore` + multiple `` !`command` `` injections
+- [reference/codebase-visualizer.md](./reference/codebase-visualizer.md) — bundled script + `${CLAUDE_SKILL_DIR}`
 
 ### 3. Create the directory and `SKILL.md`
 
@@ -146,10 +146,10 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 | Change | Where to look |
 | :-- | :-- |
 | Description, `name`, `when_to_use`, `argument-hint`, `arguments`, `model`, `effort`, `paths`, `shell`, `hooks` | [reference/frontmatter.md](./reference/frontmatter.md) |
-| Add / change `$ARGUMENTS` / `$N` / `$name` | [reference/frontmatter.md](./reference/frontmatter.md) + [examples/fix-issue.md](./examples/fix-issue.md) |
-| Inject `!command` (dynamic context) | [reference/advanced.md](./reference/advanced.md) + [examples/summarize-changes.md](./examples/summarize-changes.md) |
-| Convert to `context: fork` | [reference/advanced.md](./reference/advanced.md) + [examples/pr-summary.md](./examples/pr-summary.md) |
-| Bundle a script (`${CLAUDE_SKILL_DIR}`) | [reference/advanced.md](./reference/advanced.md) + [examples/codebase-visualizer.md](./examples/codebase-visualizer.md) |
+| Add / change `$ARGUMENTS` / `$N` / `$name` | [reference/frontmatter.md](./reference/frontmatter.md) + [reference/fix-issue.md](./reference/fix-issue.md) |
+| Inject `!command` (dynamic context) | [reference/advanced.md](./reference/advanced.md) + [reference/summarize-changes.md](./reference/summarize-changes.md) |
+| Convert to `context: fork` | [reference/advanced.md](./reference/advanced.md) + [reference/pr-summary.md](./reference/pr-summary.md) |
+| Bundle a script (`${CLAUDE_SKILL_DIR}`) | [reference/advanced.md](./reference/advanced.md) + [reference/codebase-visualizer.md](./reference/codebase-visualizer.md) |
 | `allowed-tools` / `disable-model-invocation` / `user-invocable` / `skillOverrides` | [reference/invocation.md](./reference/invocation.md) |
 | Split long SKILL.md into supporting files | [reference/locations.md](./reference/locations.md) (directory layout section) |
 | Rename the skill | Rename the directory — the new name becomes the command unless `name:` overrides it |
@@ -203,11 +203,11 @@ See [reference/decision-questions.md](./reference/decision-questions.md) for the
 
 ## Pattern References
 
-- [examples/summarize-changes.md](./examples/summarize-changes.md) — dynamic context injection
-- [examples/deploy.md](./examples/deploy.md) — manual task action
-- [examples/fix-issue.md](./examples/fix-issue.md) — arguments and positional substitutions
-- [examples/pr-summary.md](./examples/pr-summary.md) — subagent execution
-- [examples/codebase-visualizer.md](./examples/codebase-visualizer.md) — bundled script
+- [reference/summarize-changes.md](./reference/summarize-changes.md) — dynamic context injection
+- [reference/deploy.md](./reference/deploy.md) — manual task action
+- [reference/fix-issue.md](./reference/fix-issue.md) — arguments and positional substitutions
+- [reference/pr-summary.md](./reference/pr-summary.md) — subagent execution
+- [reference/codebase-visualizer.md](./reference/codebase-visualizer.md) — bundled script
 
 ## Output Examples
 

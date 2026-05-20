@@ -1,8 +1,3 @@
-# Template: code-reviewer
-
-Read-only review agent. Cannot Edit or Write — only Read, Grep, Glob, Bash. Designed for proactive delegation after code changes.
-
-```markdown
 ---
 name: code-reviewer
 description: Expert code review specialist. Proactively reviews code for quality, security, and maintainability. Use immediately after writing or modifying code.
@@ -33,10 +28,3 @@ Provide feedback organized by priority:
 - Suggestions (consider improving)
 
 Include specific examples of how to fix issues.
-```
-
-Key design choices:
-- `tools: Read, Grep, Glob, Bash` — no Edit/Write, so the agent can't accidentally modify code.
-- `model: inherit` — match the main thread; this is review, not heavy reasoning.
-- Description starts with "Expert" + ends with "Use immediately after writing or modifying code" → fires automatically after code changes.
-- Body provides a workflow + checklist + output format → much better than "review this code".

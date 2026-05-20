@@ -67,4 +67,4 @@ Edit `SKILL.md`, then run `/reload-plugins` in the session — no restart needed
 
 - Add a sub-agent: create `my-first-plugin/agents/<name>.md`. Use the [subagent skill](../../subagent/SKILL.md).
 - Add a hook: create `my-first-plugin/hooks/hooks.json`. Use the [hooks skill](../../hooks/SKILL.md).
-- Distribute: add a `marketplace.json` per [reference/distribution.md](../reference/distribution.md).
+- Distribute: add a `marketplace.json` per [reference/distribution.md](./distribution.md).

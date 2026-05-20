@@ -1,4 +1,4 @@
-# Example: deploy
+# Pattern: deploy
 
 **Pattern**: Task action + manual-only + pre-approved tools + arguments
 

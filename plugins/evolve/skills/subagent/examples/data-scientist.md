@@ -1,8 +1,3 @@
-# Template: data-scientist
-
-Domain specialist outside typical coding tasks. Pins `model: sonnet` for capability.
-
-```markdown
 ---
 name: data-scientist
 description: Data analysis expert for SQL queries, BigQuery operations, and data insights. Use proactively for data analysis tasks and queries.
@@ -33,11 +28,3 @@ For each analysis:
 - Suggest next steps based on data
 
 Always ensure queries are efficient and cost-effective.
-```
-
-Key design choices:
-- `model: sonnet` — pinned for analysis quality regardless of the main thread's model.
-- `tools: Bash, Read, Write` — Bash to run `bq`, Write to persist query results / reports.
-- Domain-specific role + workflow → outperforms a generic Claude prompt for SQL/BigQuery tasks.
-
-Variant: add `memory: project` to accumulate institutional knowledge about the data warehouse (table relationships, common queries, cost notes).

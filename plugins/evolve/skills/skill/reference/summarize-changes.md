@@ -1,4 +1,4 @@
-# Example: summarize-changes
+# Pattern: summarize-changes
 
 **Pattern**: Dynamic context injection + auto-invocable
 
