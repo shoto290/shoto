@@ -23,6 +23,7 @@ After install, run `/help` to see the `shoto:` skills and `/agents` to confirm t
 | `/shoto:skill` | Create or update a skill (`SKILL.md` + supporting files). |
 | `/shoto:subagent` | Design or update a sub-agent (frontmatter, tools, scope, model). |
 | `/shoto:hooks` | Build or audit hooks (`PreToolUse`, `PostToolUse`, …). |
+| `/shoto:plugin` | Scaffold, validate, migrate, and ship a Claude Code plugin as a whole. |
 | `/shoto:agent-team` | Spawn and orchestrate experimental agent teams. |
 | `/shoto:explore-codebase` | Run an `Explore` fork that returns a compact, location-anchored map. |
 | `/shoto:evolve` | Plan coordinated changes across skills / sub-agents / hooks. |
