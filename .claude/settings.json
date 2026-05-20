@@ -19,6 +19,9 @@
       "Bash(bun run dev)"
     ]
   },
+  "enabledPlugins": {
+    "evolve@shoto": true
+  },
   "extraKnownMarketplaces": {
     "shoto": {
       "source": {
@@ -26,8 +29,5 @@
         "repo": "shoto290/shoto"
       }
     }
-  },
-  "enabledPlugins": {
-    "evolve@shoto": true
   }
 }
