@@ -1,6 +1,6 @@
 ---
-description: Analyze the project's existing skills, subagents, and hooks to propose what to create or update for a new capability. Use when the user describes a high-level need ("I want to add X", "how should I structure Y", "what's the cleanest way to evolve our setup for Z") or when a feature spans multiple artifact types (skill + agent + hook).
-argument-hint: '[capability or feature description]'
+description: Analyze the project's existing skills, subagents, and hooks to propose what to create or update for a new capability. Use when the user describes a high-level need ("I want to add X", "how should I structure Y", "what's the cleanest way to evolve our setup for Z") or when a feature spans multiple artifact types (skill + agent + hook). When invoked without arguments, infers the capability from the current conversation context so the user does not have to repeat themselves.
+argument-hint: '[capability or feature description — optional; inferred from conversation if omitted]'
 ---
 
 # Evolve
@@ -9,10 +9,16 @@ argument-hint: '[capability or feature description]'
 
 ## Detect intent
 
-Treat `$ARGUMENTS` as the capability description.
+**If `$ARGUMENTS` is non-empty and concrete** → use it as the capability description and proceed to Phase 1 immediately.
 
-- **Empty or ambiguous** → ask one targeted clarifying question with `AskUserQuestion` (what capability, which surface, who triggers it). Do not proceed until the intent is concrete enough to inventory against.
-- **Concrete** → move to Phase 1 immediately.
+**If `$ARGUMENTS` is empty** → enter "infer from conversation" mode:
+
+1. Scan the current conversation for pain points, friction, repeated requests, or capability ideas the user has surfaced (frustrations, "I wish…", "we need…", repeated manual steps, gaps between skills/agents/hooks).
+2. Synthesize a 1–3 sentence capability description from what you found.
+3. If nothing actionable surfaced (early in session, unrelated topics) → fall back to the "ambiguous" path below.
+4. Otherwise, present the synthesis to the user with `AskUserQuestion`, offering options to confirm, adjust, or replace. Wait for confirmation before moving to Phase 1.
+
+**If `$ARGUMENTS` is provided but ambiguous, or the no-args fallback triggered** → ask one targeted clarifying question with `AskUserQuestion` (what capability, which surface, who triggers it). Do not proceed until the intent is concrete enough to inventory against.
 
 ## Phase 1 — Inventory (read-only)
 
