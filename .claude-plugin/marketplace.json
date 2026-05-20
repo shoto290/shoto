@@ -5,8 +5,12 @@
   },
   "plugins": [
     {
-      "name": "evolve",
-      "source": "./plugins/evolve"
+      "name": "core",
+      "source": "./plugins/core"
+    },
+    {
+      "name": "utils",
+      "source": "./plugins/utils"
     }
   ]
 }

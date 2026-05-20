@@ -2,7 +2,7 @@
 
 This phase is read-only. Do not modify any file.
 
-**Preferred path:** delegate the whole inventory to `explore-codebase` (see SKILL.md Phase 1) — it runs in `context: fork` with the `Explore` agent and returns a compact report. Only run the inline steps below as a fallback for tiny `.claude/` setups or when `explore-codebase` is unavailable.
+**Preferred path:** delegate the whole inventory to `utils:explore` (see SKILL.md Phase 1) — it runs in `context: fork` with the `Explore` agent and returns a compact report. Only run the inline steps below as a fallback for tiny `.claude/` setups or when `utils:explore` is unavailable.
 
 1. **Skills** — for each `.claude/skills/*/SKILL.md`:
    - Read the YAML frontmatter.
