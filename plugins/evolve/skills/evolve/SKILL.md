@@ -1,4 +1,5 @@
 ---
+name: evolve
 description: Analyze the project's existing skills, subagents, and hooks to propose what to create or update for a new capability. Use when the user describes a high-level need ("I want to add X", "how should I structure Y", "what's the cleanest way to evolve our setup for Z") or when a feature spans multiple artifact types (skill + agent + hook). When invoked without arguments, infers the capability from the current conversation context so the user does not have to repeat themselves.
 argument-hint: '[capability or feature description — optional; inferred from conversation if omitted]'
 ---

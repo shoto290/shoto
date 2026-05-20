@@ -1,4 +1,5 @@
 ---
+name: skill
 description: Create or update a Claude Code skill (a SKILL.md that extends Claude's capabilities). Use when the user wants to create, build, scaffold, write, modify, edit, refactor, rename, improve, fix, or change a skill, slash command, /command, or /name. Handles both new skills and updates to existing ones; walks through scope, frontmatter, supporting files, and testing.
 argument-hint: '[skill-name]'
 ---
