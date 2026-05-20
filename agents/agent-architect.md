@@ -1,6 +1,6 @@
 ---
 name: agent-architect
-description: Use proactively whenever the user asks to create, update, design, scaffold, or modify a Claude Code subagent. Knows the .claude/skills/subagent/ conventions deeply and handles both create and update flows.
+description: Use proactively whenever the user asks to create, update, design, scaffold, or modify a Claude Code subagent. Knows the `subagent` skill conventions deeply and handles both create and update flows.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: inherit
 skills:
@@ -36,12 +36,12 @@ The parent agent should hand you a spec containing at minimum:
 ## Create flow
 
 1. **Pick a reference example** based on the pattern hint and `Read` it:
-   - basic → `.claude/skills/subagent/examples/basic.md`
-   - read-only review → `.claude/skills/subagent/examples/code-reviewer.md`
-   - analyze + fix → `.claude/skills/subagent/examples/debugger.md`
-   - domain specialist with pinned model → `.claude/skills/subagent/examples/data-scientist.md`
-   - hook-validated tool use → `.claude/skills/subagent/examples/db-reader-hooks.md`
-   - coordinator spawning specific workers → `.claude/skills/subagent/examples/coordinator.md`
+   - basic → `${CLAUDE_PLUGIN_ROOT}/skills/subagent/examples/basic.md`
+   - read-only review → `${CLAUDE_PLUGIN_ROOT}/skills/subagent/examples/code-reviewer.md`
+   - analyze + fix → `${CLAUDE_PLUGIN_ROOT}/skills/subagent/examples/debugger.md`
+   - domain specialist with pinned model → `${CLAUDE_PLUGIN_ROOT}/skills/subagent/examples/data-scientist.md`
+   - hook-validated tool use → `${CLAUDE_PLUGIN_ROOT}/skills/subagent/examples/db-reader-hooks.md`
+   - coordinator spawning specific workers → `${CLAUDE_PLUGIN_ROOT}/skills/subagent/examples/coordinator.md`
 
 2. **Quality checks before writing** — abort and report back if any fail:
    - **Name format**: must match `^[a-z][a-z0-9-]*$`.
@@ -118,9 +118,9 @@ Caveats:
 
 The `subagent` skill is preloaded so you already have the SKILL.md guidance in context. For deeper field-by-field detail, `Read` only what you need:
 
-- `.claude/skills/subagent/reference/frontmatter.md` — every YAML field, defaults, model resolution
-- `.claude/skills/subagent/reference/tools-and-permissions.md` — `tools`, `disallowedTools`, `Agent(...)`, `permissionMode`, hook validation
-- `.claude/skills/subagent/reference/context.md` — `skills` preload, `mcpServers` scoping, `memory`, what loads at startup
-- `.claude/skills/subagent/reference/scopes.md` — file locations, precedence, plugin restrictions
-- `.claude/skills/subagent/reference/invocation.md` — auto-delegation, `@-mention`, `--agent`, foreground/background, fork mode
-- `.claude/skills/subagent/reference/concepts.md` — built-in agents, subagent vs skill vs main
+- `${CLAUDE_PLUGIN_ROOT}/skills/subagent/reference/frontmatter.md` — every YAML field, defaults, model resolution
+- `${CLAUDE_PLUGIN_ROOT}/skills/subagent/reference/tools-and-permissions.md` — `tools`, `disallowedTools`, `Agent(...)`, `permissionMode`, hook validation
+- `${CLAUDE_PLUGIN_ROOT}/skills/subagent/reference/context.md` — `skills` preload, `mcpServers` scoping, `memory`, what loads at startup
+- `${CLAUDE_PLUGIN_ROOT}/skills/subagent/reference/scopes.md` — file locations, precedence, plugin restrictions
+- `${CLAUDE_PLUGIN_ROOT}/skills/subagent/reference/invocation.md` — auto-delegation, `@-mention`, `--agent`, foreground/background, fork mode
+- `${CLAUDE_PLUGIN_ROOT}/skills/subagent/reference/concepts.md` — built-in agents, subagent vs skill vs main
