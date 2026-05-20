@@ -50,6 +50,8 @@ Two strategies:
 
 Recommendation: pin `version` for shared plugins, omit it for personal experiments.
 
+For tagging releases on git so semver constraints resolve correctly, use `claude plugin tag` — see [reference/cli-commands.md](./cli-commands.md).
+
 ## Community Marketplace Submission
 
 Anthropic runs two public marketplaces:
