@@ -17,7 +17,13 @@ Where you put a hook decides who runs it and whether it's shareable. Hooks alway
 
 When hooks from multiple scopes match the same event, **they all run** — there is no override semantics for hook execution. (Contrast with permissions, where managed deny > project deny > user deny.) Outputs combine per [io.md](./io.md#combine-results-from-multiple-hooks).
 
+Identical command hooks are auto-deduplicated by `command` + `args`. Identical HTTP hooks are auto-deduplicated by `url`. Subtle whitespace or env-var differences defeat dedup.
+
 What managed settings *can* enforce is `disableAllHooks: false` — managed-level hooks still run even when the user sets `"disableAllHooks": true`.
+
+### `allowManagedHooksOnly`
+
+Enterprise administrators can set `allowManagedHooksOnly: true` in managed policy settings to block user, project, and plugin hooks entirely — only hooks defined in managed policy settings run. Hooks from plugins that are force-enabled via managed `enabledPlugins` are exempt, so administrators can distribute vetted hooks through an organization marketplace.
 
 ## Anatomy of a settings file with hooks
 
@@ -84,12 +90,12 @@ Plugin-bundled and skill/agent-frontmatter hooks load when the plugin/skill/agen
 
 ## Disabling hooks
 
-Set `"disableAllHooks": true` in any settings file to disable hooks **from that scope**. Hooks defined in managed settings still run unless the managed config also sets `disableAllHooks: true`.
+Set `"disableAllHooks": true` in any settings file to disable hooks **from that scope**. The setting respects the managed settings hierarchy: it is only effective at the SAME OR HIGHER scope than the hook it is trying to disable. Managed-level hooks can only be disabled by `disableAllHooks` set at the managed level — user/project/local `disableAllHooks` cannot silence them.
 
 There is no per-event disable switch — to silence one event, remove or comment out (by deleting) its entries.
 
 ## Plugin and frontmatter notes
 
-- **Plugin hooks** in `<plugin>/hooks/hooks.json` use the same shape as `settings.json`'s `hooks` value.
+- **Plugin hooks** in `<plugin>/hooks/hooks.json` use the same shape as `settings.json`'s `hooks` value. Use `${CLAUDE_PLUGIN_ROOT}` to reference scripts bundled with the plugin (changes per update) and `${CLAUDE_PLUGIN_DATA}` for persistent state that should survive plugin updates.
 - **Skill frontmatter** can declare lifecycle hooks that run only while the skill is active. See the [skill](../../skill/SKILL.md) skill for layout.
-- **Agent frontmatter** can declare lifecycle hooks inline. For exact behavior (which events are supported, plugin-sourced agent caveats), check the [subagent](../../subagent/SKILL.md) skill and the `/en/sub-agents` reference.
+- **Agent frontmatter** can declare lifecycle hooks inline. `Stop` hooks declared in subagent frontmatter are auto-converted to `SubagentStop` since that is the event that fires when a subagent completes. For exact behavior (which events are supported, plugin-sourced agent caveats), check the [subagent](../../subagent/SKILL.md) skill and the `/en/sub-agents` reference.

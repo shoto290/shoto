@@ -88,11 +88,30 @@ For `PreToolUse` denies, the `permissionDecisionReason` is fed back to **Claude*
 
 Two `PreToolUse` hooks both rewriting `tool_input`? The last one to finish wins, and they run in parallel, so order is non-deterministic. Don't do this. Consolidate into a single hook script that handles all rewrites.
 
+## Async hook output never appears
+
+You added `"async": true` and the hook's `additionalContext` never reaches Claude.
+
+- Async hook output is delivered on the **next conversation turn**. If the session is idle, the response waits until the next user input.
+- Exception: an `asyncRewake` hook that exits with code 2 wakes Claude immediately, even when idle. Use `asyncRewake` instead of `async` when failures must interrupt the session.
+- Async completion notifications are suppressed by default. Enable verbose mode with `Ctrl+O` or start Claude with `--verbose` to see them.
+- Async hooks cannot return `decision`, `permissionDecision`, or `continue` — the triggering action has already completed by the time the hook finishes. If you need to block, use a synchronous hook.
+
+## `terminalSequence` ignored
+
+Your JSON contains `terminalSequence` but no notification fires and no error appears.
+
+- The field is **silently dropped** if the sequence contains anything outside the allowlist: OSC `0`, `1`, `2`, `9`, `99`, `777`, plus bare BEL. CSI cursor sequences, OSC 8 hyperlinks, OSC 52 clipboard writes, and OSC 1337 are all rejected.
+- Build the escape sequence with `printf` octal escapes (e.g. `printf '\033]777;notify;%s;%s\007' "$title" "$body"`) so control bytes never appear on the shell command line where they could be mangled.
+- Verify the field made it into the JSON: pipe the hook through `jq` and confirm `terminalSequence` is a single string starting with the right OSC introducer.
+- Requires Claude Code v2.1.141+.
+
 ## How to debug in depth
 
 1. **Transcript view** — toggle with `Ctrl+O`. Success hooks are silent; blocking errors show stderr; non-blocking errors show a one-line `<hook name> hook error` notice with the first line of stderr.
 2. **Debug log** — start Claude with `claude --debug-file /tmp/claude.log`, then `tail -f /tmp/claude.log` in another terminal. Every hook's stdin, stdout, stderr, and exit code is captured. If you forgot the flag at startup, run `/debug` mid-session — it prints the log path.
-3. **Manual unit test** — pipe representative JSON via stdin to your script and inspect output. Most hook bugs are reproducible this way without going through Claude Code at all.
+3. **Verbose debug logging** — set `CLAUDE_CODE_DEBUG_LOG_LEVEL=verbose` to surface matcher counts and per-handler `if`-field evaluation in the debug log. Pair with `claude --debug-file <path>` to capture: `CLAUDE_CODE_DEBUG_LOG_LEVEL=verbose claude --debug-file /tmp/claude.log`.
+4. **Manual unit test** — pipe representative JSON via stdin to your script and inspect output. Most hook bugs are reproducible this way without going through Claude Code at all.
 
 ## Per-event "exit 2 doesn't block" surprises
 
