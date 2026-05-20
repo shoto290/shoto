@@ -6,10 +6,7 @@
   "plugins": [
     {
       "name": "shoto",
-      "source": {
-        "source": "local",
-        "path": "."
-      }
+      "source": "./"
     }
   ]
 }
