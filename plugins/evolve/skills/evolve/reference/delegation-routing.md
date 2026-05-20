@@ -5,7 +5,7 @@
 | Artifact | Executor | Invocation |
 | :-- | :-- | :-- |
 | Skill (create or update) | `skill-architect` subagent | `Agent({subagent_type: "skill-architect", prompt: "<full spec>"})` |
-| Subagent (create or update) | `agent-architect` subagent | `Agent({subagent_type: "agent-architect", prompt: "<full spec>"})` |
+| Subagent (create or update) | `subagent-architect` subagent | `Agent({subagent_type: "subagent-architect", prompt: "<full spec>"})` |
 | Hook (create or update) | `hooks` skill via the Skill tool | `Skill({skill: "hooks", args: "<event-or-pattern>"})` |
 
 ## Spec template for each executor
@@ -22,7 +22,7 @@ Include in the prompt:
 - Supporting files needed (`reference/`, `examples/`, `scripts/`, `assets/`, `template.md`).
 - Body outline — section list with one-line intent per section.
 
-### `agent-architect`
+### `subagent-architect`
 
 Include in the prompt:
 

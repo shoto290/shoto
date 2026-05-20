@@ -84,7 +84,7 @@ This repo exists to build skills, sub-agents, and hooks for Claude Code. **Use t
 | Artifact | Author |
 |----------|--------|
 | Skill (`plugins/<plugin>/skills/<name>/SKILL.md`) | `/shoto:skill` or the `skill-architect` sub-agent |
-| Sub-agent (`plugins/<plugin>/agents/<name>.md`) | `/shoto:subagent` or the `agent-architect` sub-agent |
+| Sub-agent (`plugins/<plugin>/agents/<name>.md`) | `/shoto:subagent` or the `subagent-architect` sub-agent |
 | Hook (`.claude/hooks/*`) | `/shoto:hooks` skill |
 | Coordinated multi-artifact change | `/shoto:evolve` (plans across skill / sub-agent / hook) |
 

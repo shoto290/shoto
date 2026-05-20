@@ -109,7 +109,7 @@ Continue that code review and now analyze the authorization logic
 [Claude resumes the subagent with full history]
 ```
 
-Claude uses the `SendMessage` tool with the agent's id to resume. `SendMessage` is only available when **agent teams** is enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`).
+Claude uses the `SendMessage` tool with the agent's id to resume. `SendMessage` is only available when **agent teams** is enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`). A stopped subagent that receives a `SendMessage` auto-resumes in the background without requiring a new `Agent` invocation.
 
 Resumed subagents keep all prior tool calls, results, and reasoning. Agent ids are visible in transcript files at `~/.claude/projects/{project}/{sessionId}/subagents/agent-{agentId}.jsonl`.
 

@@ -34,6 +34,8 @@ If both are set, `disallowedTools` is applied first, then `tools` resolves again
 
 When an agent runs as the **main thread** (`claude --agent coordinator`), it can spawn subagents via the Agent tool. Restrict which ones with `Agent(<name>, <name>)` in the `tools` field:
 
+> The Agent tool was renamed from `Task` in Claude Code 2.1.63. Existing `Task(<name>, <name>)` references in settings and agent definitions still work as aliases.
+
 ```yaml
 ---
 name: coordinator
