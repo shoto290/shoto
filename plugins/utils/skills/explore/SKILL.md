@@ -4,6 +4,7 @@ description: Explore a codebase area and return a compact, location-anchored rep
 argument-hint: [profile=survey|deep-dive|targeted] <topic or feature to explore>
 context: fork
 agent: Explore
+allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
 # explore
