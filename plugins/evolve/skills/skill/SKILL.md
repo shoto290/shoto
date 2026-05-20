@@ -76,6 +76,8 @@ Propose defaults from the user's request; confirm before writing:
 | **Subagent** | Run in an isolated fork (`context: fork`)? |
 | **Pre-approved tools** | List for `allowed-tools` |
 
+See [reference/decision-questions.md](./reference/decision-questions.md) for the canonical list of decisions to surface to the user, with options, implications, and recommended defaults. `skill-architect` uses it to drive `AskUserQuestion` calls.
+
 ### 2. Pick a reference pattern
 
 Start from a complete pattern reference:
@@ -157,6 +159,8 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 | Compaction / behavior across turns | [reference/lifecycle.md](./reference/lifecycle.md) |
 | Doesn't trigger / triggers too often | [reference/troubleshooting.md](./reference/troubleshooting.md) |
 
+See [reference/decision-questions.md](./reference/decision-questions.md) for the update-flow decisions (target scope when multiple matches, fields to change, rename / scope-move confirmation, destructive-delete confirmation).
+
 ### 4. Apply the change
 
 - Edit files via `Edit` — preserve what already works
@@ -179,6 +183,7 @@ Ask what to update (or infer from the user's request). Route to the relevant doc
 - **Knowledge → background** — `user-invocable: false` for context-only skills (e.g. `legacy-system-context`).
 - **Pre-approve carefully** — `allowed-tools` skips approval prompts. Review before committing project skills.
 - **Stick to documented resource folders** — use the slots above (`SKILL.md`, `template.md`, `examples/`, `reference.md` or `reference/`, `scripts/`, `assets/`). `examples/` is for output samples; workflow and prompt patterns belong in `reference/`. Don't invent new top-level folders.
+- **Interactive by default** — when invoked via `skill-architect`, every key decision is surfaced to the user via `AskUserQuestion` with options + recommendation + implications. See [reference/decision-questions.md](./reference/decision-questions.md).
 
 ## Common gotchas
 
