@@ -1,8 +1,3 @@
-# Sample evolve plan output
-
-Scenario: user asks "I want to add a code-review workflow that runs after every commit."
-
-```markdown
 ## Plan: code-review workflow after every commit
 
 ### Reuse (no action needed)
@@ -16,10 +11,10 @@ Scenario: user asks "I want to add a code-review workflow that runs after every 
 2. **Hook: `PostToolUse` on `Bash` matching `git commit*`** — runs `/review-commit` automatically. Why a hook: enforces "every commit" without requiring the user to remember.
 
 ### Restart required
-- No (no new subagents; existing one updated in place — but the hook needs Claude Code to re-read `settings.json`)
+- New skill `review-commit`: no restart (`.claude/skills/` is hot-loaded)
+- New hook in `settings.json`: restart required so Claude Code re-reads the file
 
 ### Test plan
 - Manual: `/review-commit` → expect a structured review of HEAD
 - End-to-end: make a small commit → expect the hook to fire `/review-commit` automatically
 - Reuse check: `/explore-codebase` still works unchanged
-```

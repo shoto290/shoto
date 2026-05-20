@@ -1,4 +1,4 @@
-# Example: codebase-visualizer
+# Pattern: codebase-visualizer
 
 **Pattern**: Bundled script + `${CLAUDE_SKILL_DIR}` + visual output
 

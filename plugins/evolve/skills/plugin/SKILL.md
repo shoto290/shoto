@@ -65,7 +65,7 @@ In the session:
 /my-first-plugin:hello Alex
 ```
 
-Edit files, then `/reload-plugins` to pick up changes without restarting. For a full minimal example see [examples/minimal-plugin.md](./examples/minimal-plugin.md).
+Edit files, then `/reload-plugins` to pick up changes without restarting. For a full minimal walkthrough see [reference/minimal-plugin.md](./reference/minimal-plugin.md). For the bare scaffold Claude produces, see [examples/plugin-scaffold-output.md](./examples/plugin-scaffold-output.md).
 
 ## Plugin Structure Overview
 
@@ -226,4 +226,5 @@ High-level steps (full version with the `hooks.json` `jq` example in [reference/
 
 ## Examples
 
-- [examples/minimal-plugin.md](./examples/minimal-plugin.md) — complete `my-first-plugin` source
+- [examples/plugin-scaffold-output.md](./examples/plugin-scaffold-output.md) — bare scaffold output (directory tree + `plugin.json` + stub `SKILL.md`)
+- [reference/minimal-plugin.md](./reference/minimal-plugin.md) — complete `my-first-plugin` walkthrough

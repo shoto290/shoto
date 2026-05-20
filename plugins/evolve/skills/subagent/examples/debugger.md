@@ -1,8 +1,3 @@
-# Template: debugger
-
-Analyzes AND fixes. Unlike a reviewer, this agent has `Edit` access because fixing bugs requires modifying code.
-
-```markdown
 ---
 name: debugger
 description: Debugging specialist for errors, test failures, and unexpected behavior. Use proactively when encountering any issues.
@@ -33,10 +28,3 @@ For each issue, provide:
 - Prevention recommendations
 
 Focus on fixing the underlying issue, not the symptoms.
-```
-
-Key design choices:
-- `Edit` is in `tools` → agent can apply the fix.
-- No `Write` → can't create unrelated files, only modify what's already there. Add `Write` if the agent needs to create new test files.
-- "Use proactively when encountering any issues" → fires when Claude sees errors or test failures in conversation.
-- Workflow ends with "Verify solution works" → forces the agent to confirm the fix instead of stopping at "looks good".
