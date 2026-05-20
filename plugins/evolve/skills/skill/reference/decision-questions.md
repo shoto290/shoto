@@ -116,23 +116,66 @@ This catalog is consumed by [`skill-architect`](../../../agents/skill-architect.
 
 (No single default — pick the minimal set the skill actually uses. Default to empty for reference skills.)
 
-### 9. Supporting files
+### 9. `template.md`
 
-**Question**: Which supporting files should be scaffolded alongside `SKILL.md`?
-**Multi-select**: yes
-**Skip when**: the skill body is expected to stay under ~500 lines and is self-contained.
+**Question**: Should the skill ship a single fill-in template that Claude uses to produce output?
+**Multi-select**: no
+**Skip when**: type is Reference, OR the skill does not produce structured output from a fixed template.
 
 **Options**:
 
 | Label | Implication | Recommended? |
 | :-- | :-- | :-- |
-| `template.md` | Single fill-in template Claude uses to produce output. Rare — only when the skill produces output from a template. | |
-| `examples/` | Directory of sample expected outputs. Loaded for format reference only — not for prompt recipes. | |
-| `reference.md` or `reference/` | Detailed docs Claude loads on demand. Use when the body would otherwise exceed ~500 lines. | |
-| `scripts/` | Executables invoked via `${CLAUDE_SKILL_DIR}`. Use when the skill bundles deterministic logic. | |
-| `assets/` | Static resources — templates, schemas, images, lookup tables. | |
+| No | No template file. The skill body itself describes the output format inline. Simpler and the default for almost every skill. | ✅ (default) |
+| Yes | Adds `template.md` at the skill root. Claude reads it as the canonical output skeleton and fills in the blanks. Use only when the output truly is a fill-in-the-blank document (rare). |  |
 
-(Default: none — keep `SKILL.md` self-contained until it grows past ~500 lines.)
+See [slot-template.md](./slot-template.md) for the full slot reference.
+
+### 10. `examples/`
+
+**Question**: Should the skill ship sample expected outputs under `examples/`?
+**Multi-select**: no
+**Skip when**: the skill body already shows the output format clearly inline.
+
+**Options**:
+
+| Label | Implication | Recommended? |
+| :-- | :-- | :-- |
+| No | No `examples/` directory. Keeps the skill self-contained. | ✅ (default) |
+| Yes | Adds an `examples/` directory of sample expected outputs (e.g. `examples/create-output.md`). Loaded for format reference only. Anti-pattern: do NOT put prompt recipes, workflow patterns, or complete sample `SKILL.md` files here — those belong in `reference/`. |  |
+
+See [slot-examples.md](./slot-examples.md) for the full slot reference.
+
+### 11. `reference.md` or `reference/`
+
+**Question**: Should the skill ship detailed reference docs loaded on demand?
+**Multi-select**: no
+**Skip when**: the SKILL.md body is expected to stay under ~500 lines and is self-contained.
+
+**Options**:
+
+| Label | Implication | Recommended? |
+| :-- | :-- | :-- |
+| No | Everything lives in `SKILL.md`. Recommended while the skill is small. | ✅ (default) |
+| Yes — single `reference.md` | One flat reference file at the skill root. Use when there's a single coherent doc to offload (e.g. a frontmatter reference). |  |
+| Yes — `reference/` directory | A directory of focused reference files (e.g. `reference/frontmatter.md`, `reference/patterns.md`). Use when offloaded content splits naturally into multiple topics. Each file MUST be linked from `SKILL.md` so Claude knows when to load it. |  |
+
+See [slot-reference.md](./slot-reference.md) for the full slot reference.
+
+### 12. `scripts/`
+
+**Question**: Should the skill bundle executable scripts invoked via `${CLAUDE_SKILL_DIR}`?
+**Multi-select**: no
+**Skip when**: type is Reference, OR the skill performs no deterministic computation that benefits from being in code.
+
+**Options**:
+
+| Label | Implication | Recommended? |
+| :-- | :-- | :-- |
+| No | No bundled executables. The skill drives everything through prompt instructions and tool calls. | ✅ (default) |
+| Yes | Adds a `scripts/` directory; the body invokes them via `${CLAUDE_SKILL_DIR}/scripts/<name>`. Use when the skill needs deterministic logic Claude shouldn't re-derive each run (parsers, validators, generators). Adds an execution dependency (Python / Node / shell must be available at runtime). |  |
+
+See [slot-scripts.md](./slot-scripts.md) for the full slot reference.
 
 ---
 
@@ -176,7 +219,7 @@ This catalog is consumed by [`skill-architect`](../../../agents/skill-architect.
 | user-invocable | Toggles whether the user can run `/skill-name`. | |
 | context | Switches inline vs fork execution. | |
 | agent | Pins the subagent used when `context: fork`. | |
-| supporting files | Adds, removes, or rewrites files under `examples/`, `reference/`, `scripts/`, `assets/`. | |
+| supporting files | Adds, removes, or rewrites files under `examples/`, `reference/`, `scripts/`. | |
 | body section | Edits a specific section of the markdown body. | |
 
 Note: changing `name:` or moving scope changes the slash command and discovery — chain into the rename / scope-move confirmation below.

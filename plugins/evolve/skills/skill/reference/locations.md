@@ -26,13 +26,11 @@ my-skill/
 ├── reference.md       # optional, loaded on demand (or use reference/ for larger sets)
 ├── examples/
 │   └── create-skill-output.md # optional, expected output format examples only
-├── scripts/
-│   └── helper.py      # executed, not loaded
-└── assets/
-    └── schema.json    # static resources, loaded when needed
+└── scripts/
+    └── helper.py      # executed, not loaded
 ```
 
-Use documented resource folders. No `templates/` (plural) directory: if you need a fill-in template, use a single `template.md` file. Larger reference material, prompt recipes, workflow patterns, and complete sample `SKILL.md` files can live in `reference/`. Use `examples/` only for expected output examples. Static resources such as schemas, images, lookup tables, or document templates can live in `assets/`.
+Use documented resource folders. No `templates/` (plural) directory: if you need a fill-in template, use a single `template.md` file. Larger reference material, prompt recipes, workflow patterns, and complete sample `SKILL.md` files can live in `reference/`. Use `examples/` only for expected output examples.
 
 Reference supporting files from `SKILL.md` so Claude knows when to read them.
 
