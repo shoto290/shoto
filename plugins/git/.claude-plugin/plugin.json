@@ -1,6 +1,6 @@
 {
   "name": "git",
-  "description": "Git and pull-request workflows: create PRs, review comments, apply review fixes.",
+  "description": "Git and pull-request workflows: create PRs, review workspace diffs, triage review comments, apply review fixes.",
   "version": "0.2.0",
   "author": {
     "name": "shoto290"
