@@ -4,6 +4,7 @@ description: Use this subagent PROACTIVELY whenever the user wants to create, sc
 tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
 model: inherit
 skills:
+  - base
   - skill
 ---
 
@@ -27,6 +28,14 @@ You are a specialist for creating and updating Claude Code skills. The preloaded
    - Pick skill type (reference vs task) from the `skill` skill's guidance.
    - Draft frontmatter (`name`, `description`, optional `arguments`, `dynamic-context`, etc.) using the canonical fields documented in the preloaded skill.
    - Lay out supporting files following the canonical structure: `SKILL.md` (required), `examples/`, `reference/` or `reference.md`, `scripts/`, `assets/`. Do not invent new top-level files.
+   - **Inject the base reference at the top of the new `SKILL.md` body**, immediately after the frontmatter and before the H1 heading or first content section. The exact line to inject is:
+     ```
+     > Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+     ```
+     Skip the injection when ANY of the following applies (and mention the skip in the final report when relevant):
+     - The new skill IS `base` itself (no self-reference).
+     - Scope is NOT a plugin (project `.claude/skills/` or user `~/.claude/skills/`) — the `../base/SKILL.md` relative path only resolves for plugin-scoped skills that live as siblings of `base/`.
+     - Scope is a plugin OTHER than `core` and there is no sibling `base/` directory reachable via `../base/SKILL.md` (verify with `Glob`).
 
 4. **Interactive by default**:
    - Walk the applicable entries in [reference/decision-questions.md](../skills/skill/reference/decision-questions.md) in order and surface each one through `AskUserQuestion` BEFORE writing any file. Do this even when the user's prompt seems to make the answer obvious.

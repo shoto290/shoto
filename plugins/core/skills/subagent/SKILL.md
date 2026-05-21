@@ -4,6 +4,8 @@ description: 'Understand and create or update a Claude Code subagent (custom AI 
 argument-hint: '[agent-name]'
 ---
 
+> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+
 # Agents
 
 A **subagent** is a Markdown file with YAML frontmatter that defines a specialized AI assistant. It runs in its own isolated context window with a custom system prompt, restricted tools, and independent permissions. Claude delegates to it automatically when its `description` matches the task, or you invoke it explicitly with `@agent-<name>`, natural language, or `claude --agent <name>`.

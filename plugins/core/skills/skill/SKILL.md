@@ -4,6 +4,8 @@ description: Create or update a Claude Code skill (a SKILL.md that extends Claud
 argument-hint: '[skill-name]'
 ---
 
+> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+
 # Skill
 
 A skill is a `SKILL.md` file with YAML frontmatter + markdown instructions. Users invoke it with `/skill-name`; Claude auto-loads it when the `description` matches the request.
