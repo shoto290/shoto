@@ -1,35 +1,36 @@
 {
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-  "permissions": {
-    "deny": [
-      "Bash(curl:*)",
-      "Bash(git push --force*)",
-      "Bash(git push -f*)",
-      "Bash(git reset --hard*)",
-      "Bash(rm -rf *)",
-      "Bash(prisma migrate reset*)",
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)",
-      "Write(./.env*)",
-      "Write(./secrets/**)",
-      "Bash(bun run dev)"
-    ]
-  },
-  "enabledPlugins": {
-    "core@shoto": true,
-    "utils@shoto": true,
-    "git@shoto": true
-  },
-  "extraKnownMarketplaces": {
-    "shoto": {
-      "source": {
-        "source": "github",
-        "repo": "shoto290/shoto"
-      }
-    }
-  }
+	"attribution": {
+		"commit": "",
+		"pr": ""
+	},
+	"permissions": {
+		"deny": [
+			"Bash(curl:*)",
+			"Bash(git push --force*)",
+			"Bash(git push -f*)",
+			"Bash(git reset --hard*)",
+			"Bash(rm -rf *)",
+			"Bash(prisma migrate reset*)",
+			"Read(./.env)",
+			"Read(./.env.*)",
+			"Read(./secrets/**)",
+			"Write(./.env*)",
+			"Write(./secrets/**)",
+			"Bash(bun run dev)"
+		]
+	},
+	"enabledPlugins": {
+		"core@shoto": true,
+		"utils@shoto": true,
+		"git@shoto": true,
+		"docs@shoto": true
+	},
+	"extraKnownMarketplaces": {
+		"shoto": {
+			"source": {
+				"source": "github",
+				"repo": "shoto290/shoto"
+			}
+		}
+	}
 }
