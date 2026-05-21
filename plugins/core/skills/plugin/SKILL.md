@@ -4,6 +4,8 @@ description: Author, package, test, and distribute a Claude Code plugin as a who
 argument-hint: '[action — e.g. "new", "validate", "migrate"]'
 ---
 
+> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+
 # Plugin
 
 A **plugin** is a directory with a `.claude-plugin/plugin.json` manifest that bundles skills, sub-agents, hooks, MCP servers, LSP servers, background monitors, color themes, output styles, and default settings into a single distributable unit. Plugin components are namespaced (`/<plugin-name>:<component-name>`) so they don't clash with other plugins.

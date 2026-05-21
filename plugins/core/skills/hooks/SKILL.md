@@ -4,6 +4,8 @@ description: 'Understand, design, and create or update Claude Code hooks (shell 
 argument-hint: '[event-or-pattern]'
 ---
 
+> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+
 # Hooks
 
 A **hook** is a deterministic action — a shell command, prompt-based LLM check, subagent verification, or HTTP call — that fires at a specific point in Claude Code's lifecycle. Hooks are configured in `settings.json` under a `hooks` block keyed by event name. Use them to enforce rules that should never depend on Claude choosing to follow them: format-on-save, block edits to protected files, validate Bash commands, audit changes, re-inject context after compaction, notify on idle, auto-approve specific permission prompts.

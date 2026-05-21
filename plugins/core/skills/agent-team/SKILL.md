@@ -4,6 +4,8 @@ description: Understand and orchestrate a Claude Code agent team — multiple Cl
 argument-hint: '[task]'
 ---
 
+> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+
 # Agent teams
 
 An **agent team** is a group of independent Claude Code sessions that coordinate through a shared task list and a mailbox. One session is the **lead** (the current one — the session that creates the team). The others are **teammates**: each is a full Claude Code instance with its own context window. Teammates can message each other directly and claim work off the shared task list. This is distinct from [subagents](../subagent/SKILL.md), which only report back to the parent.

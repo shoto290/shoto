@@ -5,6 +5,8 @@ argument-hint: '[capability or feature description — optional; inferred from c
 allowed-tools: [Skill, Agent, AskUserQuestion, Read, Glob, Grep]
 ---
 
+> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+
 # Evolve
 
 `evolve` analyzes existing skills/agents/hooks, proposes a coordinated plan, gets approval, then delegates execution to the architects. It never writes artifact files directly.
