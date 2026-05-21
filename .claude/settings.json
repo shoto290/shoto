@@ -21,7 +21,8 @@
   },
   "enabledPlugins": {
     "core@shoto": true,
-    "utils@shoto": true
+    "utils@shoto": true,
+    "git@shoto": true
   },
   "extraKnownMarketplaces": {
     "shoto": {
