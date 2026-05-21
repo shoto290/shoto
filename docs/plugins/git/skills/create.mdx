@@ -1,0 +1,100 @@
+---
+title: "The git:create skill"
+description: "Push the current branch and open a PR with a Conventional Commit title and a non-technical changelog body."
+---
+
+`git:create` reads your commits and diff, drafts a `type(scope): description` PR title following the Conventional Commits spec, writes a concise changelog body for a non-developer audience, confirms with you, and then pushes the branch and opens the PR via the `gh` CLI.
+
+## Prerequisites
+
+- `gh` CLI installed and authenticated (`gh auth status`). If authentication fails, run `gh auth login` first.
+- At least one commit ahead of the repository's default branch.
+
+## Trigger phrases
+
+- `/git:create`
+- `create pr` / `create pull request` / `open pr`
+- `ship the current branch`
+
+## How it works
+
+<Steps>
+  <Step title="Read repo conventions">
+    Reads `CLAUDE.md` and `AGENTS.md` at the repo root if they exist, absorbing naming, tone, and commit conventions before drafting anything.
+  </Step>
+  <Step title="Resolve the base branch">
+    Runs `gh repo view --json defaultBranchRef` to find the default branch. Falls back to `main` if the call fails.
+  </Step>
+  <Step title="Gather branch info">
+    Runs `git branch --show-current`, `git log <base>..HEAD --oneline`, `git diff <base>...HEAD --stat`, and `git status --porcelain` in parallel.
+  </Step>
+  <Step title="Pre-flight checks">
+    If there are uncommitted changes, asks whether to continue or abort. If there are no commits ahead of the base, stops with an explanatory message.
+  </Step>
+  <Step title="Determine type and scope">
+    Infers the Conventional Commit type from commit messages and the diff. Derives the scope from the directory prefix of changed files.
+  </Step>
+  <Step title="Draft title and body">
+    Produces a `type(scope): description` title (≤72 chars, imperative, lowercase after the colon). Writes a Summary section for a non-developer audience: 1–4 bullets, short sentences, no file paths or function names.
+  </Step>
+  <Step title="Confirm with you">
+    Shows the draft title and body via a prompt. You can approve as-is or request adjustments.
+  </Step>
+  <Step title="Push and create">
+    Pushes the current branch with `git push -u origin HEAD`, then runs `gh pr create` with the confirmed title and body. Prints the resulting PR URL.
+  </Step>
+</Steps>
+
+## Conventional Commit types
+
+<Tabs>
+  <Tab title="Type reference">
+    | Type | When to use |
+    | :-- | :-- |
+    | `feat` | New user-facing functionality |
+    | `fix` | Bug fix that changes observable behavior |
+    | `refactor` | Internal restructure with no behavior change |
+    | `chore` | Tooling, CI, dependency bumps, version bumps |
+    | `docs` | Documentation-only changes |
+    | `test` | Test-only changes (no production code touched) |
+    | `style` | Formatting, whitespace, lint fixes — no logic change |
+    | `perf` | Performance improvement |
+    | `build` | Changes to the build system or external dependencies |
+    | `ci` | Changes to CI configuration files and scripts |
+  </Tab>
+  <Tab title="Scope-selection rules">
+    | Situation | Scope to use |
+    | :-- | :-- |
+    | Single top-level directory touched | That directory name |
+    | Two directories, one clearly primary by line count | The primary directory name |
+    | Three or more directories, or cross-cutting | Omit scope parentheses entirely |
+
+    Scope is always a short identifier from the repo layout — not a free-form label.
+  </Tab>
+  <Tab title="Title examples">
+    ```
+    feat(apps/web): add password reset flow
+    fix(packages/api): return 404 when project is archived
+    refactor(packages/api): extract billing logic into its own module
+    chore(deps): bump axios to 1.7.7
+    docs: clarify deployment steps in the contributor guide
+    test(packages/api): cover edge cases in invoice rounding
+    ```
+  </Tab>
+</Tabs>
+
+## Hard rules
+
+- The PR body's Summary section targets a non-developer audience — no code references, file paths, function names, or internal jargon.
+- The skill never pushes to `main`, `master`, or the resolved default branch. It pushes only the current feature branch.
+- The skill never force-pushes.
+- No "Generated with Claude Code" footer is added to the PR body.
+- No `Co-authored-by` lines are added.
+
+<Warning>
+  Pushing to a protected branch (`main`, `master`, or your repo's default) is blocked. The skill will stop and report an error if the current branch matches the default branch name.
+</Warning>
+
+<Card title="Back to git overview" href="/plugins/git/overview">
+  See the full three-skill pipeline and install instructions.
+</Card>

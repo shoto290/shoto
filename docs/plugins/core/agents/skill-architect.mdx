@@ -1,0 +1,73 @@
+---
+title: "`skill-architect` sub-agent"
+description: "Specialist sub-agent that owns the full create and update flow for Claude Code skills."
+---
+
+`skill-architect` is a Claude Code sub-agent that creates and updates `SKILL.md` files end-to-end. It surfaces every key decision interactively before writing anything, then validates the result before returning.
+
+## Purpose
+
+When you ask to create, modify, rename, or update a Claude Code skill, `skill-architect` takes over. It does not explain how skills work — it builds and updates them. If your request is out of scope (explanation, comparison, general learning), it returns a single-line note and stops.
+
+## Invocation
+
+`skill-architect` fires automatically when the `skill` skill delegates to it. You can also invoke it explicitly:
+
+```text
+@agent-skill-architect create a skill called `summarize-pr` in project scope
+```
+
+Or from the main thread:
+
+```text
+Use the skill-architect subagent to update the description on the `deploy` skill.
+```
+
+## Allowed tools
+
+`Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `AskUserQuestion`
+
+`Bash` is restricted to `mkdir -p` for creating missing parent directories. No other shell commands are run.
+
+## Model
+
+`inherit` — uses the same model as the parent session.
+
+## Preloaded skills
+
+- `base` — SIMPLE principles, behavioral guidelines, validation gate rules.
+- `skill` — the canonical create and update flow, frontmatter reference, directory structure, pattern recipes.
+
+## What it does
+
+<Steps>
+  <Step title="Determine intent">
+    Classifies the request as create or update. If only an explanation was asked for, stops immediately.
+  </Step>
+  <Step title="Locate or validate the target">
+    For updates: searches for `name:` across `.claude/skills/**/SKILL.md`, `~/.claude/skills/**/SKILL.md`, and plugin-scoped skill directories. Identity is `name:` in frontmatter, not the filename.
+
+    For creates: validates the proposed name (lowercase, digits, hyphens, max 64 chars) and checks for uniqueness.
+  </Step>
+  <Step title="Surface every key decision interactively">
+    Walks the decision list from `reference/decision-questions.md` and asks each question via `AskUserQuestion` before writing any file. Scope, type, arguments, live context, pre-approved tools — each gets a question with options, implications, and a recommended default. If the user's prompt already answers a question, the answer is pre-selected but still asked so the user can override.
+  </Step>
+  <Step title="Write the files">
+    Creates the skill directory and `SKILL.md`. Adds supporting files (`examples/`, `reference/`, `scripts/`, `template.md`) only when needed. Injects the `base` reference line at the top of the body for plugin-scoped skills inside `core`.
+  </Step>
+  <Step title="Run the validation gate">
+    Checks: `SKILL.md` exists at the expected path, frontmatter is valid YAML with both `name` and `description`, `name` is kebab-case, all internal Markdown links resolve to files that exist, no files were touched outside the skill directory.
+  </Step>
+</Steps>
+
+## Hard constraints
+
+- Never touches files outside the target skill directory.
+- Never spawns other sub-agents — it does not have the `Agent` tool.
+- The `base` reference line (`> Apply the rules from [core:base](../base/SKILL.md)…`) is injected only for plugin-scoped skills inside `core`. It is skipped for project-scoped and user-scoped skills because the relative path does not resolve.
+
+## Final output
+
+The sub-agent returns: what was done and the skill name, list of files written with absolute paths, explicit pass/fail per validation check, a compact decisions recap table, and a reminder that new skill directories require a Claude Code restart.
+
+<Card title="Back to core overview" href="/plugins/core/overview" />

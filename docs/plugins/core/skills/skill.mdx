@@ -1,0 +1,65 @@
+---
+title: "The `skill` skill"
+description: "Create or update a Claude Code SKILL.md — scope, frontmatter, supporting files, and testing."
+---
+
+`/core:skill` creates new Claude Code skills and updates existing ones. A skill is a `SKILL.md` file with YAML frontmatter that extends Claude's capabilities, invocable via `/skill-name` or auto-loaded when the `description` matches a user request.
+
+## When to use
+
+Invoke `/core:skill [skill-name]` when you want to:
+
+- Create a reusable workflow with a `/name` entry point.
+- Convert a `CLAUDE.md` procedure that has grown too large into a dedicated skill.
+- Strengthen a skill's `description` so Claude auto-loads it at the right times.
+- Add arguments (`$ARGUMENTS`, `$0`, `$1`), dynamic context via `!command` injection, or subagent execution (`context: fork`).
+- Bundle a script and reference it via `${CLAUDE_SKILL_DIR}`.
+- Rename, move scope, or diagnose why a skill doesn't trigger.
+
+<Tip>
+When invoked via the `skill-architect` sub-agent, every key decision (scope, type, arguments, live context, pre-approved tools) is surfaced interactively via `AskUserQuestion` before any file is written.
+</Tip>
+
+## Skill structure
+
+```
+my-skill/
+├── SKILL.md            # required — frontmatter + instructions
+├── template.md         # optional — single fill-in template
+├── examples/           # optional — sample expected outputs
+├── reference/          # optional — detailed docs loaded on demand
+└── scripts/            # optional — executables via ${CLAUDE_SKILL_DIR}
+```
+
+Only `SKILL.md` is required. Every other file is optional and must be linked from `SKILL.md` so Claude knows what it contains and when to load it.
+
+## Key behavior
+
+- **Detect intent** — if `$ARGUMENTS` matches an existing skill name, the skill proposes the update flow; otherwise it proposes create.
+- **Validate the name** — lowercase letters, digits, and hyphens only; max 64 characters.
+- **Pick scope** — personal (`~/.claude/skills/`), project (`.claude/skills/`), or plugin (`<plugin>/skills/`).
+- **Choose type** — reference (knowledge/context) or task (action with side effects).
+- **Draft frontmatter** — `description` is the only required field. All others (`argument-hint`, `allowed-tools`, `context`, `disable-model-invocation`, `user-invocable`) are optional.
+- **Keep `SKILL.md` under 500 lines** — move detail into `reference/` or `examples/`.
+- **Test** — direct invocation via `/skill-name` or automatic trigger via a matching natural-language request.
+
+## Hard rules
+
+- `examples/` is for expected output samples only. Workflow patterns, prompt recipes, and complete `SKILL.md` examples belong in `reference/`.
+- Do not create a `templates/` directory — use `template.md` (singular) at the skill root.
+- `context: fork` requires an explicit task body, not guidelines alone.
+- New top-level skill directories require a Claude Code restart to be discovered.
+- `allowed-tools` in project-scoped skills requires workspace trust.
+
+## Frontmatter quick reference
+
+| Field | Purpose |
+|---|---|
+| `description` | What the skill does + when to use it. Auto-load trigger. Required. |
+| `argument-hint` | Shown in `/help` — describes the expected argument. |
+| `allowed-tools` | Pre-approves tools, skipping the permission prompt. |
+| `disable-model-invocation` | `true` — loaded by reference only, never auto-triggered. |
+| `user-invocable` | `false` — loaded as background context; not invocable by the user. |
+| `context` | `fork` — runs in an isolated subagent context. |
+
+<Card title="Back to core overview" href="/plugins/core/overview" />

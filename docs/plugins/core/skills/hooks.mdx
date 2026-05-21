@@ -1,0 +1,86 @@
+---
+title: "The `hooks` skill"
+description: "Build or audit Claude Code hooks — deterministic shell commands, prompts, or HTTP calls that fire at lifecycle events."
+---
+
+`/core:hooks` designs and wires Claude Code hooks. A hook is a deterministic action — a shell command, LLM prompt check, sub-agent verification, or HTTP call — that fires at a specific lifecycle event. Use hooks to enforce rules that must not depend on Claude choosing to follow them: format-on-save, block edits to protected files, validate Bash commands, inject context after compaction, auto-approve recurring permission prompts.
+
+## When to use
+
+Invoke `/core:hooks [event-or-goal]` when you want to:
+
+- Build a hook that fires every time (format, lint, log, notify) without relying on the model.
+- Block a class of actions before they execute: edits to `.env`, destructive SQL, `rm -rf`.
+- Inject context at session start or after compaction.
+- Auto-approve a recurring permission prompt or deny a specific tool call pattern.
+- Send lifecycle events to an external service (audit log, webhook).
+- Diagnose why a hook isn't firing, parse errors, or Stop block cap issues.
+
+<Tip>
+Pass the target event name or a goal as the argument — e.g. `/core:hooks format on save` or `/core:hooks PreToolUse`. The skill picks the smallest event that covers the goal and proposes a hook.
+</Tip>
+
+## Hook anatomy
+
+Hooks live under a top-level `hooks` block in a settings file, keyed by event name. Each event holds an array of handler groups; each group has a `matcher` and a `hooks` array.
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(jq -r '.tool_input.file_path'); npx prettier --write \"$FILE\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Key behavior
+
+- **Detect intent** — if `$ARGUMENTS` matches an event name, propose a hook for that event; if it describes a goal, pick the best-fit event.
+- **Pick the right scope** — user (`~/.claude/settings.json`), project (`.claude/settings.json`, checked in), local (`.claude/settings.local.json`, gitignored), plugin (`hooks/hooks.json`), or subagent/skill frontmatter.
+- **Output mode is either/or** — exit code (`0` = allow, `2` = block + stderr fed back) or stdout JSON (`hookSpecificOutput`, `additionalContext`, `decision`). Never mix them.
+- **Add, never replace** — when a settings file already has a `hooks` key, add the new event as a sibling. Never overwrite the whole `hooks` object.
+- **Scripts longer than one line** — write to `.claude/hooks/<name>.sh`, `chmod +x`, and reference via `"$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`.
+
+## Hook types
+
+| Type | Description |
+|---|---|
+| `command` | Shell command. Most common. Supports async. |
+| `prompt` | Single-turn LLM check. Returns `{ok: false, reason}` to block. |
+| `agent` | Multi-turn LLM with tools (experimental). |
+| `http` | POST to a URL. Structured JSON response required to control behavior. |
+| `mcp_tool` | Call a connected MCP tool. |
+
+## Hard rules
+
+- `PreToolUse` that returns `permissionDecision: "deny"` blocks the tool even in `bypassPermissions` mode — this is intentional policy enforcement.
+- **Hooks tighten, never loosen.** A hook returning `"allow"` does not override deny rules from settings.
+- **`exit 2` and JSON output are mutually exclusive.** Remove `exit 2` from any script that returns stdout JSON.
+- **Stop hooks** fire on every "I'm done responding" pause. Always check `stop_hook_active` in JSON input and `exit 0` if true, or you will hit the 8-block cap.
+- **Hooks run in non-interactive shells.** Do not write to `/dev/tty`. Use `terminalSequence` in JSON output for desktop notifications.
+- Hook stdout/stderr is capped at 10,000 characters.
+- `matcher` is case-sensitive and regex-evaluated. `bash` does not match the `Bash` tool.
+- The `if` field (for filtering by tool arguments) requires Claude Code v2.1.85+ and only applies to tool events.
+
+## Common events
+
+| Event | Fires when |
+|---|---|
+| `PreToolUse` | Before any tool call — can block. |
+| `PostToolUse` | After a tool call completes successfully. |
+| `SessionStart` | Session opens (or after compaction with `matcher: "compact"`). |
+| `UserPromptSubmit` | User submits a message — can inject or transform. |
+| `Stop` | Claude finishes a response. |
+| `PermissionRequest` | Claude requests a permission — can auto-approve. |
+| `SubagentStart` / `SubagentStop` | Sub-agent lifecycle (in `settings.json`). |
+
+<Card title="Back to core overview" href="/plugins/core/overview" />

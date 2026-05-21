@@ -1,0 +1,77 @@
+---
+title: "`docs-architect` Sub-agent"
+description: "Owns the full lifecycle of Mintlify documentation: creates new MDX pages, audits existing docs, and surgically updates pages or docs.json navigation."
+---
+
+`docs-architect` is the sub-agent responsible for all MDX authoring, auditing, and editing in a Mintlify docs site. It is auto-delegated by the `docs:mintlify-page` skill for every new page, and invocable directly for audits and multi-page refactors.
+
+<Tip>
+  Every page on this docs site was authored by the `docs-architect` sub-agent — including the one you are reading now.
+</Tip>
+
+## Overview
+
+The agent operates in three modes:
+
+| Mode | Trigger | What it does |
+|---|---|---|
+| **CREATE** | Called with a title, group, audience, and optional source context | Drafts frontmatter and body, self-checks, writes the MDX, and patches `docs.json`. |
+| **READ / AUDIT** | Called to audit, inventory, or summarize existing docs | Cross-references all `.mdx` files against `docs.json`, reports orphans, dangling refs, bad frontmatter, and style violations. Never modifies any file. |
+| **UPDATE** | Called to modify, rename, move, or bulk-fix pages | Reads the target pages in full, makes surgical edits, patches `docs.json` if paths or titles changed, and emits a per-file change summary. |
+
+## Tools
+
+| Tool | Used for |
+|---|---|
+| `Read` | Reading existing MDX pages and `docs.json` before any edit |
+| `Glob` | Enumerating all `.mdx` files under the docs root |
+| `Grep` | Verifying identifiers (function names, env vars, paths) in source context |
+| `Write` | Creating a new MDX file from scratch |
+| `Edit` | Surgical edits to existing MDX pages or `docs.json` |
+| `AskUserQuestion` | Clarifying ambiguous scope before acting |
+
+**Model:** `sonnet`
+
+## Invoking directly
+
+The `docs:mintlify-page` skill spawns this agent automatically. For audits, refactors, or targeted updates, invoke it directly:
+
+```javascript
+Agent({
+  subagent_type: "docs-architect",
+  prompt: "Audit the docs site at /path/to/docs and report orphans and dangling refs."
+})
+```
+
+```javascript
+Agent({
+  subagent_type: "docs-architect",
+  prompt: "UPDATE the page at /path/to/docs/concepts/rate-limits.mdx — add a ## Burst limits section after ## Overview."
+})
+```
+
+## Constraints enforced
+
+Every MDX page the agent creates or modifies must satisfy:
+
+- **Frontmatter:** `title:` and `description:` present as quoted strings. `description:` must be 140 characters or fewer.
+- **No heading duplication:** the body must not repeat the page title as a heading (frontmatter renders as H1).
+- **Code fence language tags:** every fenced block must declare a language.
+- **Allowed components only:** `<Card>`, `<CardGroup>`, `<CodeGroup>`, `<Tabs>` / `<Tab>`, `<Note>`, `<Warning>`, `<Tip>`, `<Steps>` / `<Step>`, `<Accordion>` / `<AccordionGroup>`, `<Frame>`.
+- **No fabrication:** every function name, env var, and file path cited must be verifiable from provided source context.
+
+## Hard rules
+
+- Never runs `mint` commands — those belong to `mintlify-validate`.
+- Never scaffolds a new docs site — that belongs to `mintlify-init`.
+- Never pushes, commits, or runs `git`.
+- Never overwrites an MDX file in CREATE mode without confirmation.
+- READ / AUDIT mode is observation-only — no `Write`, no `Edit`.
+
+<Note>
+  When `docs:mintlify-page` uses `--from-code <path>`, it first calls `utils:explore` at `/plugins/utils/skills/explore` and passes the report to `docs-architect` as source context. The agent then verifies every identifier with `Read`, `Glob`, or `Grep` before including it in the draft.
+</Note>
+
+<Card title="Back to docs overview" href="/plugins/docs/overview">
+  Return to the docs plugin overview.
+</Card>

@@ -1,0 +1,85 @@
+---
+title: "The `agent-team` skill"
+description: "Spawn and orchestrate experimental Claude Code agent teams — multiple Claude instances coordinating via a shared task list and mailbox."
+---
+
+`/core:agent-team` helps you enable, spawn, steer, and clean up Claude Code agent teams. An agent team is a group of independent Claude Code sessions coordinated by a lead (the current session) through a shared task list and a direct-messaging mailbox.
+
+<Warning>
+Agent teams are **experimental** and require Claude Code v2.1.32+ with the environment variable `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` set. The skill walks you through enabling this if it is not already active.
+</Warning>
+
+## When to use
+
+Use agent teams (over subagents) when your work needs peer discussion, debate, or collaborative ownership — not just parallel task execution where only the result matters.
+
+| | Sub-agent | Agent team |
+|---|---|---|
+| Communication | Reports back to parent only | Teammates message each other directly |
+| Coordination | Parent manages everything | Shared task list, self-claiming |
+| Cost | Lower (results summarized) | Higher (each teammate is a full session) |
+| Best for | Focused tasks, single result | Parallel review, competing hypotheses, cross-layer features |
+
+Invoke `/core:agent-team [task]` when you want to:
+
+- Review a PR from multiple lenses (security, performance, tests) in parallel.
+- Investigate a bug with competing hypotheses running concurrently.
+- Build a feature spanning frontend, backend, and tests — each owned by a dedicated teammate.
+- Research a problem from multiple angles simultaneously.
+
+## Enabling agent teams
+
+Set the environment variable before starting Claude Code:
+
+```json
+{ "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" } }
+```
+
+Add this to `~/.claude/settings.json`, or export it in your shell before running `claude`. Restart the session after setting it.
+
+Choose a `teammateMode`:
+
+| Mode | Description |
+|---|---|
+| `auto` | tmux if already in a tmux session, otherwise in-process. Default. |
+| `in-process` | All teammates inside this terminal. Shift+Down to cycle. Works anywhere. |
+| `tmux` | Split panes, one per teammate. Requires tmux or iTerm2. |
+
+## Spawn prompt structure
+
+The skill drafts the spawn prompt for you. A good prompt contains:
+
+```text
+Create an agent team to <task>. Spawn <N> teammates:
+- <name1>: <focused role + file scope>
+- <name2>: <focused role + file scope>
+- <name3>: <focused role + file scope>
+Use <model> for each teammate. <Plan approval clause if needed.>
+<Synthesis instruction.>
+```
+
+## Key behavior
+
+- **The current session is always the lead.** You cannot promote a teammate to lead.
+- **3–5 teammates is the sweet spot.** Three focused teammates outperform five scattered ones.
+- **Teammates do not inherit conversation history.** They receive `CLAUDE.md`, MCP servers, skills, and the spawn prompt — nothing else. Include all necessary context in the spawn prompt.
+- **File ownership must be disjoint.** Two teammates editing the same file will overwrite each other.
+- **Clean up from the lead.** Never have a teammate run cleanup — team context may not resolve correctly from a teammate's session.
+- **Permissions propagate.** All teammates inherit the lead's permission mode. `--dangerously-skip-permissions` on the lead applies to every teammate.
+
+## Hard rules
+
+- One team per lead, for its lifetime. No nested teams, no leadership transfer. Clean up before creating a new one.
+- `teammateMode: tmux` is unsupported in VS Code's integrated terminal, Windows Terminal, and Ghostty — use `in-process` there.
+- `/resume` and `/rewind` do not restore in-process teammates. Spawn fresh teammates after resuming.
+- Teammates ignore `skills:` and `mcpServers:` from reused sub-agent definitions. They load from project/user settings instead.
+
+## Managing an active team
+
+- **Message a teammate**: tell the lead "Ask `<name>` to ...". The lead routes via the mailbox.
+- **Assign a task**: "Give the dependency-audit task to `security`."
+- **Shut down one teammate**: "Ask `<name>` to shut down."
+- **Clean up the whole team**: "Clean up the team." — run from the lead only.
+- **In-process navigation**: Shift+Down cycles teammates; Ctrl+T toggles the task list.
+
+<Card title="Back to core overview" href="/plugins/core/overview" />

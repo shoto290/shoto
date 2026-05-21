@@ -1,0 +1,155 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "shoto",
+  "colors": {
+    "primary": "#000000",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Concepts",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "installation"
+            ]
+          },
+          {
+            "group": "Foundations",
+            "pages": [
+              "concepts/simple-principles",
+              "concepts/behavioral-guidelines",
+              "concepts/authoring-rules"
+            ]
+          },
+          {
+            "group": "Conventions",
+            "pages": [
+              "conventions/naming",
+              "conventions/safety",
+              "conventions/scope-hierarchy"
+            ]
+          },
+          {
+            "group": "Architecture",
+            "pages": [
+              "architecture/skill-structure",
+              "architecture/subagent-structure",
+              "architecture/plugin-manifest"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Plugins",
+        "groups": [
+          {
+            "group": "core",
+            "pages": [
+              "plugins/core/overview",
+              {
+                "group": "Skills",
+                "pages": [
+                  "plugins/core/skills/skill",
+                  "plugins/core/skills/subagent",
+                  "plugins/core/skills/plugin",
+                  "plugins/core/skills/hooks",
+                  "plugins/core/skills/base",
+                  "plugins/core/skills/evolve",
+                  "plugins/core/skills/agent-team"
+                ]
+              },
+              {
+                "group": "Sub-agents",
+                "pages": [
+                  "plugins/core/agents/skill-architect",
+                  "plugins/core/agents/subagent-architect"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "utils",
+            "pages": [
+              "plugins/utils/overview",
+              {
+                "group": "Skills",
+                "pages": [
+                  "plugins/utils/skills/explore",
+                  "plugins/utils/skills/tools",
+                  "plugins/utils/skills/versioning"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "git",
+            "pages": [
+              "plugins/git/overview",
+              {
+                "group": "Skills",
+                "pages": [
+                  "plugins/git/skills/create",
+                  "plugins/git/skills/review-comments",
+                  "plugins/git/skills/review-fix"
+                ]
+              },
+              {
+                "group": "Sub-agents",
+                "pages": [
+                  "plugins/git/agents/reviewer"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "docs",
+            "pages": [
+              "plugins/docs/overview",
+              {
+                "group": "Skills",
+                "pages": [
+                  "plugins/docs/skills/mintlify-init",
+                  "plugins/docs/skills/mintlify-page",
+                  "plugins/docs/skills/mintlify-validate"
+                ]
+              },
+              {
+                "group": "Sub-agents",
+                "pages": [
+                  "plugins/docs/agents/docs-architect"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/shoto290/shoto"
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  }
+}

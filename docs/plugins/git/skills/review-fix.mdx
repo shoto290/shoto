@@ -1,0 +1,94 @@
+---
+title: "The git:review-fix skill"
+description: "Apply FIX and FIX-STYLE verdicts from git:review-comments, one at a time, then run auto-detected verification."
+---
+
+`git:review-fix` is the write counterpart to `git:review-comments`. Paste the verdict list output into the prompt and it applies only `FIX` and `FIX-STYLE` items — surgically, one at a time — then runs auto-detected verification commands (tests, lint, typecheck). Skipped, intentional, and out-of-scope items are never touched.
+
+## Trigger phrases
+
+- `/git:review-fix`
+- `apply review fixes`
+- `fix the review comments`
+
+## Arguments
+
+Paste the full output of `/git:review-comments`. The skill parses the verdict list and ignores everything except `FIX` and `FIX-STYLE` items.
+
+## How it works
+
+<Steps>
+  <Step title="Read repo context">
+    Reads `CLAUDE.md` and `AGENTS.md` at the repo root to respect any project-specific rules.
+  </Step>
+  <Step title="Parse the decision list">
+    Extracts only `FIX` and `FIX-STYLE` comments from the input. If none are present, stops and reports "Nothing to apply."
+  </Step>
+  <Step title="Apply fixes one at a time">
+    For each fix in order: reads the current state of the file, applies the minimal change that resolves the comment, and prints a confirmation line:
+
+    ```
+    [#N] Fixed — [File:line] — [one sentence describing the change]
+    ```
+
+    Adjacent code is never refactored, renamed, or "improved" beyond what the comment requires.
+  </Step>
+  <Step title="Run verification">
+    Auto-detects verification commands from manifest files at the repo root, then runs them.
+  </Step>
+  <Step title="Print final summary">
+    Prints counts and details for fixes applied, items skipped, and any new issues surfaced during fixing.
+  </Step>
+</Steps>
+
+## Auto-detected verification
+
+<Tabs>
+  <Tab title="JavaScript / TypeScript">
+    Detects the package manager from the lockfile (`bun.lockb` → bun, `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `package-lock.json` → npm). Runs only the scripts that are actually defined in `package.json`:
+
+    - `test` → `<pm> run test`
+    - `lint` → `<pm> run lint`
+    - `typecheck` / `types` → `<pm> run typecheck` or `<pm> run types`
+  </Tab>
+  <Tab title="Rust">
+    Runs `cargo test`, `cargo clippy --no-deps`, and `cargo check` when `Cargo.toml` is present.
+  </Tab>
+  <Tab title="Python">
+    When `pyproject.toml` is present, checks which tools are configured and runs only those:
+
+    - `pytest` (if configured)
+    - `ruff check .` (if `ruff` is in deps)
+    - `mypy .` (if `mypy` is configured)
+  </Tab>
+  <Tab title="Go">
+    Runs `go test ./...` and `go vet ./...` when `go.mod` is present.
+  </Tab>
+</Tabs>
+
+Verification results are reported as:
+
+```
+Post-fix verification:
+- Tests:    pass / fail / skipped
+- Linter:   pass / fail / skipped
+- Types:    pass / fail / skipped
+```
+
+If any command fails, up to 10 lines of failure output are shown so you can act immediately.
+
+## Hard rules
+
+- **One fix at a time.** Changes are never batched across multiple files or comments in a single operation.
+- **Minimal changes only.** Each fix addresses exactly what the comment says — nothing more.
+- **Never re-open a rejected comment.** `INTENTIONAL`, `OUT-OF-SCOPE`, and `DISCUSS` items are skipped without re-evaluation.
+- **Stop on regression.** If a fix creates a new problem surfaced by verification, the skill stops, reports which fix caused which failure, and does not continue with remaining fixes.
+- **Never commit and never push.** This skill writes file changes only. You review the diff and commit.
+
+<Warning>
+  If verification fails after a fix, the skill halts. Review the reported failure before running the skill again on the remaining items.
+</Warning>
+
+<Card title="Back to git overview" href="/plugins/git/overview">
+  See the full three-skill pipeline and install instructions.
+</Card>

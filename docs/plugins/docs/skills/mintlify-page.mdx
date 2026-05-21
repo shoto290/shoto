@@ -1,0 +1,91 @@
+---
+title: "The `docs:mintlify-page` Skill"
+description: "Author a new Mintlify MDX page, optionally from existing source code, and wire it into docs.json navigation automatically."
+---
+
+Use `mintlify-page` when you want to add a new page to an existing Mintlify docs site. The skill locates `docs.json`, asks which navigation group the page belongs to, then delegates the draft to the `docs-architect` sub-agent. The architect writes the MDX file and registers it in `docs.json`.
+
+## Prerequisites
+
+- Run from a directory that contains (or has an ancestor containing) `docs.json`. If none is found, the skill stops with an error.
+- The `docs-architect` sub-agent must be registered. The skill never writes MDX content inline.
+
+## Trigger phrases
+
+- `/docs:mintlify-page`
+- `add docs page`
+- `write a docs page`
+- `document this code`
+- `create mdx page`
+- `add new documentation content`
+
+## Arguments
+
+| Argument | Required | Description |
+|---|---|---|
+| `<page-title>` | Yes | Title of the new page. Quote multi-word titles. |
+| `[group]` | No | Navigation group. If omitted or unrecognized, the skill prompts you to pick or create one. |
+| `[--from-code <path>]` | No | Path to a source file or directory. Invokes `utils:explore` to generate source context before drafting. |
+
+**Example invocations:**
+
+```bash
+/docs:mintlify-page "Rate Limits" Concepts
+/docs:mintlify-page "Authentication" --from-code src/auth
+/docs:mintlify-page "Quick Start" "Getting Started"
+```
+
+## How it works
+
+<Steps>
+  <Step title="Parse arguments">
+    Extracts `<page-title>`, optional `[group]`, and the optional `--from-code <path>` flag. If `<page-title>` is missing, stops with a usage message.
+  </Step>
+  <Step title="Locate `docs.json`">
+    Walks up from the current working directory until it finds a `docs.json`. Stores the containing directory as the docs root. Stops if nothing is found.
+  </Step>
+  <Step title="Read existing groups">
+    Reads `docs.json` and extracts every group name from `navigation.tabs[].groups[]`. Builds a flat ordered list of group names.
+  </Step>
+  <Step title="Choose the group">
+    If `[group]` matches an existing group (case-insensitive), uses it. If it does not match, or was not provided, prompts with the existing group list and a `Create new group` option.
+  </Step>
+  <Step title="Gather source context (optional)">
+    If `--from-code <path>` was provided, invokes the `utils:explore` skill with `<path>` and a documentation focus. The returned report is passed to `docs-architect` as source context.
+  </Step>
+  <Step title="Determine target audience">
+    If the audience is clear from the title or source context, uses it directly. Otherwise asks: end users, developers integrating the API, or internal contributors.
+  </Step>
+  <Step title="Delegate the draft to docs-architect">
+    Spawns the `docs-architect` sub-agent with the title, docs root, group, audience, and any source context. The architect drafts the MDX and registers the page in `docs.json`.
+  </Step>
+  <Step title="Compute slug and write the file">
+    Slugifies the title and group name to derive the target path. Checks for an existing file — if one exists, prompts before overwriting. Creates the parent directory if needed, then writes the MDX.
+  </Step>
+  <Step title="Verify the navigation patch">
+    Reads `docs.json` and confirms the new page entry is present under the chosen group. Reports the diff. If the entry is missing, surfaces an error and asks you to patch manually or rerun.
+  </Step>
+  <Step title="Print next steps">
+    Outputs the absolute path of the written file, the nav entry that was added, and a reminder to run `/docs:mintlify-validate` before committing.
+  </Step>
+</Steps>
+
+## Hard rules
+
+- Never overwrite an existing MDX file without explicit user confirmation.
+- Never push or commit — this skill only writes local files.
+- Never patch `docs.json` directly — that is the `docs-architect`'s job. This skill only verifies the result.
+- The MDX draft must come from the `docs-architect` sub-agent — the skill does not write MDX content inline.
+- Never write outside the docs root or modify any file other than the new MDX file.
+
+<Note>
+  When `--from-code` is provided, `mintlify-page` calls the `utils:explore` skill at `/plugins/utils/skills/explore` before spawning `docs-architect`. The explore report is passed as source context so the architect can document real function names, types, and paths rather than inventing them.
+</Note>
+
+<Warning>
+  If `docs-architect` returns a draft without a frontmatter block (starting with `---`), the skill aborts before writing any file. Re-run to retry.
+</Warning>
+
+<Card title="Back to docs overview" href="/plugins/docs/overview">
+  Return to the docs plugin overview.
+</Card>

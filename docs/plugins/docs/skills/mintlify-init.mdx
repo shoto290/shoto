@@ -1,0 +1,87 @@
+---
+title: "The `docs:mintlify-init` Skill"
+description: "Scaffold a new Mintlify docs site with `mint new` and patch docs.json with your site name, color, and GitHub link."
+---
+
+Use `mintlify-init` when you need to create a brand-new Mintlify docs site in a repo. It runs `mint new`, confirms your site configuration interactively, then patches the generated `docs.json` with your choices.
+
+## Prerequisites
+
+The `mint` CLI must be on your PATH before invoking this skill. The skill will not install it automatically.
+
+```bash
+npm i -g mint
+```
+
+Verify the installation:
+
+```bash
+which mint
+```
+
+## Trigger phrases
+
+- `/docs:mintlify-init`
+- `scaffold docs`
+- `create mintlify site`
+- `set up mintlify`
+- `bootstrap documentation`
+- `start a new docs site`
+
+## Arguments
+
+| Argument | Required | Default | Description |
+|---|---|---|---|
+| `[target-directory]` | No | `./docs` | Directory to scaffold the site into. Must not already exist. |
+
+## How it works
+
+<Steps>
+  <Step title="Resolve the target directory">
+    The skill uses the first positional argument, or defaults to `./docs`. If the directory already exists and is non-empty, it asks whether to abort or pick a different name. It never overwrites an existing directory.
+  </Step>
+  <Step title="Verify `mint` is available">
+    Runs `which mint`. If the command fails, the skill stops and prints the install instruction. It does not run `npm i -g mint` on your behalf.
+  </Step>
+  <Step title="Run `mint new`">
+    Executes `mint new <dir>`. Any non-zero exit is surfaced verbatim. On success, the generated `docs.json` is expected at `<dir>/docs.json`.
+  </Step>
+  <Step title="Collect site configuration">
+    One `AskUserQuestion` prompt gathers three values:
+    - **Site name** — defaults to the directory basename.
+    - **Primary hex color** — defaults to `#0D9373`.
+    - **GitHub repo URL** — optional; omit to skip the navbar link.
+  </Step>
+  <Step title="Patch `docs.json`">
+    Reads `docs.json`, sets the top-level `name`, sets `colors.primary`, and (if provided) appends a GitHub entry to `navbar.links`. Every other field is left untouched.
+  </Step>
+  <Step title="Print next steps">
+    Emits the commands to preview locally, add a page, and validate before committing.
+  </Step>
+</Steps>
+
+## Hard rules
+
+- Never overwrite an existing `docs.json` without explicit user confirmation.
+- Never run `npm i -g mint` automatically — print the command and let you run it.
+- Never push to GitHub or invoke `git` — this skill only writes local files.
+- Never overwrite an existing target directory; asks for a new name or aborts.
+- The CLI binary is `mint` (not `mintlify`); the scaffold command is `mint new` (not `mint init`); the config file is `docs.json` (not `mint.json`).
+
+<Warning>
+  Running `mintlify-init` in a directory that already has a `docs.json` will prompt for confirmation before any changes are made. If you abort, no files are touched.
+</Warning>
+
+## Next steps
+
+After scaffolding, the typical next actions are:
+
+```bash
+cd <dir> && mint dev          # preview locally
+/docs:mintlify-page "<title>" <group>   # add a page
+/docs:mintlify-validate       # validate before committing
+```
+
+<Card title="Back to docs overview" href="/plugins/docs/overview">
+  Return to the docs plugin overview.
+</Card>
