@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "description": "Frontend development knowledge base: web performance patterns, architecture, and UX principles distilled from production codebases.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "shoto290"
   },
