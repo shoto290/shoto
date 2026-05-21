@@ -1,0 +1,73 @@
+---
+title: "The `git:commit` skill"
+description: "Stage current changes, infer a Conventional Commit title, confirm with you, and create exactly one commit."
+---
+
+`git:commit` stages your uncommitted changes, skips any secrets, infers a `type(scope): description` title following the Conventional Commits spec, confirms with you, and creates exactly one commit — without pushing.
+
+## Prerequisites
+
+- Must be run from a git repository.
+- Working tree has at least one change (staged or unstaged). If the tree is clean, the skill stops with `No changes to commit.`
+
+## Trigger phrases
+
+- `/git:commit`
+- `create commit`
+- `commit changes`
+- `stage and commit`
+- `make a commit`
+
+## How it works
+
+<Steps>
+  <Step title="Read repo conventions">
+    Reads `CLAUDE.md` and `AGENTS.md` at the repo root in parallel if they exist, absorbing naming, commit conventions, and language rules before drafting anything.
+  </Step>
+  <Step title="Inspect the workspace">
+    Runs `git status --porcelain`, `git diff --stat`, `git diff --cached --stat`, and `git branch --show-current` in parallel to understand the full state of the working tree.
+  </Step>
+  <Step title="Pre-flight checks">
+    Stops with `No changes to commit.` if the tree is clean. Stops and lists offending paths if any secrets are detected (see Warning below). Resolves the default branch via `gh repo view`; falls back to `main`. If the current branch is `main`, `master`, or the default branch, warns and asks whether to abort or continue.
+  </Step>
+  <Step title="Auto-stage">
+    Runs `git add -A`, then re-runs `git diff --cached --stat` and presents the staged file list as a short summary.
+  </Step>
+  <Step title="Infer type and scope">
+    Applies the Conventional Commit type and scope-selection rules (see [Conventional Commit types and scope-selection rules](/plugins/git/skills/create)). Scope is the single touched top-level directory, or omitted when the change is cross-cutting.
+  </Step>
+  <Step title="Draft the title">
+    Produces a `type(scope): description` or `type: description` title — ≤72 characters, lowercase after the colon, no trailing period, imperative mood, describing WHAT changed (not HOW), single-line only.
+  </Step>
+  <Step title="Confirm with you">
+    Shows the drafted title via a prompt. You can approve as-is or supply a replacement title, which is validated against the format constraints before re-confirming.
+  </Step>
+  <Step title="Create the commit">
+    Runs `git commit -m "<title>"`. If a pre-commit hook fails, the hook output is shown and the skill stops — it never retries, amends, or bypasses hooks.
+  </Step>
+  <Step title="Print the result">
+    Outputs the short hash and committed title. If the branch has commits ahead of the default branch, suggests `/git:create` as the next step.
+  </Step>
+</Steps>
+
+## Hard rules
+
+- Never adds a "Generated with Claude Code" footer to the commit message.
+- Never adds `Co-authored-by` lines.
+- Never commits `.env`, `.env.*`, `*.pem`, `*.key`, `*.cert`, or any path under `secrets/`.
+- Never uses `--no-verify`, `--amend`, or `--no-gpg-sign`.
+- Never pushes after the commit — pushing is `/git:create`'s job.
+- Exactly one commit per invocation. Re-invoke the skill for each additional logical commit.
+- Never commits on `main`, `master`, or the resolved default branch without explicit user confirmation.
+
+<Warning>
+  If `git status --porcelain` lists any path matching `.env`, `.env.*`, `*.pem`, `*.key`, `*.cert`, or anything under `secrets/`, the skill stops immediately and lists the offending paths. Remove them from the working tree or add them to `.gitignore`, then retry.
+</Warning>
+
+<Note>
+  `git:commit` creates exactly one commit per invocation. If you need several logical commits, invoke the skill once per commit. Once you have all your commits, chain `/git:create` to push the branch and open the PR.
+</Note>
+
+<Card title="Back to git overview" href="/plugins/git/overview">
+  See the full four-skill pipeline and install instructions.
+</Card>
