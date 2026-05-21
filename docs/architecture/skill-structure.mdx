@@ -1,0 +1,74 @@
+---
+title: "Skill Structure"
+description: "The canonical layout of a SKILL.md file and its supporting files, including all frontmatter fields."
+---
+
+A skill is a directory containing a `SKILL.md` entrypoint. When invoked, the rendered content enters the conversation as a standing instruction for the rest of the session.
+
+## Directory Layout
+
+```text
+my-skill/
+├── SKILL.md           # required — main instructions
+├── template.md        # optional — single fill-in template for Claude to populate
+├── reference.md       # optional — loaded on demand (or use reference/ for larger sets)
+├── examples/
+│   └── output.md      # optional — expected output format examples only
+└── scripts/
+    └── helper.py      # executed by Claude, not loaded into context
+```
+
+Use `reference/` for larger sets of reference material, prompt recipes, or workflow patterns. Use `examples/` only for expected output examples. There is no `templates/` directory — use a single `template.md` file if you need a fill-in template.
+
+## Frontmatter Fields
+
+Frontmatter lives between `---` markers at the top of `SKILL.md`. All fields are optional except `description` (recommended).
+
+| Field | Required | Description |
+| :---- | :------- | :---------- |
+| `name` | No | Display name. Defaults to the directory name. Max 64 chars, kebab-case. |
+| `description` | Recommended | What the skill does and when to use it. Claude uses this to auto-invoke. Put the key use case first. |
+| `when_to_use` | No | Additional invocation context and trigger phrases. Appended to `description` in the listing. |
+| `argument-hint` | No | Autocomplete hint shown next to the slash command, e.g. `[issue-number]`. |
+| `arguments` | No | Named positional arguments. Space-separated string or YAML list. |
+| `disable-model-invocation` | No | `true` blocks Claude from auto-loading. User can still invoke via `/name`. |
+| `user-invocable` | No | `false` hides from the `/` menu. Use for background knowledge skills. |
+| `allowed-tools` | No | Tools pre-approved while the skill is active. Space-separated string or YAML list. |
+| `model` | No | Model override for this turn. |
+| `effort` | No | Effort override: `low`, `medium`, `high`, `xhigh`, `max`. |
+| `context` | No | Set to `fork` to run in a subagent context. |
+| `hooks` | No | Hooks scoped to this skill's lifecycle. |
+| `paths` | No | Glob patterns limiting auto-invocation to matching files. |
+
+## Example Frontmatter
+
+```yaml
+---
+name: pr-summary
+description: Summarize a pull request with diff + comments. Use when the user asks for a PR review or what changed in a PR.
+argument-hint: '[pr-number]'
+arguments: pr
+disable-model-invocation: true
+allowed-tools: Bash(gh *)
+context: fork
+agent: Explore
+---
+```
+
+## Content Lifecycle
+
+When a skill is invoked, the rendered `SKILL.md` enters the conversation as a single message and stays for the rest of the session. Claude Code does not re-read the skill file on later turns. Write guidance as standing instructions, not one-time steps.
+
+After a context compaction, the most recent invocation of each skill is re-attached. Each re-attached skill keeps its first 5,000 tokens, and the combined budget for all re-attached skills is 25,000 tokens.
+
+## Extending from `core:base`
+
+Add this line at the top of a skill's body to inherit the base rules:
+
+```markdown
+> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
+```
+
+<Note>
+The full frontmatter reference — including string substitutions (`$ARGUMENTS`, `$0`, `${CLAUDE_SKILL_DIR}`) and visibility states — is at `plugins/core/skills/skill/reference/frontmatter.md`.
+</Note>

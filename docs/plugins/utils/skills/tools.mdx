@@ -1,0 +1,147 @@
+---
+title: "The `tools` skill"
+description: "Reference for Claude Code's built-in tools: when to use each one, critical gotchas, and permission rule syntax."
+---
+
+`/utils:tools` is a reference skill. Load it at the start of a session or any time you need to choose between similar tools, debug a tool failure, or write a permission rule.
+
+## Overview
+
+Claude Code ships a large surface of built-in tools. Many overlap in capability — `Read` vs `Bash cat`, `Edit` vs `Write`, `Glob` vs `Grep`, `Agent` vs `Skill`. Picking the wrong one costs tokens, breaks edit guards, or produces silent failures.
+
+This skill covers:
+
+- Which tool to prefer for a given task and why.
+- Per-tool gotchas that cause the most common failures.
+- The `Tool(specifier)` permission rule syntax for `~/.claude/settings.json`.
+
+The authoritative source is always the live docs at [docs.claude.com/en/docs/claude-code/tools](https://docs.claude.com/en/docs/claude-code/tools). Prefer those over this page if you suspect Claude Code's tool surface has changed.
+
+## When to use it
+
+Load `/utils:tools` when you are:
+
+- Starting a new session and want the tool decision table in context.
+- Choosing between similar tools (`Read` vs `Bash cat`, `Edit` vs `Write`, `Glob` vs `Grep`, `WebFetch` vs `WebSearch`, `Agent` vs `Skill`, `Monitor` vs background `Bash`).
+- Debugging a tool failure (`Edit` exact-match error, read-before-edit rejection, `Glob` cap hit, `Bash` timeout).
+- Writing or auditing permission rules.
+
+## Tool decision table
+
+| Task | Preferred | Avoid | Why |
+| :-- | :-- | :-- | :-- |
+| Read a file | `Read` | `Bash cat/head/tail` | Returns line-numbered output; registers the file for `Edit`. |
+| Modify part of a file | `Edit` | `Write` | Sends only the diff; requires a prior `Read`. |
+| Create a new file or full rewrite | `Write` | `Edit` | `Edit` cannot create files. |
+| Find files by name | `Glob` | `Bash find` | Faster; sorted by mtime. |
+| Search file contents | `Grep` | `Bash grep/rg` | Uses ripgrep; respects `.gitignore`; structured output modes. |
+| Fetch a known URL | `WebFetch` | `Bash curl` | Runs an extraction model; returns readable text. |
+| Discover unknown URLs | `WebSearch` | `WebFetch` | Returns ranked titles + URLs; follow up with `WebFetch`. |
+| Isolated investigation | `Agent` | `Skill` | Opens a fresh context window; no context bleed. |
+| Reusable workflow inline | `Skill` | `Agent` | Loads `SKILL.md` into the current turn; no extra context cost. |
+| Stream a long-running process | `Monitor` | `Bash run_in_background` | Delivers each stdout line as a notification. |
+| Wait for a one-shot job | `Bash run_in_background` | `Monitor` | Notifies once on completion. |
+| Edit a Jupyter notebook | `NotebookEdit` | `Edit` | `Edit` does not understand `.ipynb` cell structure. |
+| Schedule recurring work | `CronCreate` | `Bash` cron | Managed by Claude Code; survives sessions. |
+| Async work across sessions | `TaskCreate` | inline | Tasks have their own lifecycle: `TaskGet`, `TaskList`, `TaskOutput`, `TaskStop`, `TaskUpdate`. |
+| Ask the user a question | `AskUserQuestion` | free-text | Multi-choice prompts with options are clearer than open-ended questions. |
+
+## Tools by category
+
+<Tabs>
+  <Tab title="File">
+    **Read** — Read any file by absolute path. Returns line-numbered output and registers the file for `Edit`. Large files return a partial view; re-call with `offset` and `limit`. PDFs with more than 10 pages require the `pages` parameter.
+
+    **Edit** — Replace an exact string in a file you have already read. `old_string` must match exactly (indentation, whitespace) and must be unique unless you pass `replace_all: true`. Never include the line-number prefix from `Read` output in `old_string`.
+
+    **Write** — Create a file or fully overwrite one. Read the target first if it already exists.
+
+    **Glob** — Find files by name pattern. Caps at 100 results sorted by mtime. Does not respect `.gitignore` by default.
+
+    **Grep** — Search file contents with ripgrep. Respects `.gitignore`. Patterns containing `{}` must escape the braces. Three output modes: `content`, `files_with_matches`, `count`.
+
+    **NotebookEdit** — Edit a single Jupyter notebook cell by `cell_id`. Use `edit_mode: "insert"` to add, `"delete"` to remove.
+  </Tab>
+  <Tab title="Shell">
+    **Bash** — Run shell commands. Default timeout 2 min; max 10 min. Working directory persists between calls; environment variables do not — re-export each call. Use `run_in_background: true` for fire-and-forget.
+
+    **Monitor** — Stream stdout from a running process. Each line arrives as a notification. Use for long builds or log tailing.
+
+    **PowerShell** — Windows equivalent of Bash.
+  </Tab>
+  <Tab title="Web">
+    **WebFetch** — Fetch a URL and return extracted text. Responses cached 15 minutes. Cross-host redirects are not followed automatically. For raw bytes, use `Bash curl`.
+
+    **WebSearch** — Search the web. Returns titles + URLs + snippets. US-only by default. Follow up with `WebFetch` to read a result.
+  </Tab>
+  <Tab title="Agent">
+    **Agent** — Spawn an isolated sub-agent with its own context window. Sees only the prompt you pass. Returns one final message. Cannot itself spawn `Agent`.
+
+    **Skill** — Load a `SKILL.md` file inline into the current turn. No extra context window.
+
+    **AskUserQuestion** — Prompt the user with a structured multi-choice question.
+
+    **SendMessage** — Send a chat message between sessions.
+
+    **ShareOnboardingGuide** — Share an onboarding guide with the user.
+  </Tab>
+  <Tab title="Task / Cron">
+    **TaskCreate** — Create a persistent async task. Companion tools: `TaskGet`, `TaskList`, `TaskOutput`, `TaskStop`, `TaskUpdate`.
+
+    **CronCreate** — Schedule a recurring task. Companion tools: `CronDelete`, `CronList`.
+
+    **RemoteTrigger** — Trigger a remote runtime. Pairs with `PushNotification`.
+
+    **TodoWrite** — Write structured to-do items into the current session.
+
+    **EnterPlanMode** / **ExitPlanMode** — Mark planning vs. execution segments.
+
+    **EnterWorktree** / **ExitWorktree** — Work in an isolated git worktree with managed lifecycle.
+  </Tab>
+  <Tab title="Permissions">
+    Permission rules live in `~/.claude/settings.json` (and project / enterprise overrides). Format: `Tool(specifier)`.
+
+    | Tool family | Specifier format | Allow example | Deny example |
+    | :-- | :-- | :-- | :-- |
+    | `Bash` | command prefix | `Bash(git status:*)` | `Bash(rm -rf:*)` |
+    | `Read` / `Edit` / `Write` / `Glob` / `Grep` | path glob | `Read(/src/**)` | `Edit(**/.env)` |
+    | `WebFetch` | domain (no scheme) | `WebFetch(domain:docs.claude.com)` | `WebFetch(domain:*)` |
+    | `Agent` | sub-agent name | `Agent(Explore)` | `Agent(*)` |
+    | `Skill` | skill name | `Skill(tools)` | `Skill(deploy)` |
+    | `Task*` / `Cron*` / `RemoteTrigger` | bare tool name | `TaskCreate` | `CronDelete` |
+
+    Empty `()` matches every invocation of that tool. Deny rules take precedence over allow rules at the same scope.
+  </Tab>
+</Tabs>
+
+## Critical gotchas
+
+<AccordionGroup>
+  <Accordion title="Edit: read-before-edit is mandatory">
+    The harness tracks which files were read and rejects edits to unread files. A shell read (`cat`, `head`, `tail`, `sed -n`) satisfies the requirement only when it covered the full file and the file is small. Always use `Read` to be safe.
+  </Accordion>
+  <Accordion title="Edit: old_string must be exact and unique">
+    `old_string` must match including all indentation and whitespace. It must also be unique in the file — if it appears more than once, expand the context or pass `replace_all: true`. Never include the line-number prefix from `Read` output.
+  </Accordion>
+  <Accordion title="Glob: 100-file cap">
+    `Glob` returns at most 100 results sorted by mtime. For larger result sets, narrow the pattern or search a subtree.
+  </Accordion>
+  <Accordion title="Grep: ripgrep regex, not POSIX">
+    Grep uses Rust regex syntax. No lookbehind by default. Curly braces (`{}`) must be escaped as `\{` `\}` — ripgrep treats them as repetition counts.
+  </Accordion>
+  <Accordion title="Bash: environment variables do not persist">
+    Working directory persists between Bash calls within the project root. Environment variables do not — re-export on every call that needs them.
+  </Accordion>
+  <Accordion title="WebFetch: cached and lossy">
+    Responses are cached for 15 minutes. The page is summarised by a small extraction model — raw HTML is discarded. For raw bytes, use `Bash curl`. Cross-host redirects are not followed automatically.
+  </Accordion>
+  <Accordion title="Agent: no recursion">
+    An `Agent` cannot itself spawn another `Agent`. Plan your agent tree accordingly.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+<Card title="Back to utils overview" href="/plugins/utils/overview">
+  Return to the utils plugin page.
+</Card>

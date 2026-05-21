@@ -1,0 +1,48 @@
+---
+title: "shoto"
+description: "A Claude Code marketplace of plugins for building Claude Code itself — 4 plugins, 16 skills, 4 sub-agents."
+---
+
+shoto is a Claude Code marketplace hosting plugins that help you build Claude Code itself: skills, sub-agents, hooks, and plugins — all authored through meta-tooling rather than hand-crafted files.
+
+## Plugins
+
+<CardGroup cols={2}>
+  <Card title="core" href="/plugins/core/overview">
+    Meta-tooling to create and evolve skills, sub-agents, and hooks. The foundation of the shoto stack.
+  </Card>
+  <Card title="utils" href="/plugins/utils/overview">
+    Shared utility skills — codebase exploration, built-in tool reference, and semver versioning.
+  </Card>
+  <Card title="git" href="/plugins/git/overview">
+    Git and pull-request workflows: create PRs, review comments, apply review fixes.
+  </Card>
+  <Card title="docs" href="/plugins/docs/overview">
+    Mintlify documentation authoring: scaffold a site, write pages, validate navigation.
+  </Card>
+</CardGroup>
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Installation" href="/installation">
+    Add the shoto marketplace and install individual plugins inside Claude Code.
+  </Card>
+  <Card title="SIMPLE principles" href="/concepts/simple-principles">
+    The six principles every shoto change must pass through.
+  </Card>
+</CardGroup>
+
+## What's included
+
+| Plugin | Skills | Sub-agents |
+| :----- | -----: | ---------: |
+| `core` | 7 | 2 |
+| `utils` | 3 | 0 |
+| `git` | 3 | 1 |
+| `docs` | 3 | 1 |
+| **Total** | **16** | **4** |
+
+<Note>
+`core` depends on `utils`. Install `utils` first, or install both — `core` will prompt you if `utils` is missing.
+</Note>

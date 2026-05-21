@@ -1,0 +1,69 @@
+---
+title: "Installation"
+description: "Install the shoto marketplace and its plugins inside Claude Code."
+---
+
+shoto is distributed as a Claude Code plugin marketplace. You add the marketplace once, then install individual plugins by name.
+
+## Add the marketplace
+
+Run this inside Claude Code to register the shoto marketplace:
+
+```bash
+/plugin marketplace add shoto290/shoto
+```
+
+## Install plugins
+
+After adding the marketplace, install whichever plugins you need:
+
+<CodeGroup>
+```bash core
+/plugin install core@shoto
+```
+
+```bash utils
+/plugin install utils@shoto
+```
+
+```bash git
+/plugin install git@shoto
+```
+
+```bash docs
+/plugin install docs@shoto
+```
+</CodeGroup>
+
+## Dependencies
+
+`core` depends on `utils`. If you install `core` without `utils`, Claude Code will prompt you to resolve the dependency. The safest order is:
+
+<Steps>
+  <Step title="Install utils">
+    ```bash
+    /plugin install utils@shoto
+    ```
+  </Step>
+  <Step title="Install core">
+    ```bash
+    /plugin install core@shoto
+    ```
+    `core` resolves its `utils` dependency automatically at this point.
+  </Step>
+  <Step title="Install optional plugins">
+    Install `git` and `docs` in any order — they have no inter-plugin dependencies.
+    ```bash
+    /plugin install git@shoto
+    /plugin install docs@shoto
+    ```
+  </Step>
+</Steps>
+
+## Verify installation
+
+After installing, run `/skills` to confirm the plugin skills appear in the listing. Plugin skills are namespaced as `<plugin>:<skill>` — for example, `/core:skill` or `/utils:explore`.
+
+<Tip>
+Run `/doctor` to check whether skill description budgets are overflowing after installing multiple plugins.
+</Tip>

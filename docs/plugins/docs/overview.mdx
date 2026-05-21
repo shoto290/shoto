@@ -1,0 +1,53 @@
+---
+title: "docs"
+description: "Documentation workflows powered by Mintlify: scaffold a docs site, author MDX pages, validate before pushing."
+---
+
+The `docs` plugin gives you three skills and one sub-agent for building and maintaining Mintlify documentation sites from inside Claude Code. It covers the full cycle: scaffold a new site, author MDX pages from prose or from source code, and validate the build before committing.
+
+<Note>
+  The Mintlify site you are reading right now was scaffolded and authored using this plugin.
+</Note>
+
+## Overview
+
+The plugin is organized around a single linear workflow:
+
+1. **`mintlify-init`** — run `mint new` and patch `docs.json` with your site name, color, and GitHub link.
+2. **`mintlify-page`** — add a new MDX page to an existing group, optionally generating content from source code.
+3. **`mintlify-validate`** — run `mint validate` and `mint build`, then report every broken link, invalid frontmatter entry, and orphan file.
+
+The `docs-architect` sub-agent operates behind the scenes for page creation and audits. You can also invoke it directly for multi-page refactors.
+
+**Version:** `0.2.0`  
+**Prerequisites:** `mint` CLI must be on your PATH. Install it with:
+
+```bash
+npm i -g mint
+```
+
+## Install
+
+```bash
+/plugin marketplace add shoto290/shoto
+/plugin install docs@shoto
+```
+
+After install, run `/help` to see the `docs:` skills and `/agents` to confirm `docs-architect` is registered.
+
+## Skills and agents
+
+<CardGroup cols={2}>
+  <Card title="mintlify-init" href="/plugins/docs/skills/mintlify-init">
+    Scaffold a new Mintlify docs site with `mint new` and patch `docs.json`.
+  </Card>
+  <Card title="mintlify-page" href="/plugins/docs/skills/mintlify-page">
+    Author a new MDX page, optionally from existing source code.
+  </Card>
+  <Card title="mintlify-validate" href="/plugins/docs/skills/mintlify-validate">
+    Validate the docs build before pushing. Read-only.
+  </Card>
+  <Card title="docs-architect" href="/plugins/docs/agents/docs-architect">
+    Sub-agent that drafts, audits, and surgically updates MDX pages and `docs.json`.
+  </Card>
+</CardGroup>

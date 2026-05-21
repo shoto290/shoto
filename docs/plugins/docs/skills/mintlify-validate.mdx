@@ -1,0 +1,79 @@
+---
+title: "The `docs:mintlify-validate` skill"
+description: "Run `mint validate` and `mint build` against your docs site and get a structured report of every issue before pushing."
+---
+
+Use `mintlify-validate` before committing or pushing any documentation change. It runs Mintlify's own validator and builder, then cross-checks your filesystem against `docs.json` navigation to catch orphan files and dangling references. It never modifies any file.
+
+## Prerequisites
+
+The `mint` CLI must be on your PATH. The skill will not install it automatically.
+
+```bash
+npm i -g mint
+```
+
+## Trigger phrases
+
+- `/docs:mintlify-validate`
+- `validate docs`
+- `check mintlify`
+- `verify docs build`
+- `broken links`
+- `verify documentation before pushing`
+
+## Arguments
+
+None. The skill runs against the docs site found by walking up from your current working directory.
+
+## How it works
+
+<Steps>
+  <Step title="Locate `docs.json`">
+    Walks up from the current working directory until it finds a `docs.json`. The directory containing it becomes the docs root. If nothing is found, stops with: `No docs.json found — run /docs:mintlify-init first.`
+  </Step>
+  <Step title="Run `mint validate`">
+    Executes `mint validate` from the docs root. Captures all stdout and stderr, records the exit code, and parses the output for broken internal and external links and MDX syntax errors. File paths and line numbers are preserved.
+  </Step>
+  <Step title="Run `mint build`">
+    Executes `mint build` from the docs root. Captures all output and parses for missing pages, invalid frontmatter, and navigation entries pointing to non-existent files.
+  </Step>
+  <Step title="Cross-check navigation vs filesystem">
+    Reads every `pages` entry from `docs.json` (across all tabs, groups, anchors, and nested structures). For each entry, checks whether the corresponding `.mdx` file exists on disk. Records any missing files as `missing-in-fs`.
+  </Step>
+  <Step title="Cross-check filesystem vs navigation">
+    Lists every `.mdx` file under the docs root. For each, checks whether its path appears in any `pages` array in `docs.json`. Records any unreferenced file as an orphan.
+  </Step>
+  <Step title="Emit the report">
+    Prints a structured report with counts and per-issue file/line details. Ends with `All checks passed. Safe to push.` when everything is clean, or `Fix the issues above before committing.` when any check fails.
+  </Step>
+</Steps>
+
+## Report format
+
+```text
+Validation report
+- mint validate: PASS / FAIL (N issues)
+- mint build: PASS / FAIL (N issues)
+- Missing files referenced in nav: <list or "none">
+- Orphan files not in nav: <list or "none">
+
+Issues
+- <file>:<line>: <message>
+```
+
+## Hard rules
+
+- READ-ONLY — never modifies any file. `Edit` and `Write` are not in the allowed tools for this skill.
+- Never runs `mint deploy` or any push or publish command.
+- Never auto-installs `mint`. Instructs you to install it manually if it is missing.
+- Never silently suppresses errors. Every failure appears in the report with file and line number when available.
+- Always runs commands from the resolved docs root, never from an unrelated directory.
+
+<Tip>
+  Run `mintlify-validate` after every batch of page edits, not just before the final commit. Catching broken links and orphan pages early is cheaper than fixing them after a deploy.
+</Tip>
+
+<Card title="Back to docs overview" href="/plugins/docs/overview">
+  Return to the docs plugin overview.
+</Card>

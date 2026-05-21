@@ -1,0 +1,77 @@
+---
+title: "`subagent-architect` sub-agent"
+description: "Specialist sub-agent that owns the full create and update flow for Claude Code sub-agents."
+---
+
+`subagent-architect` is a Claude Code sub-agent that creates and updates sub-agent `.md` files end-to-end. It surfaces every key decision interactively before writing anything, then validates the result before returning.
+
+## Purpose
+
+When you ask to create, modify, rename, or update a Claude Code sub-agent, `subagent-architect` takes over. It does not explain how sub-agents work — it builds and updates them. If your request is out of scope (explanation, comparison, general learning), it returns a single-line note and stops.
+
+## Invocation
+
+`subagent-architect` fires automatically when the `subagent` skill delegates to it. You can also invoke it explicitly:
+
+```text
+@agent-subagent-architect create a subagent called `db-reader` with read-only tools
+```
+
+Or from the main thread:
+
+```text
+Use the subagent-architect subagent to tighten the tools list on the `code-reviewer` agent.
+```
+
+## Allowed tools
+
+`Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `AskUserQuestion`
+
+`Bash` is restricted to `mkdir -p` for creating missing parent directories. No other shell commands are run.
+
+## Model
+
+`inherit` — uses the same model as the parent session.
+
+## Preloaded skills
+
+- `base` — SIMPLE principles, behavioral guidelines, validation gate rules.
+- `subagent` — the canonical create and update flow, frontmatter reference, pattern recipes, scope rules.
+
+## What it does
+
+<Steps>
+  <Step title="Determine intent">
+    Classifies the request as create or update. If only an explanation was asked for, stops immediately.
+  </Step>
+  <Step title="Locate or validate the target">
+    For updates: searches by `name:` frontmatter (not filename) across `.claude/agents/**/*.md`, `~/.claude/agents/**/*.md`, and plugin-scoped agent directories. If the same name exists in multiple scopes, surfaces the conflict via `AskUserQuestion`.
+
+    For creates: validates the name (lowercase letters and hyphens only, no digits, no underscores), verifies uniqueness within the chosen scope.
+  </Step>
+  <Step title="Surface every key decision interactively">
+    Walks the decision list from `reference/decision-questions.md` and asks each question via `AskUserQuestion` before writing. Scope, tools, model, `permissionMode`, memory, skills preload, isolation — each gets a question with options, implications, and a recommended default. Pre-selects answers already given in the prompt, but still asks so the user can override.
+  </Step>
+  <Step title="Write the file">
+    Creates `<scope>/<name>.md` with frontmatter (only fields the spec actually needs — empty fields are omitted) and a markdown body: one paragraph stating the role, a numbered `When invoked:` list (3–6 steps), and an output-format expectation.
+
+    In plugin scope: always prepends `base` as the first entry in `skills:`. In project or user scope, `base` is not added because the skill lives in the `core` plugin and does not resolve outside it.
+  </Step>
+  <Step title="Run the validation gate">
+    Checks: file exists at expected path, frontmatter has `name` and `description`, `name` matches `^[a-z][a-z-]*$`, name is unique within scope, `description` states both what and when, `tools:` is a minimal allowlist, `bypassPermissions` (if set) was explicitly confirmed, plugin sub-agents do not have `hooks`/`mcpServers`/`permissionMode` (silently dropped), no files touched outside the agent's scope.
+  </Step>
+</Steps>
+
+## Hard constraints
+
+- Never touches files outside the target agent file.
+- Never spawns other sub-agents — it does not have the `Agent` tool.
+- Plugin sub-agents that declare `hooks`, `mcpServers`, or `permissionMode` are warned and advised to copy the file to `.claude/agents/` or `~/.claude/agents/` instead.
+- `bypassPermissions` is never set unless the user explicitly confirmed it.
+- A sub-agent cannot spawn other sub-agents — if a coordinator pattern is needed, the architect offers to scaffold a `coordinator`-style agent using `Agent(<name>, <name>)` in `tools:`.
+
+## Final output
+
+The sub-agent returns: what was done and the agent name, list of files written with absolute paths, explicit pass/fail per validation check, a compact decisions recap table, a test plan (forced via `@agent-<name>` and natural-language auto-delegation trigger), and a reminder that new sub-agent files require a Claude Code restart.
+
+<Card title="Back to core overview" href="/plugins/core/overview" />

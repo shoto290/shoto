@@ -1,0 +1,91 @@
+---
+title: "The `plugin` skill"
+description: "Scaffold, validate, and distribute a complete Claude Code plugin — manifest, layout, local testing, and marketplace submission."
+---
+
+`/core:plugin` covers plugin-level concerns: the `.claude-plugin/plugin.json` manifest, directory layout, local testing with `--plugin-dir`, LSP servers, background monitors, default settings, and marketplace distribution. It does **not** author individual skills, sub-agents, or hooks — route those to the matching `core:` skills.
+
+## When to use
+
+Invoke `/core:plugin [action]` when you want to:
+
+- Scaffold a new Claude Code plugin from scratch.
+- Edit or validate a plugin manifest (`plugin.json`).
+- Test a plugin locally with `--plugin-dir` or `--plugin-url`.
+- Ship a plugin: versioning, `marketplace.json`, and community submission.
+- Migrate an existing `.claude/` standalone setup into a distributable plugin.
+- Debug structure, discovery, component registration, or reload issues.
+
+## Plugin structure
+
+```text
+my-plugin/
+├── .claude-plugin/
+│   └── plugin.json         # manifest — the only file inside .claude-plugin/
+├── skills/<name>/SKILL.md  # skills
+├── agents/<name>.md        # sub-agents
+├── hooks/hooks.json        # hook handlers
+├── .mcp.json               # MCP server configs
+├── .lsp.json               # LSP server configs
+├── monitors/monitors.json  # background monitors (experimental)
+├── bin/                    # executables added to PATH
+└── settings.json           # default settings when plugin is enabled
+```
+
+<Warning>
+Do NOT put `skills/`, `agents/`, `hooks/`, or any other component directory inside `.claude-plugin/`. Only `plugin.json` goes there. All component directories live at the plugin root.
+</Warning>
+
+## Key behavior
+
+- **Namespace isolation** — every skill and sub-agent in a plugin is namespaced as `/<plugin-name>:<component-name>`, preventing clashes with other plugins.
+- **Manifest validation** — `claude plugin validate` checks manifest, frontmatter, and hooks. Pass `--strict` to escalate warnings to errors.
+- **Hot reload** — `/reload-plugins` during a session reloads skills, agents, hooks, and MCP/LSP servers without a restart. Monitors require a full restart.
+- **Local testing** — `claude --plugin-dir ./my-plugin` loads the plugin for a single session. A local copy overrides a marketplace plugin of the same name for that session.
+- **Caching** — marketplace plugins are copied into `~/.claude/plugins/cache`. Installed plugins cannot reference files outside their directory — `../shared-utils` does not work.
+- **User config** — declare values the user provides at enable time via `userConfig`; values are substituted as `${user_config.KEY}` in MCP/LSP configs and hook commands.
+
+## Minimal manifest
+
+```json
+{
+  "name": "my-plugin",
+  "description": "What this plugin does",
+  "version": "1.0.0",
+  "author": { "name": "Your Name" }
+}
+```
+
+Only `name` is required. Add `dependencies`, `keywords`, `userConfig`, or `experimental.*` fields as needed.
+
+## Environment variables
+
+| Variable | Description |
+|---|---|
+| `${CLAUDE_PLUGIN_ROOT}` | Plugin install directory. Changes on every update — treat as ephemeral. |
+| `${CLAUDE_PLUGIN_DATA}` | Persistent directory that survives updates. Use for caches and installed deps. |
+| `${CLAUDE_PROJECT_DIR}` | Project root, same as the `CLAUDE_PROJECT_DIR` env var hooks receive. |
+
+## CLI reference
+
+```bash
+claude plugin install <plugin>          # install from a marketplace
+claude plugin list                       # list installed plugins
+claude plugin validate                   # validate manifest + components
+claude plugin details <name>             # component inventory + token cost
+claude plugin enable <plugin>            # toggle on without reinstalling
+claude plugin update <plugin>            # update to latest version
+claude --plugin-dir ./my-plugin          # local session test (directory or .zip)
+claude --plugin-url https://example.com/plugin.zip   # remote zip, session-only
+```
+
+## Standalone vs plugin
+
+| | Standalone `.claude/` | Plugin |
+|---|---|---|
+| Skill names | `/hello` | `/my-plugin:hello` |
+| Sharing | Manual copy | `claude plugin install` |
+| Versioning | None | `version` in manifest |
+| Best for | Personal workflows, quick experiments | Team sharing, marketplace distribution |
+
+<Card title="Back to core overview" href="/plugins/core/overview" />

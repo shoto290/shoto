@@ -1,0 +1,95 @@
+---
+title: "The `git:review-comments` skill"
+description: "Triage PR review comments into a structured verdict list. Read-only — no files are modified."
+---
+
+`git:review-comments` takes PR comments you paste inline and returns one verdict block per comment — `FIX`, `FIX-STYLE`, `INTENTIONAL`, `OUT-OF-SCOPE`, or `DISCUSS` — along with a confidence level. The output is designed to be pasted directly into `git:review-fix`.
+
+## Trigger phrases
+
+- `/git:review-comments`
+- `review these PR comments`
+- `process review feedback`
+- `handle PR issues`
+
+## Arguments
+
+Paste PR comments inline. If you pass only a `@PR-url`, the skill will ask you to paste the comments — it cannot fetch them from GitHub (`Bash` and `gh` are not available to this skill).
+
+## How it works
+
+<Steps>
+  <Step title="Read repo context">
+    Reads `CLAUDE.md` and `AGENTS.md` at the repo root, plus any plan file under `.plan/*.md`. These sources distinguish intentional patterns from genuine issues.
+  </Step>
+  <Step title="Parse comments">
+    Extracts one tuple per comment: index `N` (1-based), file path, line number (or `null` for file-level comments), and verbatim text.
+  </Step>
+  <Step title="Choose fan-out strategy">
+    For 3 or fewer comments, handles each inline on the main thread — reads the cited file with ±20 lines of context and emits the verdict directly.
+
+    For 4 or more comments, spawns one `reviewer` sub-agent per comment in parallel (a single message containing N `Agent` tool calls). Waits for every sub-agent to return before rendering results.
+  </Step>
+  <Step title="Render the decision list">
+    Emits one verdict block per comment in input order, then a summary table and handoff instruction for `git:review-fix`.
+  </Step>
+</Steps>
+
+## Verdict block format
+
+Each comment produces exactly this block:
+
+```text
+---
+[#N] [File:line]
+Comment: "[verbatim text]"
+
+Verdict: [FIX | FIX-STYLE | INTENTIONAL | OUT-OF-SCOPE | DISCUSS]
+Reason: [one sentence]
+Action: [what /git:review-fix or the human should do next]
+Confidence: [high | medium | low]
+---
+```
+
+<AccordionGroup>
+  <Accordion title="Verdict glossary">
+    | Verdict | Meaning |
+    | :-- | :-- |
+    | `FIX` | Real bug, regression, or correctness issue. `git:review-fix` will patch it. |
+    | `FIX-STYLE` | Cosmetic or readability nit with no behavior change. Safe for `git:review-fix`. |
+    | `INTENTIONAL` | The flagged pattern is correct by design — matches `CLAUDE.md`, `AGENTS.md`, or a clear codebase convention. |
+    | `OUT-OF-SCOPE` | Valid concern but unrelated to this PR. Log as a follow-up; no code change here. |
+    | `DISCUSS` | Ambiguous, needs human judgment, or the cited file/line could not be read. |
+  </Accordion>
+  <Accordion title="Decision summary format">
+    After all verdict blocks, the skill prints:
+
+    ```
+    ## Decision summary
+    Fix:           [N]
+    Fix (style):   [N]
+    Intentional:   [N]
+    Out of scope:  [N]
+    Discuss:       [N]
+
+    Paste this output into /git:review-fix to apply the FIX and FIX-STYLE items.
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Hard rules
+
+- **Read-only.** `Edit`, `Write`, and `Bash` are excluded from `allowed-tools`. No files are ever modified.
+- **Never auto-apply a fix.** Output is a decision list only. `git:review-fix` is the write counterpart.
+- **One comment per reviewer invocation.** Multiple comments are never batched into a single sub-agent call.
+- **Parallel fan-out for 4+ comments.** All sub-agent calls go out in one message; results are collected before rendering.
+- **Failure handling.** A missing or malformed verdict is retried once. If it still fails, a `DISCUSS` block is emitted with reason "verdict subagent failed; please re-run."
+- **No PR fetching.** Paste comments inline — the skill cannot call `gh`.
+
+<Note>
+  The verdict criteria and edge-case handling live in the `reviewer` sub-agent (`plugins/git/agents/reviewer.md`), not in this skill. The skill does not duplicate that logic.
+</Note>
+
+<Card title="Back to git overview" href="/plugins/git/overview">
+  See the full three-skill pipeline and install instructions.
+</Card>

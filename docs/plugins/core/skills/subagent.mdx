@@ -1,0 +1,66 @@
+---
+title: "The `subagent` skill"
+description: "Design or update a Claude Code sub-agent — tools, model, permissions, preloaded skills, and lifecycle hooks."
+---
+
+`/core:subagent` creates and updates Claude Code sub-agents. A sub-agent is a Markdown file with YAML frontmatter that defines a specialized AI assistant with its own isolated context window, custom system prompt, restricted tools, and independent permissions.
+
+## When to use
+
+Invoke `/core:subagent [agent-name]` when you want to:
+
+- Learn how sub-agents work, decide if a task needs one, or pick the right frontmatter fields.
+- Write a new sub-agent file in `.claude/agents/` or `~/.claude/agents/`.
+- Restrict tools and permissions around a recurring task (review, debug, database reads).
+- Preload skills, enable persistent memory, or scope MCP servers to a sub-agent.
+- Add lifecycle hooks, convert to a coordinator pattern, or move scope.
+- Diagnose why a sub-agent doesn't get delegated to.
+
+<Tip>
+When invoked via the `subagent-architect` sub-agent, every key decision is surfaced interactively before any file is written.
+</Tip>
+
+## Sub-agent structure
+
+A sub-agent is a **single Markdown file** — no directory, no supporting files.
+
+```text
+.claude/agents/
+└── my-agent.md     # frontmatter + system prompt (markdown body)
+```
+
+Only `name` and `description` are required in frontmatter. The markdown body is the agent's full system prompt — the sub-agent does not see the Claude Code system prompt, only this body plus environment details.
+
+## Key behavior
+
+- **Detect intent** — if `$ARGUMENTS` matches an existing agent `name:`, proposes update flow; otherwise create.
+- **Identity is `name:` not filename** — search by the `name:` frontmatter field, not the filename.
+- **Validate the name** — lowercase letters and hyphens only (no digits, no underscores).
+- **Pick scope** — project (`.claude/agents/`, default), user (`~/.claude/agents/`), or plugin (`<plugin>/agents/`).
+- **Tools are blast radius** — prefer a small `tools:` allowlist over inheriting everything. The default is to inherit the parent's full tool set including MCP tools.
+- **Description is the trigger** — state what the agent does AND when to delegate to it. Add "use proactively" only for agents that should fire automatically.
+- **Loaded at session start** — edits on disk only take effect after a restart (or via the `/agents` UI).
+
+## Hard rules
+
+- Plugin sub-agents **silently drop** `hooks`, `mcpServers`, and `permissionMode`. Copy the file out to `.claude/agents/` or `~/.claude/agents/` if you need those fields.
+- `bypassPermissions` is dangerous — it skips prompts including writes to `.git`, `.claude`, `.vscode`. Confirm explicitly before setting.
+- Sub-agents cannot spawn sub-agents. Only a main-thread agent can spawn workers via `Agent(<name>)`.
+- Two files with the same `name:` in one scope — one silently wins. Names must be unique per scope.
+- Parent `bypassPermissions` / `acceptEdits` / `auto` modes **override** the sub-agent's own `permissionMode`.
+
+## Frontmatter quick reference
+
+| Field | Purpose |
+|---|---|
+| `name` | Agent identity. Required. Lowercase letters and hyphens. |
+| `description` | Delegation trigger — what it does and when to use it. Required. |
+| `tools` | Allowlist of tools available to this agent. |
+| `model` | `inherit` (default), `haiku`, `sonnet`, `opus`, or a full model ID. |
+| `permissionMode` | `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan`. |
+| `skills` | Preloaded skill content injected at startup. |
+| `memory` | `user`, `project`, or `local` for persistent memory. |
+| `isolation` | `worktree` for an isolated git worktree. |
+| `background` | `true` to always run in the background. |
+
+<Card title="Back to core overview" href="/plugins/core/overview" />

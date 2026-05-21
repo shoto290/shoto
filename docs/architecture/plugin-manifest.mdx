@@ -1,0 +1,121 @@
+---
+title: "Plugin Manifest"
+description: "The .claude-plugin/plugin.json schema: required fields, component paths, dependencies, and how marketplace.json references plugins."
+---
+
+Every plugin declares its identity and components in a manifest at `<plugin-root>/.claude-plugin/plugin.json`. Only `name` is required — everything else is optional.
+
+## Minimal Example
+
+```json
+{
+  "name": "my-first-plugin",
+  "description": "A greeting plugin to learn the basics",
+  "version": "1.0.0",
+  "author": { "name": "Your Name" }
+}
+```
+
+## Full Schema Example
+
+```json
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "security-toolkit",
+  "displayName": "Security Toolkit",
+  "version": "2.3.0",
+  "description": "Security review skills, agents, and hooks",
+  "author": {
+    "name": "Acme Security",
+    "email": "security@acme.example",
+    "url": "https://acme.example"
+  },
+  "homepage": "https://acme.example/security-toolkit",
+  "repository": "https://github.com/acme/security-toolkit",
+  "license": "Apache-2.0",
+  "keywords": ["security", "review", "sast"],
+  "skills": ["./skills/"],
+  "agents": ["./agents/"],
+  "hooks": "./hooks/hooks.json",
+  "dependencies": ["helper-lib"]
+}
+```
+
+## Required Fields
+
+| Field | Rule |
+| :---- | :--- |
+| `name` | Kebab-case identifier, no spaces. Determines the slash-command namespace: `/<name>:<skill>`. Renaming changes every command. |
+
+## Metadata Fields
+
+| Field | Type | Purpose |
+| :---- | :--- | :------ |
+| `$schema` | string | Editor autocomplete URL. Ignored at load time. |
+| `displayName` | string | Human-readable name. May contain spaces. Falls back to `name`. Not used for lookup. |
+| `version` | string (semver) | Pins the plugin to a version string. Omit for trunk-style delivery (uses git commit SHA). |
+| `description` | string | Shown in the plugin manager when browsing or installing. |
+| `author` | object | `{ name, email?, url? }` attribution. |
+| `homepage` | string (URL) | Project homepage. |
+| `repository` | string (URL) | Source repository. |
+| `license` | string (SPDX) | e.g. `MIT`, `Apache-2.0`. |
+| `keywords` | array of strings | Discovery tags surfaced in marketplaces. |
+
+## Component Path Fields
+
+| Field | Behavior | Example |
+| :---- | :------- | :------ |
+| `skills` | **Adds** to the default `skills/` directory | `["./skills/", "./extras/"]` |
+| `commands` | **Replaces** default `commands/` when set | `"./commands/"` |
+| `agents` | **Replaces** default `agents/` when set | `"./agents/"` |
+| `hooks` | Path to `hooks.json` or inline hooks object | `"./hooks/hooks.json"` |
+| `mcpServers` | Path to `.mcp.json` or inline MCP config | `"./.mcp.json"` |
+| `outputStyles` | **Replaces** default `output-styles/` | `["./output-styles/"]` |
+| `lspServers` | Path to `.lsp.json` or inline LSP config | `"./.lsp.json"` |
+| `dependencies` | Other plugins this one requires | `["utils"]` |
+
+All paths must be relative to the plugin root and start with `./`.
+
+## Dependencies
+
+List other plugin names this plugin requires. Claude Code resolves them at install time.
+
+```json
+{
+  "name": "core",
+  "dependencies": ["utils"]
+}
+```
+
+In the shoto marketplace, `core` declares `utils` as a dependency. Installing `core` without `utils` present will prompt you to resolve it.
+
+## Marketplace Listing (`marketplace.json`)
+
+The top-level `.claude-plugin/marketplace.json` lists every plugin in the marketplace. Each entry points at the plugin's source directory:
+
+```json
+{
+  "name": "shoto",
+  "owner": { "name": "shoto290" },
+  "plugins": [
+    { "name": "core",  "source": "./plugins/core" },
+    { "name": "utils", "source": "./plugins/utils" },
+    { "name": "git",   "source": "./plugins/git" },
+    { "name": "docs",  "source": "./plugins/docs" }
+  ]
+}
+```
+
+When you run `/plugin marketplace add shoto290/shoto`, Claude Code reads this file to discover what plugins are available. The `source` paths are resolved relative to the marketplace root.
+
+<Warning>
+Confirm before modifying `marketplace.json` or any `plugin.json`. These files affect discovery for all users of the marketplace.
+</Warning>
+
+## Validation
+
+Run `claude plugin validate ./my-plugin` to check a manifest. Unrecognized fields produce warnings, not errors. Wrong types (e.g., `keywords` as a string instead of an array) produce load errors. Pass `--strict` to escalate warnings to errors.
+
+<Note>
+The full manifest schema reference — including `userConfig`, `channels`, experimental fields, and path behavior rules — is at `plugins/core/skills/plugin/reference/manifest-schema.md`.
+</Note>
