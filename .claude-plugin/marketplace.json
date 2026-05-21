@@ -19,6 +19,10 @@
     {
       "name": "docs",
       "source": "./plugins/docs"
+    },
+    {
+      "name": "frontend",
+      "source": "./plugins/frontend"
     }
   ]
 }
