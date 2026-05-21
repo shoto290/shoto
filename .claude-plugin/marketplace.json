@@ -11,6 +11,10 @@
     {
       "name": "utils",
       "source": "./plugins/utils"
+    },
+    {
+      "name": "git",
+      "source": "./plugins/git"
     }
   ]
 }
