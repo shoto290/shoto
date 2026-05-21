@@ -23,7 +23,8 @@
 		"core@shoto": true,
 		"utils@shoto": true,
 		"git@shoto": true,
-		"docs@shoto": true
+		"docs@shoto": true,
+		"frontend@shoto": true
 	},
 	"extraKnownMarketplaces": {
 		"shoto": {
