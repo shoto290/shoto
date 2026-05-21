@@ -18,7 +18,7 @@ Invoke `/core:plugin [action]` when you want to:
 
 ## Plugin structure
 
-```
+```text
 my-plugin/
 ├── .claude-plugin/
 │   └── plugin.json         # manifest — the only file inside .claude-plugin/
@@ -75,7 +75,8 @@ claude plugin validate                   # validate manifest + components
 claude plugin details <name>             # component inventory + token cost
 claude plugin enable <plugin>            # toggle on without reinstalling
 claude plugin update <plugin>            # update to latest version
-claude --plugin-dir ./my-plugin          # local session test
+claude --plugin-dir ./my-plugin          # local session test (directory or .zip)
+claude --plugin-url https://example.com/plugin.zip   # remote zip, session-only
 ```
 
 ## Standalone vs plugin

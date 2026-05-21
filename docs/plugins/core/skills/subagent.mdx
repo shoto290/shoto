@@ -24,7 +24,7 @@ When invoked via the `subagent-architect` sub-agent, every key decision is surfa
 
 A sub-agent is a **single Markdown file** — no directory, no supporting files.
 
-```
+```text
 .claude/agents/
 └── my-agent.md     # frontmatter + system prompt (markdown body)
 ```
@@ -57,7 +57,7 @@ Only `name` and `description` are required in frontmatter. The markdown body is 
 | `description` | Delegation trigger — what it does and when to use it. Required. |
 | `tools` | Allowlist of tools available to this agent. |
 | `model` | `inherit` (default), `haiku`, `sonnet`, `opus`, or a full model ID. |
-| `permissionMode` | `default`, `acceptEdits`, `auto`, `bypassPermissions`, `plan`. |
+| `permissionMode` | `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan`. |
 | `skills` | Preloaded skill content injected at startup. |
 | `memory` | `user`, `project`, or `local` for persistent memory. |
 | `isolation` | `worktree` for an isolated git worktree. |

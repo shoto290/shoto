@@ -34,7 +34,7 @@ Only `name` and `description` are required. Everything after the closing `---` i
 | `tools` | No | Comma-separated allowlist. Omit to inherit all tools from the parent. |
 | `disallowedTools` | No | Denylist applied after `tools` resolution. |
 | `model` | No | `sonnet`, `opus`, `haiku`, a full model id, or `inherit`. Default: `inherit`. |
-| `permissionMode` | No | `default`, `acceptEdits`, `auto`, `bypassPermissions`, or `plan`. Ignored for plugin sub-agents. |
+| `permissionMode` | No | `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, or `plan`. Ignored for plugin sub-agents. |
 | `maxTurns` | No | Hard cap on agentic turns before the sub-agent stops. |
 | `skills` | No | Skill names to preload at startup. Full skill content is injected — not just the description. |
 | `mcpServers` | No | MCP servers scoped to this sub-agent. Ignored for plugin sub-agents. |

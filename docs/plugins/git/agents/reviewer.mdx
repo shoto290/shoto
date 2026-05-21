@@ -1,5 +1,5 @@
 ---
-title: "reviewer sub-agent"
+title: "`reviewer` sub-agent"
 description: "Evaluates exactly one PR review comment per invocation and returns a structured verdict block."
 ---
 
@@ -15,7 +15,7 @@ It is READ-ONLY. It never modifies any file.
 
 `git:review-comments` spawns one instance per comment using the following prompt template:
 
-```
+```text
 Comment #N
 File: <path>
 Line: <N>
@@ -58,7 +58,7 @@ Model is inherited from the calling context.
 
 The sub-agent returns only the verdict block — no preamble, no closing remarks:
 
-```
+```text
 ---
 [#N] [File:line]
 Comment: "[verbatim text]"
