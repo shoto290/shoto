@@ -4,3 +4,6 @@ AGENTS.local.md
 
 # Local Settings
 .claude/settings.local.json
+
+# Bench run reports
+runs/

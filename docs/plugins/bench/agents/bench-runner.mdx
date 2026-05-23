@@ -1,0 +1,50 @@
+---
+title: "`bench-runner` sub-agent"
+description: "Executes a single benchmark prompt in fresh context and returns raw output. Spawned by bench:run — do not invoke directly."
+---
+
+The `bench-runner` sub-agent is an internal executor. It receives one benchmark test prompt, runs it exactly as a real user would in a fresh session, and returns only the raw output. It exists to give each test a clean, isolated context with no cross-contamination from other tests.
+
+## Purpose
+
+Benchmark results are only meaningful when each test mirrors real runtime conditions. A shared context would let previous test state bleed into later ones, skewing output. `bench-runner` solves this by being stateless by design — one prompt in, one raw output out.
+
+## Invocation
+
+`bench-runner` is **not user-invocable**. The [`bench:run` skill](/plugins/bench/skills/run) spawns one instance per selected test using the Agent tool, all in a single message so tests execute in parallel.
+
+```text
+# Prompt shape sent by bench:run
+<verbatim test prompt>
+```
+
+The sub-agent treats whatever it receives as a verbatim user prompt typed into a fresh session.
+
+<Warning>
+  Never invoke `bench-runner` directly. Call `/bench:run` instead — it handles test selection, parallelization, and result aggregation.
+</Warning>
+
+## Behavior contract
+
+| Rule | Detail |
+| :-- | :-- |
+| Execute verbatim | The received message is treated as a real user prompt — no interpretation, no modification. |
+| Skill passthrough | If the prompt invokes a skill (e.g. `/git:commit`), the skill runs normally and its output is returned as-is. |
+| Destructive actions | Force push, hard reset, file deletion, and secret access are described, not performed. The description is kept as brief as a real response would be. |
+| No clarifying questions | There is no orchestrator to answer. The sub-agent never asks one. |
+| Raw output only | No preamble, no postamble, no meta-commentary about what was tested, what was loaded, or how the agent behaved. |
+
+## Tools
+
+`bench-runner` has access to all tools (`*`). Broad tool access is intentional — tests must reflect real runtime conditions, and restricting tools would produce results that don't match production behavior.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="bench:run" href="/plugins/bench/skills/run">
+    The skill that spawns this sub-agent for parallel test execution.
+  </Card>
+  <Card title="Back to bench overview" href="/plugins/bench/overview">
+    See the full bench plugin and install instructions.
+  </Card>
+</CardGroup>

@@ -1,0 +1,137 @@
+---
+title: "The `bench:run` skill"
+description: "Discover colocated test files, run them in parallel sub-agents, and write a timestamped markdown report with timing and raw output."
+---
+
+`bench:run` is an interactive orchestrator. It finds every `tests/*.md` file colocated with skills and sub-agents in your `plugins/` tree, lets you pick which artifact and which tests to run, dispatches them all in parallel via `bench-runner`, and saves a markdown report under `runs/`.
+
+## Trigger phrases
+
+- `/bench:run`
+- `run benchmarks`
+- `benchmark a skill`
+- `benchmark a sub-agent`
+- `test a skill with prompts`
+- `compare skill outputs`
+
+## How it works
+
+<Steps>
+  <Step title="Discover tests">
+    Globs `plugins/**/tests/*.md` from the repo root and groups matches by artifact. A file at `plugins/<plugin>/skills/<name>/tests/<test>.md` maps to artifact `<plugin>:<name>` (kind: skill); a file under `agents/<name>/tests/` maps to kind: subagent. If no tests are found, the skill stops and points you at the test-format reference.
+  </Step>
+  <Step title="Select an artifact">
+    Prompts you with `AskUserQuestion`. Each option is an artifact label (`<plugin>:<name>`) with the kind and test count as its description. If more than four artifacts exist, they are paged in batches of four with an `Other (specify)` option.
+  </Step>
+  <Step title="Select tests">
+    Prompts you again with `multiSelect: true`. The first option is `All tests`; the remaining options are individual test files, labelled by their `name:` frontmatter field and described by their `description:` field.
+  </Step>
+  <Step title="Run in parallel">
+    In a single assistant message, emits one `Agent` call per selected test — all in the same message so the runtime executes them concurrently. Each call targets the `bench-runner` sub-agent. Wall-clock time is recorded per test.
+  </Step>
+  <Step title="Write the report">
+    Computes `safe_artifact = artifact.replace(':', '-')` and a filesystem-safe timestamp (`YYYY-MM-DDTHH-MM-SS`). Creates `runs/<safe-artifact>/` if needed and writes the report there.
+  </Step>
+  <Step title="Print the summary">
+    Prints the summary table inline in the conversation, followed by the absolute path to the report file.
+  </Step>
+</Steps>
+
+<Note>
+  All selected tests run in a single parallel batch. `bench:run` never serializes test execution.
+</Note>
+
+## Test format
+
+Tests are plain markdown files colocated with the artifact they exercise.
+
+| Artifact type | Canonical path |
+|---------------|----------------|
+| Skill | `plugins/<plugin>/skills/<name>/tests/<test-name>.md` |
+| Sub-agent | `plugins/<plugin>/agents/<name>/tests/<test-name>.md` |
+
+Every test file must have this frontmatter:
+
+```yaml
+---
+name: <test-name>
+description: <one-line summary of what this test exercises>
+---
+```
+
+The body after the closing `---` is the prompt sent verbatim to `bench-runner`. You may append notes or context — everything is forwarded as-is and the runner does not interpret it.
+
+An optional `prompt:` frontmatter field lets you embed a short inline prompt. When present, it is used as the prompt and the body is appended as extra context. When absent, the entire body is the prompt.
+
+### Example test file
+
+```markdown
+---
+name: minimal-task-skill
+description: Scaffold the smallest valid task skill from a one-line description.
+---
+
+Create a new task skill named `ping-host` in the project scope that takes a single hostname argument and runs `ping -c 1 <host>`. Do not ask follow-up questions. Return the absolute path of the SKILL.md you wrote.
+```
+
+### Authoring checklist
+
+- File lives at the canonical path so discovery picks it up.
+- `name:` matches the filename (without `.md`) by convention.
+- `description:` reads well as a one-liner in the selection menu.
+- The prompt is self-contained — `bench-runner` starts with no prior context.
+
+## Where reports land
+
+Reports are written to:
+
+```
+runs/<safe-artifact>/<YYYY-MM-DDTHH-MM-SS>.md
+```
+
+The `runs/` directory is gitignored. Each report contains a summary table followed by a per-test section with the prompt, duration, and raw output.
+
+| Report field | Detail |
+|---|---|
+| Duration per test | `<ms>ms` under 1 000 ms, otherwise `<s.sss>s` |
+| Total duration | Wall-clock max across parallel runs (longest test, not sum) |
+| Status | `ok` if the sub-agent returned, `error` if it failed |
+| Output | Raw sub-agent output — never truncated |
+
+## Authoring your first test
+
+<Steps>
+  <Step title="Pick an artifact to exercise">
+    Choose a skill or sub-agent. Note its plugin and name — for example, `plugins/git/skills/commit`.
+  </Step>
+  <Step title="Create the tests directory">
+    Add a `tests/` folder next to the artifact's definition file:
+
+    ```
+    plugins/git/skills/commit/tests/
+    ```
+  </Step>
+  <Step title="Write a test file">
+    Create `tests/<test-name>.md` with at minimum `name:` and `description:` in frontmatter, then write the prompt in the body:
+
+    ```markdown
+    ---
+    name: stage-and-commit
+    description: Verify the skill stages changes and produces a Conventional Commit title.
+    ---
+
+    Stage all changes in the current working tree and create a commit. The title must follow the Conventional Commits spec. Do not push.
+    ```
+  </Step>
+  <Step title="Run the benchmark">
+    Type `/bench:run`. The skill will discover your new test, let you select it, run it via `bench-runner`, and save the result under `runs/git-commit/`.
+  </Step>
+</Steps>
+
+<Warning>
+  Never modify test files from within `bench:run` — the skill treats them as read-only. Edit them directly in your editor.
+</Warning>
+
+<Card title="Back to bench overview" href="/plugins/bench/overview">
+  See the full bench plugin and install instructions.
+</Card>

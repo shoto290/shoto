@@ -23,6 +23,10 @@
     {
       "name": "frontend",
       "source": "./plugins/frontend"
+    },
+    {
+      "name": "bench",
+      "source": "./plugins/bench"
     }
   ]
 }

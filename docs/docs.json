@@ -140,6 +140,24 @@
                 ]
               }
             ]
+          },
+          {
+            "group": "bench",
+            "pages": [
+              "plugins/bench/overview",
+              {
+                "group": "Skills",
+                "pages": [
+                  "plugins/bench/skills/run"
+                ]
+              },
+              {
+                "group": "Sub-agents",
+                "pages": [
+                  "plugins/bench/agents/bench-runner"
+                ]
+              }
+            ]
           }
         ]
       }
