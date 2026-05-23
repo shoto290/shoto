@@ -1,7 +1,7 @@
 {
   "name": "bench",
   "description": "Run prompt benchmarks against skills and sub-agents with timing and markdown reports.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "shoto290"
   },
