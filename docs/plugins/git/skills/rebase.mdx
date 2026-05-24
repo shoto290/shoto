@@ -1,0 +1,89 @@
+---
+title: "The `git:rebase` skill"
+description: "Rebase the current branch onto the default branch with interactive per-file conflict resolution and an automatic local backup branch."
+---
+
+`git:rebase` rebases your feature branch onto the repo's default branch (or a branch you specify), resolves conflicts one file at a time with your input, and never touches the remote without explicit confirmation. It creates a timestamped backup branch before touching anything, so recovery is always one command away. Pairs naturally with `/git:create` for a rebase-then-squash-merge PR workflow.
+
+## Prerequisites
+
+- Must be run from a git repository.
+- Working tree must be clean (no staged or unstaged changes). The skill stops and tells you to commit or stash — it never auto-stashes.
+- Current branch must not be the base branch itself.
+- Current branch must be at least one commit ahead of the base branch.
+
+## Trigger phrases
+
+- `/git:rebase`
+- `rebase my branch`
+- `rebase onto main`
+- `sync my branch with main`
+- `update my branch via rebase`
+
+## How it works
+
+<Steps>
+  <Step title="Read repo conventions">
+    Reads `CLAUDE.md` and `AGENTS.md` at the repo root in parallel if they exist, absorbing naming, commit conventions, and language rules.
+  </Step>
+  <Step title="Inspect the workspace">
+    Runs `git status --porcelain`, `git branch --show-current`, `git rev-parse HEAD`, and checks for an upstream (`git rev-parse --abbrev-ref @{u}`) in parallel. Saves the original commit count for post-rebase verification.
+  </Step>
+  <Step title="Pre-flight checks">
+    Stops with an explanatory message if the working tree is dirty, if you're already on the base branch, or if the branch has no commits ahead of the base. Resolves the base branch via `gh repo view --json defaultBranchRef`; falls back to `main`. If you passed an argument (e.g. `/git:rebase staging`), that value overrides detection.
+  </Step>
+  <Step title="Golden rule check">
+    If the branch has an upstream (it has already been pushed), the skill warns that rebasing rewrites history and asks for explicit confirmation before continuing. It will never silently rebase a published branch.
+  </Step>
+  <Step title="Create the safety backup">
+    Creates a UTC-timestamped local branch — e.g. `backup/feat-my-feature-20260524T130000Z` — before any rebase command runs. Prints the exact `git reset --hard <backup-name>` recovery command so you always have it.
+  </Step>
+  <Step title="Fetch and show ahead/behind">
+    Runs `git fetch origin <base>`, then shows how many commits your branch is ahead and behind `origin/<base>`.
+  </Step>
+  <Step title="Confirm the replay plan">
+    Shows the list of commits that will be replayed (`git log --oneline origin/<base>..HEAD`) and asks whether to proceed or abort. Aborting at this step deletes the just-created backup branch.
+  </Step>
+  <Step title="Rebase and resolve conflicts">
+    Runs `git rebase origin/<base>`. If conflicts arise, handles them one file at a time: reads the conflict markers, shows you the "ours" hunk and the "theirs" hunk with surrounding context, and asks:
+
+    - **(a) Keep ours** — your branch's version
+    - **(b) Keep theirs** — the version from the base branch
+    - **(c) Describe the merge** — you provide plain-text instructions; the skill applies them via `Edit` and confirms the result before moving on
+    - **(d) Abort and restore** — runs `git rebase --abort` and reminds you the backup branch is intact
+
+    After every file in a conflicted commit is resolved, runs `git rebase --continue` and loops if the next commit also conflicts.
+  </Step>
+  <Step title="Verify the result">
+    Compares the replayed commit count to the original. Warns loudly if commits appear to have been dropped. Shows a cumulative diff summary between the backup branch and the new HEAD.
+  </Step>
+  <Step title="Offer to push">
+    Asks whether to push with `--force-with-lease` or stop. If you choose to stop, prints the new HEAD hash, backup branch name, and the exact push command to run later. Never pushes automatically.
+  </Step>
+  <Step title="Print the result">
+    Always prints the branch name, new HEAD short hash, backup branch name, and a suggested next step (e.g. reviewing the diff vs. backup before deleting it, or chaining `/git:create`).
+  </Step>
+</Steps>
+
+## Hard rules
+
+- Never rebases a pushed branch without explicit user confirmation (the golden rule of rebasing).
+- Never uses `git push --force` — always `--force-with-lease`.
+- Never pushes without going through the `AskUserQuestion` prompt at step 10.
+- Never deletes the backup branch automatically.
+- Never auto-stashes dirty changes — stops and tells you to handle them first.
+- Never uses `--no-verify`, `--strategy=ours`, `--strategy=theirs`, or any other lossy auto-resolution flag.
+- Always creates the backup branch before running `git rebase`.
+- Always resolves conflicts one file at a time — never batches them.
+
+<Warning>
+  If your branch has already been pushed, rebasing rewrites its history. Anyone who pulled those commits will need to re-sync. The skill surfaces this warning and requires confirmation before proceeding. See [Pro Git — Rebasing](https://git-scm.com/book/fr/v2/Les-branches-avec-Git-Rebaser-Rebasing) for the full rationale.
+</Warning>
+
+<Note>
+  The backup branch (`backup/<branch>-<timestamp>`) is local only and is never pushed or auto-deleted. Once you've verified the rebased branch is correct, delete it manually with `git branch -D <backup-name>`.
+</Note>
+
+<Card title="Back to git overview" href="/plugins/git/overview">
+  See the full four-skill pipeline and install instructions.
+</Card>
