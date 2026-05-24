@@ -1,7 +1,7 @@
 {
   "name": "core",
   "description": "Core meta-tooling to create and evolve Claude Code skills, sub-agents and hooks.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "shoto290"
   },
