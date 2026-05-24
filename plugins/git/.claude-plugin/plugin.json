@@ -1,7 +1,7 @@
 {
   "name": "git",
-  "description": "Git and pull-request workflows: commit changes, create PRs, review workspace diffs, triage review comments, apply review fixes.",
-  "version": "0.5.0",
+  "description": "Git and pull-request workflows: commit changes, create PRs, rebase branches onto the default branch with safety backups, review workspace diffs, triage review comments, apply review fixes.",
+  "version": "0.6.0",
   "author": {
     "name": "shoto290"
   },

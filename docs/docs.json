@@ -97,6 +97,7 @@
                 "pages": [
                   "plugins/git/skills/commit",
                   "plugins/git/skills/create",
+                  "plugins/git/skills/rebase",
                   "plugins/git/skills/review-comments",
                   "plugins/git/skills/review-fix"
                 ]
