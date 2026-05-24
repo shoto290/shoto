@@ -1,9 +1,11 @@
 ---
 name: explore-component
-description: Find existing components, utilities, or services that match a desired capability; evaluate reusability and recommend REUSE / EXTEND / NEW. Use when an agent or user types `/explore-component <need>`, asks "does X already exist", "is there a component I can reuse", "can I extend Y instead of building Z", or needs to avoid duplicating logic.
+description: Internal specialist dispatched by the `explore:explore` orchestrator. Finds existing components, utilities, or services that match a desired capability; evaluates reusability and returns a REUSE / EXTEND / NEW recommendation. Not user-invocable directly — call `/explore:explore profile=component <need>` instead.
 argument-hint: <need or capability you want to add>
 context: fork
 agent: component-explorer
+user-invocable: false
+disable-model-invocation: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 

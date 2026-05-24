@@ -3,6 +3,10 @@ title: "The `explore-flow` skill"
 description: "Trace the control and data flow of a feature from entry point through handlers, services, and side effects to success and error exits."
 ---
 
+<Note>
+  Internal specialist — dispatched only by [`/explore:explore`](/plugins/explore/skills/explore). Not invokable as a standalone slash command. Documented here so you can understand how the orchestrator routes requests.
+</Note>
+
 `/explore-flow` follows a feature end-to-end: it locates the entry point, traces each synchronous step up to 5 hops deep, lists every async side effect, and identifies success and error exits. It runs in fork mode via the `flow-explorer` sub-agent and returns only the anchored report.
 
 ## When to use it

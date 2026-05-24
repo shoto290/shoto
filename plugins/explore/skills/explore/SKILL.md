@@ -1,7 +1,8 @@
 ---
 name: explore
-description: Orchestrator for codebase exploration. Routes a request to the right specialist — architecture, component, flow, or convention — or falls back to a general exploration mode (survey / deep-dive / targeted profiles). Use when an agent or user types `/explore <topic>`, says "explore the codebase", "map this feature", "find patterns", "is there a component for X", "trace the flow of Y", "what conventions does this repo follow", or needs a structured map of an area before acting.
+description: Single entry point for codebase exploration. Routes the request internally to the right specialist (architecture patterns, component reuse, control/data flow, code conventions) or falls back to a general map (survey / deep-dive / targeted profiles). Use whenever an agent or user wants to "explore the codebase", "map this feature", "find patterns", "see if a component already exists for X", "check whether Y is reusable", "trace the flow of Z", "understand how this repo handles errors / naming / structure", "audit an area before refactoring", or get a structured location-anchored report on a module. The 4 specialists are internal — never call them directly; always go through this skill.
 argument-hint: [profile=architecture|component|flow|convention|general|survey|deep-dive|targeted] <topic>
+context: fork
 allowed-tools: [Read, Glob, Grep, Bash, Skill]
 ---
 
@@ -27,7 +28,7 @@ $ARGUMENTS
 
 ## Dispatch rules
 
-- For specialist profiles, call the Skill tool with `skill: explore-<specialty>` and `args: <topic>`. The skill runs in fork with its agent — you get back the report only.
+- For specialist profiles, call the Skill tool with `skill: explore:explore-<specialty>` and `args: <topic>`. The skill runs in fork with its agent — you get back the report only.
 - Multiple specialists in parallel: emit them in a SINGLE tool-use block with multiple Skill calls. Wait for all, then concatenate with `## architecture`, `## component`, etc. headers.
 - For general mode, follow the rules in [reference/general-profiles.md](./reference/general-profiles.md). Do NOT dispatch — you handle it inline using `Read`, `Glob`, `Grep`, `Bash`.
 

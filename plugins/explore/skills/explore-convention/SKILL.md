@@ -1,9 +1,11 @@
 ---
 name: explore-convention
-description: Map the naming, folder structure, idioms, and error/logging/test patterns of a codebase area so new code can match existing conventions. Use when an agent or user types `/explore-convention <area>`, asks "how does this codebase do X", "what's the naming pattern here", "how are errors handled in this repo", or needs to write new code that blends in.
+description: Internal specialist dispatched by the `explore:explore` orchestrator. Maps the naming, folder structure, idioms, and error/logging/test patterns of a codebase area so new code can match existing conventions. Not user-invocable directly — call `/explore:explore profile=convention <area>` instead.
 argument-hint: [area=<path>] <topic, e.g. "how errors are handled">
 context: fork
 agent: convention-explorer
+user-invocable: false
+disable-model-invocation: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 

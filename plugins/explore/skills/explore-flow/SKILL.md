@@ -1,9 +1,11 @@
 ---
 name: explore-flow
-description: Trace the control and data flow of a feature from entry point through handlers, services, and side effects, ending at success or error exits. Use when an agent or user types `/explore-flow <feature>`, asks "by where does X pass", "trace the flow of Y", "what happens when route Z is hit", or needs a step-by-step call chain before modifying a feature.
+description: Internal specialist dispatched by the `explore:explore` orchestrator. Traces the control and data flow of a feature from entry point through handlers and side effects to success or error exits. Not user-invocable directly — call `/explore:explore profile=flow <feature>` instead.
 argument-hint: <feature or entry symbol>
 context: fork
 agent: flow-explorer
+user-invocable: false
+disable-model-invocation: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 

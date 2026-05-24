@@ -1,9 +1,11 @@
 ---
 name: explore-architecture
-description: Analyze architectural patterns, layering, and structural conventions of a codebase area. Returns a Patterns / Layers / Conventions / Anti-patterns report. Use when an agent or user types `/explore-architecture <area>`, asks about "patterns in this repo", "how is X layered", "what design patterns are used here", or wants a structural overview before refactoring.
+description: Internal specialist dispatched by the `explore:explore` orchestrator. Analyzes architectural patterns, layering, and structural conventions of a codebase area, returning a Patterns / Layers / Conventions / Anti-patterns report. Not user-invocable directly — call `/explore:explore profile=architecture <area>` instead.
 argument-hint: <area or feature to analyze>
 context: fork
 agent: architecture-explorer
+user-invocable: false
+disable-model-invocation: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 

@@ -149,10 +149,15 @@
                 "group": "Skills",
                 "pages": [
                   "plugins/explore/skills/explore",
-                  "plugins/explore/skills/explore-architecture",
-                  "plugins/explore/skills/explore-component",
-                  "plugins/explore/skills/explore-flow",
-                  "plugins/explore/skills/explore-convention"
+                  {
+                    "group": "Internals (dispatched only)",
+                    "pages": [
+                      "plugins/explore/skills/explore-architecture",
+                      "plugins/explore/skills/explore-component",
+                      "plugins/explore/skills/explore-flow",
+                      "plugins/explore/skills/explore-convention"
+                    ]
+                  }
                 ]
               },
               {

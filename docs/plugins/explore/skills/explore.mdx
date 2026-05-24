@@ -5,6 +5,10 @@ description: "Orchestrator that routes a codebase exploration request to the rig
 
 `/explore` parses your request, picks the best specialist for the job — architecture, component, flow, or convention — and returns that specialist's report unchanged. For broad questions it dispatches multiple specialists in parallel and concatenates the results. When no specialist fits, it falls back to general mode and handles the request inline.
 
+<Note>
+  `/explore:explore` is the only user-facing exploration command. The four specialist skills (`explore-architecture`, `explore-component`, `explore-flow`, `explore-convention`) are dispatched internally — you don't call them directly.
+</Note>
+
 ## Overview
 
 The orchestrator never reads files itself in specialist mode. It delegates to a specialist skill (which runs its paired sub-agent in fork mode), then passes the report back to you verbatim.

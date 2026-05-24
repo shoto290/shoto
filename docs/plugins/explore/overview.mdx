@@ -20,11 +20,9 @@ Each pair is a skill + sub-agent: the skill defines the output contract and budg
 
 When you invoke `/explore <topic>`, the orchestrator detects intent from keywords and dispatches automatically. For broad questions it can run multiple specialists in parallel.
 
-## When to use `/explore` vs the slash commands directly
+## Entry point
 
-Use `/explore <topic>` when you are not sure which specialist fits. The orchestrator parses your phrasing and routes accordingly — or fans out to several specialists at once.
-
-Invoke a specialist slash command directly (`/explore-architecture`, `/explore-component`, `/explore-flow`, `/explore-convention`) when you know exactly what you need and want to skip the routing step.
+`/explore <topic>` is the only command you invoke directly. The orchestrator parses your phrasing and routes to the right specialist — or fans out to several at once for broad questions.
 
 <Note>
   If no specialist keyword is detected, the orchestrator falls back to general exploration mode (`survey`, `deep-dive`, or `targeted`) and handles the request inline without delegating to a sub-agent.
@@ -32,23 +30,18 @@ Invoke a specialist slash command directly (`/explore-architecture`, `/explore-c
 
 ## Skills
 
-<CardGroup cols={2}>
-  <Card title="explore (orchestrator)" href="/plugins/explore/skills/explore">
-    Routes a request to the right specialist, runs multiple specialists in parallel for broad questions, or falls back to general exploration mode.
-  </Card>
-  <Card title="explore-architecture" href="/plugins/explore/skills/explore-architecture">
-    Detects structural patterns, maps layer boundaries and responsibilities, surfaces conventions, and flags anti-patterns.
-  </Card>
-  <Card title="explore-component" href="/plugins/explore/skills/explore-component">
-    Finds existing components that match a desired capability and recommends REUSE, EXTEND, or NEW with anchored evidence.
-  </Card>
-  <Card title="explore-flow" href="/plugins/explore/skills/explore-flow">
-    Traces the call chain and data flow of a feature from entry point through side effects to success or error exits.
-  </Card>
-  <Card title="explore-convention" href="/plugins/explore/skills/explore-convention">
-    Maps naming patterns, folder structure, idioms, and error/logging/test conventions so new code blends in.
-  </Card>
-</CardGroup>
+<Card title="explore (orchestrator)" href="/plugins/explore/skills/explore">
+  Routes a request to the right specialist, runs multiple specialists in parallel for broad questions, or falls back to general exploration mode.
+</Card>
+
+### Internal specialists dispatched by the orchestrator
+
+The four specialist skills below are not invoked directly. The orchestrator selects and dispatches them based on intent detection. Their pages are documented here so you can understand how routing works.
+
+- [`explore-architecture`](/plugins/explore/skills/explore-architecture) — structural patterns, layer boundaries, anti-patterns
+- [`explore-component`](/plugins/explore/skills/explore-component) — reuse fit scoring, REUSE / EXTEND / NEW recommendation
+- [`explore-flow`](/plugins/explore/skills/explore-flow) — call chain and data flow from entry point to exits
+- [`explore-convention`](/plugins/explore/skills/explore-convention) — naming patterns, folder structure, idioms, style samples
 
 ## Sub-agents
 

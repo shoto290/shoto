@@ -3,6 +3,10 @@ title: "The `explore-component` skill"
 description: "Find existing components, utilities, or services that match a desired capability, score reuse fit, and get a REUSE / EXTEND / NEW recommendation."
 ---
 
+<Note>
+  Internal specialist — dispatched only by [`/explore:explore`](/plugins/explore/skills/explore). Not invokable as a standalone slash command. Documented here so you can understand how the orchestrator routes requests.
+</Note>
+
 `/explore-component` answers the question "does something for this already exist?" It runs in fork mode via the `component-explorer` sub-agent, scores every candidate by fit, identifies gaps, and returns one clear recommendation — `REUSE`, `EXTEND`, or `NEW` — backed by anchored evidence.
 
 ## When to use it

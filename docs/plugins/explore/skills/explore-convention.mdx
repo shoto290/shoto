@@ -3,6 +3,10 @@ title: "The `explore-convention` skill"
 description: "Map the naming patterns, folder structure, idioms, and error/logging/test conventions of a codebase area so new code blends in."
 ---
 
+<Note>
+  Internal specialist — dispatched only by [`/explore:explore`](/plugins/explore/skills/explore). Not invokable as a standalone slash command. Documented here so you can understand how the orchestrator routes requests.
+</Note>
+
 `/explore-convention` surfaces the implicit rules of a codebase area — what naming patterns, folder organization, idioms, and style conventions are in use — so you can write new code that fits. It runs in fork mode via the `convention-explorer` sub-agent and returns only the anchored report.
 
 ## When to use it
