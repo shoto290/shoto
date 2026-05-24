@@ -1,0 +1,73 @@
+---
+title: "The `explore-architecture` skill"
+description: "Analyze structural patterns, layer boundaries, conventions, and anti-patterns in a codebase area."
+---
+
+<Note>
+  Internal specialist — dispatched only by [`/explore:explore`](/plugins/explore/skills/explore). Not invokable as a standalone slash command. Documented here so you can understand how the orchestrator routes requests.
+</Note>
+
+`/explore-architecture` produces a focused structural map of a codebase area — what design patterns are in use, how the code is layered, what conventions hold, and where anti-patterns appear. It runs in fork mode via the `architecture-explorer` sub-agent and returns only the anchored report.
+
+## When to use it
+
+Trigger phrases that load this skill:
+
+- `/explore-architecture <area>`
+- "what design patterns are used in X"
+- "how is Y layered"
+- "is there an MVC structure here"
+- "structural overview before refactoring"
+- "what architectural conventions does this module follow"
+
+It is also dispatched automatically by `/explore` when your topic contains keywords such as `pattern`, `architecture`, `layering`, `hexagonal`, `MVC`, `repository`, `factory`, or `observer`.
+
+## Usage
+
+```text
+/explore-architecture <area or feature to analyze>
+```
+
+## What the skill looks for
+
+- **Recurring structural patterns** — layered, hexagonal, clean architecture, MVC, MVVM, repository, factory, observer, strategy, mediator, event-bus, CQRS, port-adapter. Only reported when 3 or more occurrences are confirmed.
+- **Layer boundaries** — each layer named with its responsibility in 10 words or fewer, anchored to an entry-point file.
+- **Conventions** — structural rules that hold across the area (e.g., "one aggregate root per folder", "controllers thin, services thick"). Each needs an example anchor.
+- **Anti-patterns** — god-object, circular dependencies between layers, business logic in controllers, hidden global state. Only reported when 2 or more concrete occurrences are found.
+
+## Report format
+
+```markdown
+## Patterns
+- <pattern name> — applied at <path>:<line> — <10-word rationale>
+
+## Layers
+- <layer> — <10-word responsibility> — entry at <path>:<line>
+
+## Conventions
+- <convention> — exemplified at <path>:<line>
+
+## Anti-patterns / smells
+- <issue> (<path>:<line>)
+```
+
+All four sections are always emitted. An empty section is written as `- (none)`.
+
+## Budget and rules
+
+| Constraint | Limit |
+| :-- | :-- |
+| Files opened | 20 max |
+| Report length | 60 lines max |
+| Anchors | Required on every fact |
+| Unknown facts | Prefixed with `?` |
+
+The skill does not quote source code and does not narrate. Every claim must be anchored.
+
+## Sub-agent
+
+This skill delegates to the [`architecture-explorer`](/plugins/explore/agents/architecture-explorer) sub-agent, which runs in a forked context. The report returned to you is the sub-agent's output verbatim.
+
+<Card title="Back to explore overview" href="/plugins/explore/overview">
+  Return to the explore plugin page.
+</Card>

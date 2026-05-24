@@ -1,7 +1,7 @@
 ## Plan: code-review workflow after every commit
 
 ### Reuse (no action needed)
-- **Skill: `utils:explore`** — already handles "what changed in this commit" via Glob + Grep
+- **Skill: `explore:explore`** — already handles "what changed in this commit" via Glob + Grep
 
 ### Update
 - **Subagent: `code-reviewer`** (existing) — extend description to mention "post-commit usage" so it auto-triggers from the hook
@@ -17,4 +17,4 @@
 ### Test plan
 - Manual: `/review-commit` → expect a structured review of HEAD
 - End-to-end: make a small commit → expect the hook to fire `/review-commit` automatically
-- Reuse check: `/utils:explore` still works unchanged
+- Reuse check: `/explore:explore` still works unchanged

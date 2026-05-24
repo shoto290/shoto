@@ -59,7 +59,7 @@ Store the result as `<group>`.
 
 ### 5. Gather source context (only if `--from-code` was provided)
 
-Invoke the `utils:explore` skill via the Skill tool with `<code-path>` and the focus:
+Invoke the `explore:explore` skill via the Skill tool with `<code-path>` and the focus:
 
 ```
 documentation context: what this module does, public API, typical usage

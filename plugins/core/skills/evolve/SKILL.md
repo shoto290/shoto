@@ -26,15 +26,15 @@ allowed-tools: [Skill, Agent, AskUserQuestion, Read, Glob, Grep]
 
 ## Phase 1 — Inventory (read-only)
 
-Delegate the inventory to the `utils:explore` skill so the raw frontmatter dumps stay out of the main thread. Invoke it via the `Skill` tool with a topic targeted at `.claude/`:
+Delegate the inventory to the `explore:explore` skill so the raw frontmatter dumps stay out of the main thread. Invoke it via the `Skill` tool with a topic targeted at `.claude/`:
 
 ```
-Skill({ skill: "utils:explore", args: "inventory all skills under .claude/skills/*/SKILL.md (description, argument-hint, disable-model-invocation, user-invocable, context, agent, flow type), all subagents under .claude/agents/*.md (name, description, tools, model), and hooks + permissions in .claude/settings.json and .claude/settings.local.json" })
+Skill({ skill: "explore:explore", args: "inventory all skills under .claude/skills/*/SKILL.md (description, argument-hint, disable-model-invocation, user-invocable, context, agent, flow type), all subagents under .claude/agents/*.md (name, description, tools, model), and hooks + permissions in .claude/settings.json and .claude/settings.local.json" })
 ```
 
-`utils:explore` runs in `context: fork` and returns a compact location-anchored report. Use that report as the inventory for Phases 2-3.
+`explore:explore` runs in `context: fork` and returns a compact location-anchored report. Use that report as the inventory for Phases 2-3.
 
-Fallback: if `utils:explore` is unavailable or the `.claude/` directory is tiny (<3 skills, <2 agents, no hooks), run the inline Glob/Read steps in [reference/inventory-checklist.md](./reference/inventory-checklist.md) instead. Do not modify any file during this phase.
+Fallback: if `explore:explore` is unavailable or the `.claude/` directory is tiny (<3 skills, <2 agents, no hooks), run the inline Glob/Read steps in [reference/inventory-checklist.md](./reference/inventory-checklist.md) instead. Do not modify any file during this phase.
 
 ## Phase 2 — Classify
 

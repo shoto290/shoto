@@ -1,0 +1,78 @@
+---
+title: "The `explore-flow` skill"
+description: "Trace the control and data flow of a feature from entry point through handlers, services, and side effects to success and error exits."
+---
+
+<Note>
+  Internal specialist — dispatched only by [`/explore:explore`](/plugins/explore/skills/explore). Not invokable as a standalone slash command. Documented here so you can understand how the orchestrator routes requests.
+</Note>
+
+`/explore-flow` follows a feature end-to-end: it locates the entry point, traces each synchronous step up to 5 hops deep, lists every async side effect, and identifies success and error exits. It runs in fork mode via the `flow-explorer` sub-agent and returns only the anchored report.
+
+## When to use it
+
+Trigger phrases that load this skill:
+
+- `/explore-flow <feature or entry symbol>`
+- "trace the flow of X"
+- "by where does Y pass"
+- "what happens when route Z is hit"
+- "step-by-step call chain for W"
+- "what does this feature do end to end"
+
+It is also dispatched automatically by `/explore` when your topic contains keywords such as `flow`, `trace`, `by where`, `call chain`, `lifecycle`, or `request path`.
+
+## Usage
+
+```text
+/explore-flow <feature or entry symbol>
+```
+
+## What the skill captures
+
+- The single most public entry point (HTTP route, CLI command, event handler, cron job, or public method).
+- Each synchronous step, traced depth-first, up to 5 hops — stopping at framework boundaries or external library calls.
+- Branch conditions that route to different outcomes, noted as sub-bullets under the relevant step.
+- All async and IO side effects: DB writes, external API calls, event emits, cache updates, log writes, file writes.
+- Both success and error exit points.
+
+## Report format
+
+```markdown
+## Entry
+<path>:<line> — `<signature>` — <trigger: HTTP route | CLI cmd | event | cron | public API>
+
+## Steps
+1. <path>:<line> — <action> — <input → output if non-obvious>
+2. <path>:<line> — <action>
+   - if <condition>: → step 3
+   - else: → step 5
+3. ...
+
+## Side effects
+- <DB write | external API | event emit | log | file write> (<path>:<line>)
+
+## Exit points
+- success: <path>:<line> — <response shape or return type>
+- error: <path>:<line> — <error class or status code>
+```
+
+All four sections are always emitted. An empty section is written as `- (none)`.
+
+## Budget and rules
+
+| Constraint | Limit |
+| :-- | :-- |
+| Files opened | 20 max |
+| Hops traced | 5 max |
+| Report length | 70 lines max |
+| Anchors | Required on every fact |
+| Unknown facts | Prefixed with `?` |
+
+## Sub-agent
+
+This skill delegates to the [`flow-explorer`](/plugins/explore/agents/flow-explorer) sub-agent, which runs in a forked context. The report returned to you is the sub-agent's output verbatim.
+
+<Card title="Back to explore overview" href="/plugins/explore/overview">
+  Return to the explore plugin page.
+</Card>

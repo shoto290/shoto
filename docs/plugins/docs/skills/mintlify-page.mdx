@@ -25,7 +25,7 @@ Use `mintlify-page` when you want to add a new page to an existing Mintlify docs
 |---|---|---|
 | `<page-title>` | Yes | Title of the new page. Quote multi-word titles. |
 | `[group]` | No | Navigation group. If omitted or unrecognized, the skill prompts you to pick or create one. |
-| `[--from-code <path>]` | No | Path to a source file or directory. Invokes `utils:explore` to generate source context before drafting. |
+| `[--from-code <path>]` | No | Path to a source file or directory. Invokes `explore:explore` to generate source context before drafting. |
 
 **Example invocations:**
 
@@ -51,7 +51,7 @@ Use `mintlify-page` when you want to add a new page to an existing Mintlify docs
     If `[group]` matches an existing group (case-insensitive), uses it. If it does not match, or was not provided, prompts with the existing group list and a `Create new group` option.
   </Step>
   <Step title="Gather source context (optional)">
-    If `--from-code <path>` was provided, invokes the `utils:explore` skill with `<path>` and a documentation focus. The returned report is passed to `docs-architect` as source context.
+    If `--from-code <path>` was provided, invokes the `explore:explore` skill with `<path>` and a documentation focus. The returned report is passed to `docs-architect` as source context.
   </Step>
   <Step title="Determine target audience">
     If the audience is clear from the title or source context, uses it directly. Otherwise asks: end users, developers integrating the API, or internal contributors.
@@ -79,7 +79,7 @@ Use `mintlify-page` when you want to add a new page to an existing Mintlify docs
 - Never write outside the docs root or modify any file other than the new MDX file.
 
 <Note>
-  When `--from-code` is provided, `mintlify-page` calls the `utils:explore` skill at `/plugins/utils/skills/explore` before spawning `docs-architect`. The explore report is passed as source context so the architect can document real function names, types, and paths rather than inventing them.
+  When `--from-code` is provided, `mintlify-page` calls the `explore:explore` skill at `/plugins/explore/skills/explore` before spawning `docs-architect`. The explore report is passed as source context so the architect can document real function names, types, and paths rather than inventing them.
 </Note>
 
 <Warning>

@@ -16,7 +16,8 @@ Shared utility skills used by other `shoto` plugins.
 
 | Skill | Purpose |
 | :--- | :--- |
-| `/utils:explore` | Explore a codebase area with selectable profiles (`survey`, `deep-dive`, `targeted`) and return a compact, location-anchored report. |
+| `/utils:tools` | Reference for Claude Code's built-in tools — when to use each, common pitfalls, permission-rule syntax. |
+| `/utils:versioning` | Bump a plugin's semver `version` in `plugins/<plugin>/.claude-plugin/plugin.json` from Conventional Commits since the last release. |
 
 ## Repo
 

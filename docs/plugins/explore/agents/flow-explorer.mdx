@@ -1,0 +1,74 @@
+---
+title: "`flow-explorer` sub-agent"
+description: "Read-only specialist that traces a feature's call chain step by step, lists side effects, and identifies success and error exits."
+---
+
+The `flow-explorer` sub-agent is a focused, read-only call-flow specialist. It traces the control and data flow of a single feature from entry point to exit, listing every side effect along the way. It never modifies code. It is spawned by `explore-flow` (and by the `explore` orchestrator when routing to the flow specialist).
+
+## What it does
+
+<Steps>
+  <Step title="Locate the entry point">
+    Globs and Greps for the entry symbol — HTTP route, CLI command, event handler, cron job, or public method. If multiple candidates exist, picks the most public one.
+  </Step>
+  <Step title="Follow synchronous calls depth-first">
+    Traces up to 5 hops deep. Stops at framework boundaries or external library calls.
+  </Step>
+  <Step title="Note data shape transitions">
+    Records input → output at each step, but only when it is non-obvious from the symbol name.
+  </Step>
+  <Step title="Branch on conditionals">
+    Notes guards, early returns, and the conditions that route to each branch as sub-bullets under the relevant step.
+  </Step>
+  <Step title="List side effects">
+    Records every async and IO operation: DB writes, external API calls, message bus emits, cache updates, log writes, and file writes — each with its trigger anchor.
+  </Step>
+</Steps>
+
+## Report format
+
+```markdown
+## Entry
+<path>:<line> — `<signature>` — <trigger: HTTP route | CLI cmd | event | cron | public API>
+
+## Steps
+1. <path>:<line> — <action> — <input → output if non-obvious>
+2. <path>:<line> — <action>
+   - if <condition>: → step 3
+   - else: → step 5
+3. ...
+
+## Side effects
+- <DB write | external API | event emit | log | file write> (<path>:<line>)
+
+## Exit points
+- success: <path>:<line> — <response shape or return type>
+- error: <path>:<line> — <error class or status code>
+```
+
+All four sections are always present. Empty sections use `- (none)`. Unknown facts are prefixed with `?`.
+
+## Budget and rules
+
+| Constraint | Value |
+| :-- | :-- |
+| Files opened | 20 max |
+| Hops traced | 5 max |
+| Report length | 70 lines max |
+| Tools available | `Read`, `Glob`, `Grep`, `Bash` |
+| Model | sonnet |
+
+The sub-agent never quotes source code and never narrates. Every claim must carry a `path:line` anchor.
+
+## Invocation
+
+This sub-agent is paired with and invoked by the [`explore-flow`](/plugins/explore/skills/explore-flow) skill. The skill runs in fork mode: the sub-agent explores in its own context window and returns only the report.
+
+<CardGroup cols={2}>
+  <Card title="explore-flow" href="/plugins/explore/skills/explore-flow">
+    The skill that spawns this sub-agent.
+  </Card>
+  <Card title="Back to explore overview" href="/plugins/explore/overview">
+    Return to the explore plugin page.
+  </Card>
+</CardGroup>

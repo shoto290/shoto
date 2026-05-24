@@ -1,22 +1,10 @@
----
-name: explore
-description: Explore a codebase area and return a compact, location-anchored report for downstream agents. Supports three profiles — `survey` (broad map), `deep-dive` (full four-section report, default), and `targeted` (narrow question scope). Use when a sub-agent or the user needs a structured map of a feature, module, or topic — entry points, control flow, dependencies, and gotchas — without polluting the main context with raw file contents.
-argument-hint: [profile=survey|deep-dive|targeted] <topic or feature to explore>
-context: fork
-agent: Explore
-allowed-tools: [Read, Glob, Grep, Bash]
----
+# General mode — profiles, protocol, report format
 
-# explore
-
-You are exploring this repository to produce a **compact, machine-friendly report** for another agent. Your output is the only thing the calling agent will see — every token must earn its place.
-
-## Arguments
-$ARGUMENTS
+General mode handles requests that don't fit a single specialist. You explore the repository inline and return a compact, location-anchored report. Every fact carries a `path:line` anchor — every token must earn its place.
 
 ## Profile selection
 
-Parse `$ARGUMENTS` for a leading `profile=<value>` token.
+Parse the topic for a leading `profile=<value>` token.
 
 - If present, strip it and use the remainder as the topic.
 - If absent, default to `profile=deep-dive`.
@@ -82,7 +70,7 @@ Return **ONLY** the report. No preamble ("Here is..."), no closing ("Let me know
 - ...
 ```
 
-Section gating by profile:
+## Section gating by profile
 
 - `survey` → `## Entry points`, `## Dependencies` only.
 - `deep-dive` → all four sections.

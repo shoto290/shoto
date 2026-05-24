@@ -81,7 +81,6 @@
               {
                 "group": "Skills",
                 "pages": [
-                  "plugins/utils/skills/explore",
                   "plugins/utils/skills/tools",
                   "plugins/utils/skills/versioning"
                 ]
@@ -138,6 +137,44 @@
                 "group": "Skills",
                 "pages": [
                   "plugins/frontend/skills/performance"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "explore",
+            "pages": [
+              "plugins/explore/overview",
+              {
+                "group": "Skills",
+                "pages": [
+                  "plugins/explore/skills/explore",
+                  {
+                    "group": "Internals (dispatched only)",
+                    "pages": [
+                      "plugins/explore/skills/explore-architecture",
+                      "plugins/explore/skills/explore-component",
+                      "plugins/explore/skills/explore-flow",
+                      "plugins/explore/skills/explore-convention",
+                      "plugins/explore/skills/explore-tests",
+                      "plugins/explore/skills/explore-dependencies",
+                      "plugins/explore/skills/explore-api-surface",
+                      "plugins/explore/skills/explore-config"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Sub-agents",
+                "pages": [
+                  "plugins/explore/agents/architecture-explorer",
+                  "plugins/explore/agents/component-explorer",
+                  "plugins/explore/agents/flow-explorer",
+                  "plugins/explore/agents/convention-explorer",
+                  "plugins/explore/agents/tests-explorer",
+                  "plugins/explore/agents/dependencies-explorer",
+                  "plugins/explore/agents/api-surface-explorer",
+                  "plugins/explore/agents/config-explorer"
                 ]
               }
             ]

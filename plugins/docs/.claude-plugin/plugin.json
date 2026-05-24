@@ -1,7 +1,7 @@
 {
   "name": "docs",
   "description": "Documentation workflows powered by Mintlify: scaffold a docs site, author MDX pages, validate before pushing.",
-  "version": "0.4.0",
+  "version": "0.7.0",
   "author": {
     "name": "shoto290"
   },

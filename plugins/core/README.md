@@ -16,7 +16,7 @@ After install, run `/help` to see the `core:` skills and `/agents` to confirm th
 
 ## Depends on
 
-- [`utils`](../utils) — provides `utils:explore`, used by `core:evolve` for read-only codebase inventory.
+- [`explore`](../explore) — provides `explore:explore`, used by `core:evolve` for read-only codebase inventory.
 
 ## What's inside
 
@@ -43,7 +43,7 @@ Both own the writing flow end-to-end: search-by-`name:`, scope selection, frontm
 ## Typical flow
 
 1. Describe the capability — e.g. `/core:evolve add a CI-failure triage workflow`.
-2. `evolve` inventories what already exists (via `utils:explore`) and proposes a plan touching skill / sub-agent / hook.
+2. `evolve` inventories what already exists (via `explore:explore`) and proposes a plan touching skill / sub-agent / hook.
 3. After approval, it delegates the writes to `skill-architect`, `subagent-architect`, and/or the `hooks` skill. Restart Claude Code to load the new artifacts.
 
 ## Repo

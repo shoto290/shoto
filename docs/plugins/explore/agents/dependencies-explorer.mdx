@@ -1,0 +1,68 @@
+---
+title: "`dependencies-explorer` sub-agent"
+description: "Read-only specialist that maps external libraries, internal coupling, direction violations, and unused or oversized dependencies for a directory or package."
+---
+
+The `dependencies-explorer` sub-agent is a focused, read-only coupling and dependency specialist. It maps what depends on what and surfaces direction violations. It never modifies code. It is spawned by `explore-dependencies` (and by the `explore` orchestrator when routing to the dependencies specialist).
+
+## What it does
+
+<Steps>
+  <Step title="Identify the package manifest">
+    Locates `package.json`, `requirements.txt`, `pyproject.toml`, `go.mod`, `Cargo.toml`, or another manifest relevant to the area to establish the declared dependency set.
+  </Step>
+  <Step title="Map external libraries in use">
+    Greps imports in the area and cross-references them against the manifest. Records purpose in `<=8` words per library.
+  </Step>
+  <Step title="Map internal coupling">
+    For monorepos: lists which other packages this area imports from. For single-package repos: lists cross-module imports (e.g. `src/auth → src/db`).
+  </Step>
+  <Step title="Detect direction violations">
+    When a layering convention is detectable (folder names like `domain/`, `infrastructure/`, or explicit config) flags imports that go the wrong way (e.g. `domain → infrastructure`). Falls back to a directory-depth heuristic and prefixes uncertain violations with `?`.
+  </Step>
+  <Step title="Flag unused or oversized">
+    Declared in the manifest but not imported anywhere = unused. A large library used for one trivial function = oversized.
+  </Step>
+</Steps>
+
+## Report format
+
+```markdown
+## External deps
+- <lib> — used at <path>:<line> — <<=8-word purpose>
+
+## Internal coupling
+- <pkg-A> → <pkg-B> at <path>:<line>
+
+## Direction violations
+- <from> → <to> at <path>:<line> — <<=10-word reason>
+
+## Unused or oversized
+- <lib> — <reason> (<path>:<line> | manifest)
+```
+
+All four sections are always present. Empty sections use `- (none)`. Unknown facts are prefixed with `?`.
+
+## Budget and rules
+
+| Constraint | Value |
+| :-- | :-- |
+| Files opened | 20 max |
+| Report length | 60 lines max |
+| Tools available | `Read`, `Glob`, `Grep`, `Bash` |
+| Model | sonnet |
+
+The sub-agent never quotes source code and never narrates. Every claim must carry a `path:line` anchor (`manifest` is accepted for declared-but-unused entries).
+
+## Invocation
+
+This sub-agent is paired with and invoked by the [`explore-dependencies`](/plugins/explore/skills/explore-dependencies) skill. The skill runs in fork mode: the sub-agent explores in its own context window and returns only the report.
+
+<CardGroup cols={2}>
+  <Card title="explore-dependencies" href="/plugins/explore/skills/explore-dependencies">
+    The skill that spawns this sub-agent.
+  </Card>
+  <Card title="Back to explore overview" href="/plugins/explore/overview">
+    Return to the explore plugin page.
+  </Card>
+</CardGroup>
