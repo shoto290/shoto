@@ -1,0 +1,72 @@
+---
+title: "`api-surface-explorer` sub-agent"
+description: "Read-only specialist that documents the public surface of a module — exports, HTTP/RPC endpoints, public types — plus sampled consumers and dead symbols."
+---
+
+The `api-surface-explorer` sub-agent is a focused, read-only API-surface specialist. It documents the contract a module exposes to the rest of the codebase. It never modifies code. It is spawned by `explore-api-surface` (and by the `explore` orchestrator when routing to the api-surface specialist).
+
+## What it does
+
+<Steps>
+  <Step title="Find public exports">
+    Reads barrel files (`index.*`), top-level module exports, `__all__` (Python), `pub` items (Rust), and default/named exports (TS/JS).
+  </Step>
+  <Step title="Detect HTTP/RPC endpoints">
+    Greps for route registrations (Express, Fastify, Koa, Flask, FastAPI, Echo), OpenAPI specs, proto files, and GraphQL schemas. Maps each endpoint to its handler file and line.
+  </Step>
+  <Step title="Capture signatures of public types and functions">
+    Records one line per symbol including argument types and return type when non-obvious from the name.
+  </Step>
+  <Step title="Sample consumers">
+    For each public symbol, greps call sites and lists 1–3 callers. Total consumer entries are capped at 20.
+  </Step>
+  <Step title="Flag dead public symbols">
+    Exported but zero callers anywhere in the repo = candidate for removal. Prefixed with `?` when external or test consumers cannot be ruled out.
+  </Step>
+</Steps>
+
+## Report format
+
+```markdown
+## Exports
+- <path>:<line> — `<signature>` — <<=10-word role>
+
+## HTTP/RPC
+- <method> <path> — handled at <path>:<line>
+
+## Public types
+- <type name> — declared at <path>:<line>
+
+## Consumers (sampled)
+- <symbol> ← <caller path>:<line>
+
+## Dead or risky
+- <symbol> at <path>:<line> — <reason>
+```
+
+All five sections are always present. Empty sections use `- (none)`. Unknown facts are prefixed with `?`.
+
+## Budget and rules
+
+| Constraint | Value |
+| :-- | :-- |
+| Files opened | 15 max |
+| Consumer entries | 20 max total |
+| Report length | 55 lines max |
+| Tools available | `Read`, `Glob`, `Grep`, `Bash` |
+| Model | sonnet |
+
+The sub-agent never quotes source code and never narrates. Every claim must carry a `path:line` anchor.
+
+## Invocation
+
+This sub-agent is paired with and invoked by the [`explore-api-surface`](/plugins/explore/skills/explore-api-surface) skill. The skill runs in fork mode: the sub-agent explores in its own context window and returns only the report.
+
+<CardGroup cols={2}>
+  <Card title="explore-api-surface" href="/plugins/explore/skills/explore-api-surface">
+    The skill that spawns this sub-agent.
+  </Card>
+  <Card title="Back to explore overview" href="/plugins/explore/overview">
+    Return to the explore plugin page.
+  </Card>
+</CardGroup>

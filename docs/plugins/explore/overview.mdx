@@ -1,13 +1,13 @@
 ---
 title: "explore"
-description: "Specialized codebase exploration plugin: an orchestrator skill routes requests to four domain specialists — architecture, component, flow, and convention."
+description: "Specialized codebase exploration plugin: an orchestrator skill routes requests to eight domain specialists — architecture, component, flow, convention, tests, dependencies, api-surface, and config."
 ---
 
 The `explore` plugin gives you focused, read-only intelligence about an unfamiliar codebase area. One orchestrator skill parses your intent and dispatches the right specialist — or several in parallel — each of which runs in fork mode and returns a compact, location-anchored report.
 
 ## Overview
 
-Four specialist pairs each cover a distinct lens:
+Eight specialist pairs each cover a distinct lens:
 
 | Specialist | Question it answers |
 | :-- | :-- |
@@ -15,6 +15,10 @@ Four specialist pairs each cover a distinct lens:
 | **component** | Does a component for this capability already exist? |
 | **flow** | What is the call chain and data flow for this feature? |
 | **convention** | What naming, idiom, and style rules does this area follow? |
+| **tests** | What is covered, what is likely uncovered, and where are the gaps? |
+| **dependencies** | What external libs and internal coupling exist, and are there direction violations? |
+| **api-surface** | What does this module export, what are its endpoints, and which symbols are dead? |
+| **config** | What env vars, config files, and feature flags does this feature consume? |
 
 Each pair is a skill + sub-agent: the skill defines the output contract and budget; the sub-agent does the file reading.
 
@@ -36,12 +40,16 @@ When you invoke `/explore <topic>`, the orchestrator detects intent from keyword
 
 ### Internal specialists dispatched by the orchestrator
 
-The four specialist skills below are not invoked directly. The orchestrator selects and dispatches them based on intent detection. Their pages are documented here so you can understand how routing works.
+The eight specialist skills below are not invoked directly. The orchestrator selects and dispatches them based on intent detection. Their pages are documented here so you can understand how routing works.
 
 - [`explore-architecture`](/plugins/explore/skills/explore-architecture) — structural patterns, layer boundaries, anti-patterns
 - [`explore-component`](/plugins/explore/skills/explore-component) — reuse fit scoring, REUSE / EXTEND / NEW recommendation
 - [`explore-flow`](/plugins/explore/skills/explore-flow) — call chain and data flow from entry point to exits
 - [`explore-convention`](/plugins/explore/skills/explore-convention) — naming patterns, folder structure, idioms, style samples
+- [`explore-tests`](/plugins/explore/skills/explore-tests) — covered symbols, uncovered symbols, test patterns, notable gaps
+- [`explore-dependencies`](/plugins/explore/skills/explore-dependencies) — external libs, internal coupling, direction violations, unused deps
+- [`explore-api-surface`](/plugins/explore/skills/explore-api-surface) — exports, HTTP/RPC endpoints, public types, dead symbols
+- [`explore-config`](/plugins/explore/skills/explore-config) — env vars, config files, feature flags, undocumented or risky values
 
 ## Sub-agents
 
@@ -57,6 +65,18 @@ The four specialist skills below are not invoked directly. The orchestrator sele
   </Card>
   <Card title="convention-explorer" href="/plugins/explore/agents/convention-explorer">
     Samples 8–12 files across sub-folders and returns naming, structure, idioms, and style sections.
+  </Card>
+  <Card title="tests-explorer" href="/plugins/explore/agents/tests-explorer">
+    Reads up to 18 files to map covered and uncovered symbols, test patterns, and notable gaps.
+  </Card>
+  <Card title="dependencies-explorer" href="/plugins/explore/agents/dependencies-explorer">
+    Reads up to 20 files to map external libs, internal coupling, direction violations, and unused deps.
+  </Card>
+  <Card title="api-surface-explorer" href="/plugins/explore/agents/api-surface-explorer">
+    Reads up to 15 files to document exports, endpoints, public types, and dead symbols.
+  </Card>
+  <Card title="config-explorer" href="/plugins/explore/agents/config-explorer">
+    Reads up to 15 files to surface env vars, config files, feature flags, and undocumented values.
   </Card>
 </CardGroup>
 

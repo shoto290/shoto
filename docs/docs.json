@@ -155,7 +155,11 @@
                       "plugins/explore/skills/explore-architecture",
                       "plugins/explore/skills/explore-component",
                       "plugins/explore/skills/explore-flow",
-                      "plugins/explore/skills/explore-convention"
+                      "plugins/explore/skills/explore-convention",
+                      "plugins/explore/skills/explore-tests",
+                      "plugins/explore/skills/explore-dependencies",
+                      "plugins/explore/skills/explore-api-surface",
+                      "plugins/explore/skills/explore-config"
                     ]
                   }
                 ]
@@ -166,7 +170,11 @@
                   "plugins/explore/agents/architecture-explorer",
                   "plugins/explore/agents/component-explorer",
                   "plugins/explore/agents/flow-explorer",
-                  "plugins/explore/agents/convention-explorer"
+                  "plugins/explore/agents/convention-explorer",
+                  "plugins/explore/agents/tests-explorer",
+                  "plugins/explore/agents/dependencies-explorer",
+                  "plugins/explore/agents/api-surface-explorer",
+                  "plugins/explore/agents/config-explorer"
                 ]
               }
             ]

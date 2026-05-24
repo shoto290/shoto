@@ -1,7 +1,7 @@
 ---
 name: explore
-description: Single entry point for codebase exploration. Routes the request internally to the right specialist (architecture patterns, component reuse, control/data flow, code conventions) or falls back to a general map (survey / deep-dive / targeted profiles). Use whenever an agent or user wants to "explore the codebase", "map this feature", "find patterns", "see if a component already exists for X", "check whether Y is reusable", "trace the flow of Z", "understand how this repo handles errors / naming / structure", "audit an area before refactoring", or get a structured location-anchored report on a module. The 4 specialists are internal — never call them directly; always go through this skill.
-argument-hint: [profile=architecture|component|flow|convention|general|survey|deep-dive|targeted] <topic>
+description: Single entry point for codebase exploration. Routes the request internally to the right specialist (architecture patterns, component reuse, control/data flow, code conventions, test coverage, dependencies/coupling, public API surface, configuration) or falls back to a general map (survey / deep-dive / targeted profiles). Use whenever an agent or user wants to "explore the codebase", "map this feature", "find patterns", "see if a component already exists for X", "check whether Y is reusable", "trace the flow of Z", "understand how this repo handles errors / naming / structure", "audit an area before refactoring", "what is tested in this area", "what does this module depend on", "what's the public API of this module", "what env vars / feature flags does this feature use", or get a structured location-anchored report on a module. The 8 specialists are internal — never call them directly; always go through this skill.
+argument-hint: [profile=architecture|component|flow|convention|tests|dependencies|api-surface|config|general|survey|deep-dive|targeted] <topic>
 context: fork
 allowed-tools: [Read, Glob, Grep, Bash, Skill]
 ---
@@ -18,10 +18,10 @@ $ARGUMENTS
 ## Profile parsing
 
 - If `$ARGUMENTS` starts with `profile=<value>`, strip it and use the remainder as the topic.
-- Specialist profiles: `architecture`, `component`, `flow`, `convention`.
+- Specialist profiles: `architecture`, `component`, `flow`, `convention`, `tests`, `dependencies`, `api-surface`, `config`.
 - General-mode profiles: `general`, `survey`, `deep-dive`, `targeted`.
 - If no `profile=` is given, run **intent detection** (see [reference/routing.md](./reference/routing.md)):
-  - Map keywords to specialists (e.g. "pattern", "layering", "architecture" → architecture; "reuse", "existing", "duplicate", "déjà" → component; "flow", "trace", "by where", "passe", "appelle" → flow; "convention", "naming", "idiom", "style" → convention).
+  - Map keywords to specialists (e.g. "pattern", "layering", "architecture" → architecture; "reuse", "existing", "duplicate", "déjà" → component; "flow", "trace", "by where", "passe", "appelle" → flow; "convention", "naming", "idiom", "style" → convention; "test", "coverage", "tested", "couvert", "testé" → tests; "dependency", "depends on", "coupling", "couplage", "imports" → dependencies; "api", "public surface", "exports", "endpoints", "interface", "contrat" → api-surface; "config", "env var", "environment", "feature flag", "settings" → config). See [reference/routing.md](./reference/routing.md) for the full table.
   - If exactly one specialist matches → dispatch to it.
   - If multiple specialists match → dispatch them in PARALLEL (single tool-use block, multiple Skill calls), then concatenate the reports with a `## <specialty>` header per block.
   - If zero specialists match → fall back to general mode (default `profile=deep-dive`).

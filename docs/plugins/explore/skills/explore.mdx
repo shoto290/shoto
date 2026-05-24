@@ -3,10 +3,10 @@ title: "The `explore` skill"
 description: "Orchestrator that routes a codebase exploration request to the right specialist skill, runs multiple specialists in parallel, or falls back to general mode."
 ---
 
-`/explore` parses your request, picks the best specialist for the job — architecture, component, flow, or convention — and returns that specialist's report unchanged. For broad questions it dispatches multiple specialists in parallel and concatenates the results. When no specialist fits, it falls back to general mode and handles the request inline.
+`/explore` parses your request, picks the best specialist for the job — architecture, component, flow, convention, tests, dependencies, api-surface, or config — and returns that specialist's report unchanged. For broad questions it dispatches multiple specialists in parallel and concatenates the results. When no specialist fits, it falls back to general mode and handles the request inline.
 
 <Note>
-  `/explore:explore` is the only user-facing exploration command. The four specialist skills (`explore-architecture`, `explore-component`, `explore-flow`, `explore-convention`) are dispatched internally — you don't call them directly.
+  `/explore:explore` is the only user-facing exploration command. The eight specialist skills (`explore-architecture`, `explore-component`, `explore-flow`, `explore-convention`, `explore-tests`, `explore-dependencies`, `explore-api-surface`, `explore-config`) are dispatched internally — you don't call them directly.
 </Note>
 
 ## Overview
@@ -41,6 +41,10 @@ The optional `profile=` token, when given, overrides automatic routing:
 | `component` | Dispatch to `explore-component` |
 | `flow` | Dispatch to `explore-flow` |
 | `convention` | Dispatch to `explore-convention` |
+| `tests` | Dispatch to `explore-tests` |
+| `dependencies` | Dispatch to `explore-dependencies` |
+| `api-surface` | Dispatch to `explore-api-surface` |
+| `config` | Dispatch to `explore-config` |
 | `general` | General mode, `deep-dive` sub-profile |
 | `survey` | General mode, broad 8-file budget |
 | `deep-dive` | General mode, full 25-file budget (default fallback) |
@@ -56,6 +60,10 @@ When no `profile=` is given, the orchestrator maps keywords to specialists:
 | reuse, existing component, duplicate, can I use, is there a, réutilis | `component` |
 | flow, trace, by where, call chain, lifecycle, request path, étapes | `flow` |
 | convention, naming, idiom, style, how do we, error handling | `convention` |
+| test, coverage, tested, untested, couvert, testé, tests for, smoke test | `tests` |
+| dependency, depends on, coupling, couplage, dépend de, imports, external deps | `dependencies` |
+| api, public api, surface, exports, endpoints, interface, contrat, consumers, breaking change | `api-surface` |
+| config, configuration, env var, environment variable, feature flag, settings, toggle, .env | `config` |
 
 - Exactly one match → dispatch to that specialist.
 - Multiple matches → dispatch all matching specialists **in parallel** (single tool-use block).
@@ -68,6 +76,10 @@ Broad multi-word topics also trigger multi-specialist heuristics:
 | "understand `<area>`" | architecture + flow |
 | "audit `<area>`" | architecture + convention |
 | "before adding `<capability>`" | component + convention |
+| "audit `<area>` for ship readiness" | tests + dependencies |
+| "refactor `<area>`" | architecture + dependencies |
+| "before breaking `<module>`" | api-surface + flow |
+| "onboard onto `<area>`" | config + architecture |
 
 ## Output contract
 

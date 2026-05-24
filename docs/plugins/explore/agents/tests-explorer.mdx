@@ -1,0 +1,68 @@
+---
+title: "`tests-explorer` sub-agent"
+description: "Read-only specialist that maps test coverage, uncovered symbols, test patterns in use, and notable gaps for a codebase area."
+---
+
+The `tests-explorer` sub-agent is a focused, read-only test-coverage specialist. It opens files only to confirm coverage facts and never modifies code. It is spawned by `explore-tests` (and by the `explore` orchestrator when routing to the tests specialist).
+
+## What it does
+
+<Steps>
+  <Step title="Locate tests in the area">
+    Globs for `*.test.*`, `*.spec.*`, `__tests__/`, `tests/`, `*_test.go`, `test_*.py`, and other language-appropriate conventions relevant to the requested area.
+  </Step>
+  <Step title="Cross-reference test and source">
+    Matches test files to source by filename pair (e.g. `Foo.ts` ↔ `Foo.test.ts`) or by import — a test file that imports the source module counts as coverage.
+  </Step>
+  <Step title="Detect uncovered public symbols">
+    Lists exported functions, classes, types, and endpoints that have no matching test file and no import from any test file.
+  </Step>
+  <Step title="Extract test patterns">
+    Identifies the test framework (Vitest, Jest, Pytest, Go test, etc.), the unit/integration/e2e split, the mock strategy (msw, nock, fakes, fixtures), and any custom helpers. A pattern is only reported when it appears `>=3` times across distinct files.
+  </Step>
+  <Step title="Flag notable gaps">
+    Reports error paths never tested, public APIs without a smoke test, and recently changed files without test updates (when `git log` is accessible).
+  </Step>
+</Steps>
+
+## Report format
+
+```markdown
+## Covered
+- <symbol> at <path>:<line> ← tested at <test path>:<line>
+
+## Uncovered (likely)
+- <symbol> at <path>:<line> — <why: no matching test file / no import / etc.>
+
+## Test patterns
+- <pattern> — sample at <test path>:<line>
+
+## Notable gaps
+- <gap> (<path>:<line>)
+```
+
+All four sections are always present. Empty sections use `- (none)`. Unknown facts are prefixed with `?`.
+
+## Budget and rules
+
+| Constraint | Value |
+| :-- | :-- |
+| Files opened | 18 max |
+| Report length | 55 lines max |
+| Tools available | `Read`, `Glob`, `Grep`, `Bash` |
+| Model | sonnet |
+
+The sub-agent never quotes source code and never narrates. Every claim must carry a `path:line` anchor.
+
+## Invocation
+
+This sub-agent is paired with and invoked by the [`explore-tests`](/plugins/explore/skills/explore-tests) skill. The skill runs in fork mode: the sub-agent explores in its own context window and returns only the report.
+
+<CardGroup cols={2}>
+  <Card title="explore-tests" href="/plugins/explore/skills/explore-tests">
+    The skill that spawns this sub-agent.
+  </Card>
+  <Card title="Back to explore overview" href="/plugins/explore/overview">
+    Return to the explore plugin page.
+  </Card>
+</CardGroup>
