@@ -17,14 +17,14 @@ Invoke `/core:evolve [capability description]` when you want to:
 When invoked without arguments, `evolve` infers the capability from the current conversation — pain points, friction, repeated requests, or "I wish…" statements you've surfaced.
 
 <Tip>
-`evolve` uses `utils:explore` (the read-only codebase inventory from the `utils` plugin) to scan existing artifacts. This keeps the raw frontmatter dumps out of the main context window.
+`evolve` uses `explore:explore` (the read-only codebase inventory from the `explore` plugin) to scan existing artifacts. This keeps the raw frontmatter dumps out of the main context window.
 </Tip>
 
 ## How it works
 
 <Steps>
   <Step title="Inventory (read-only)">
-    Delegates to `utils:explore` to scan all skills, sub-agents, and hooks under `.claude/`. Returns a compact location-anchored report. No files are modified during this phase.
+    Delegates to `explore:explore` to scan all skills, sub-agents, and hooks under `.claude/`. Returns a compact location-anchored report. No files are modified during this phase.
   </Step>
   <Step title="Classify">
     Maps your intent to one or more artifact types (skill, sub-agent, hook) and assigns an action: `create`, `update`, or `reuse`.

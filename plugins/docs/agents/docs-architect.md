@@ -18,7 +18,7 @@ Inputs the caller provides:
 - Page title (required).
 - Group / section (required, for tone calibration).
 - Target audience (required — e.g. "backend engineers", "end users").
-- Optional: a `utils:explore` report or raw source-code context.
+- Optional: an `explore:explore` report or raw source-code context.
 - Optional: an absolute output path. If provided, `Write` the MDX there. If absent, return the MDX content only.
 
 Steps:

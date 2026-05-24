@@ -1,0 +1,66 @@
+---
+title: "`component-explorer` sub-agent"
+description: "Read-only specialist that scores existing components against a desired capability and returns a single REUSE / EXTEND / NEW recommendation."
+---
+
+The `component-explorer` sub-agent is a focused, read-only reuse specialist. Given a capability the caller wants to add, it finds what already exists, scores each candidate by fit, identifies gaps, and delivers one clear recommendation. It never modifies code. It is spawned by `explore-component` (and by the `explore` orchestrator when routing to the component specialist).
+
+## What it does
+
+<Steps>
+  <Step title="Search by name, signature, and usage">
+    Globs filenames matching the domain (e.g., `*Parser*`, `*Service*`), Greps symbol names, and Greps call sites to spot heavily-reused utilities.
+  </Step>
+  <Step title="Score fit per candidate">
+    Reads just enough of each candidate to evaluate. Scores as `high` (≥80% of requested sub-capabilities covered), `medium` (40–79%), or `low` (`<40%`).
+  </Step>
+  <Step title="Identify gaps">
+    Lists sub-capabilities not covered by any candidate. Provides an anchor to the closest workaround if one exists.
+  </Step>
+  <Step title="Decide">
+    Issues exactly one recommendation: `REUSE` when a high-fit candidate has no gaps, `EXTEND` when the best candidate is high or medium fit and 1–2 gaps fit its surface, or `NEW` when no candidate is above low fit or the surface is wrong for the gaps.
+  </Step>
+</Steps>
+
+## Report format
+
+```markdown
+## Matches
+- <path>:<line> — `<signature>` — <10-word role> — fit: high|medium|low
+
+## Reuse fit
+- <component> covers: <comma-separated capabilities>
+- <component> missing for this need: <comma-separated gaps>
+
+## Gaps
+- <capability> — closest workaround at <path>:<line>
+
+## Recommendation
+<REUSE <component> | EXTEND <component> (add <gap>) | NEW (no good match)>
+```
+
+All four sections are always present. Empty sections use `- (none)`. Unknown facts are prefixed with `?`.
+
+## Budget and rules
+
+| Constraint | Value |
+| :-- | :-- |
+| Files opened | 15 max |
+| Report length | 50 lines max |
+| Tools available | `Read`, `Glob`, `Grep`, `Bash` |
+| Model | sonnet |
+
+The sub-agent never quotes source code and never narrates. Every claim must carry a `path:line` anchor.
+
+## Invocation
+
+This sub-agent is paired with and invoked by the [`explore-component`](/plugins/explore/skills/explore-component) skill. The skill runs in fork mode: the sub-agent explores in its own context window and returns only the report.
+
+<CardGroup cols={2}>
+  <Card title="explore-component" href="/plugins/explore/skills/explore-component">
+    The skill that spawns this sub-agent.
+  </Card>
+  <Card title="Back to explore overview" href="/plugins/explore/overview">
+    Return to the explore plugin page.
+  </Card>
+</CardGroup>

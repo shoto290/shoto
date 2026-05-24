@@ -81,7 +81,6 @@
               {
                 "group": "Skills",
                 "pages": [
-                  "plugins/utils/skills/explore",
                   "plugins/utils/skills/tools",
                   "plugins/utils/skills/versioning"
                 ]
@@ -138,6 +137,31 @@
                 "group": "Skills",
                 "pages": [
                   "plugins/frontend/skills/performance"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "explore",
+            "pages": [
+              "plugins/explore/overview",
+              {
+                "group": "Skills",
+                "pages": [
+                  "plugins/explore/skills/explore",
+                  "plugins/explore/skills/explore-architecture",
+                  "plugins/explore/skills/explore-component",
+                  "plugins/explore/skills/explore-flow",
+                  "plugins/explore/skills/explore-convention"
+                ]
+              },
+              {
+                "group": "Sub-agents",
+                "pages": [
+                  "plugins/explore/agents/architecture-explorer",
+                  "plugins/explore/agents/component-explorer",
+                  "plugins/explore/agents/flow-explorer",
+                  "plugins/explore/agents/convention-explorer"
                 ]
               }
             ]

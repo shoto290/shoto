@@ -69,7 +69,7 @@ Every MDX page the agent creates or modifies must satisfy:
 - READ / AUDIT mode is observation-only — no `Write`, no `Edit`.
 
 <Note>
-  When `docs:mintlify-page` uses `--from-code <path>`, it first calls `utils:explore` at `/plugins/utils/skills/explore` and passes the report to `docs-architect` as source context. The agent then verifies every identifier with `Read`, `Glob`, or `Grep` before including it in the draft.
+  When `docs:mintlify-page` uses `--from-code <path>`, it first calls `explore:explore` at `/plugins/explore/skills/explore` and passes the report to `docs-architect` as source context. The agent then verifies every identifier with `Read`, `Glob`, or `Grep` before including it in the draft.
 </Note>
 
 <Card title="Back to docs overview" href="/plugins/docs/overview">

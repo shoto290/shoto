@@ -24,7 +24,8 @@
 		"utils@shoto": true,
 		"git@shoto": true,
 		"docs@shoto": true,
-		"frontend@shoto": true
+		"frontend@shoto": true,
+		"explore@shoto": true
 	},
 	"extraKnownMarketplaces": {
 		"shoto": {
@@ -42,7 +43,9 @@
 					{
 						"type": "command",
 						"command": "bash",
-						"args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/notify-docs-sync.sh"]
+						"args": [
+							"${CLAUDE_PROJECT_DIR}/.claude/hooks/notify-docs-sync.sh"
+						]
 					}
 				]
 			}

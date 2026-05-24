@@ -19,7 +19,7 @@ After install, run `/help` to see the `docs:` skills and `/agents` to confirm th
 | Skill | Purpose |
 | :--- | :--- |
 | `/docs:mintlify-init` | Scaffold a new Mintlify docs site in the current repo via `mint new`, then patch `docs.json` with site name, primary color, and GitHub repo URL. |
-| `/docs:mintlify-page` | Author a new MDX page (optionally from existing source code via `utils:explore`), delegate to the `docs-architect` sub-agent which drafts the page and wires it into `docs.json` navigation. |
+| `/docs:mintlify-page` | Author a new MDX page (optionally from existing source code via `explore:explore`), delegate to the `docs-architect` sub-agent which drafts the page and wires it into `docs.json` navigation. |
 | `/docs:mintlify-validate` | Run `mint validate` and `mint build` against the docs site and report broken links, invalid frontmatter, and missing navigation entries. Read-only. |
 
 ### Sub-agents

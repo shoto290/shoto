@@ -1,0 +1,75 @@
+---
+title: "explore"
+description: "Specialized codebase exploration plugin: an orchestrator skill routes requests to four domain specialists — architecture, component, flow, and convention."
+---
+
+The `explore` plugin gives you focused, read-only intelligence about an unfamiliar codebase area. One orchestrator skill parses your intent and dispatches the right specialist — or several in parallel — each of which runs in fork mode and returns a compact, location-anchored report.
+
+## Overview
+
+Four specialist pairs each cover a distinct lens:
+
+| Specialist | Question it answers |
+| :-- | :-- |
+| **architecture** | What structural patterns, layers, and anti-patterns exist? |
+| **component** | Does a component for this capability already exist? |
+| **flow** | What is the call chain and data flow for this feature? |
+| **convention** | What naming, idiom, and style rules does this area follow? |
+
+Each pair is a skill + sub-agent: the skill defines the output contract and budget; the sub-agent does the file reading.
+
+When you invoke `/explore <topic>`, the orchestrator detects intent from keywords and dispatches automatically. For broad questions it can run multiple specialists in parallel.
+
+## When to use `/explore` vs the slash commands directly
+
+Use `/explore <topic>` when you are not sure which specialist fits. The orchestrator parses your phrasing and routes accordingly — or fans out to several specialists at once.
+
+Invoke a specialist slash command directly (`/explore-architecture`, `/explore-component`, `/explore-flow`, `/explore-convention`) when you know exactly what you need and want to skip the routing step.
+
+<Note>
+  If no specialist keyword is detected, the orchestrator falls back to general exploration mode (`survey`, `deep-dive`, or `targeted`) and handles the request inline without delegating to a sub-agent.
+</Note>
+
+## Skills
+
+<CardGroup cols={2}>
+  <Card title="explore (orchestrator)" href="/plugins/explore/skills/explore">
+    Routes a request to the right specialist, runs multiple specialists in parallel for broad questions, or falls back to general exploration mode.
+  </Card>
+  <Card title="explore-architecture" href="/plugins/explore/skills/explore-architecture">
+    Detects structural patterns, maps layer boundaries and responsibilities, surfaces conventions, and flags anti-patterns.
+  </Card>
+  <Card title="explore-component" href="/plugins/explore/skills/explore-component">
+    Finds existing components that match a desired capability and recommends REUSE, EXTEND, or NEW with anchored evidence.
+  </Card>
+  <Card title="explore-flow" href="/plugins/explore/skills/explore-flow">
+    Traces the call chain and data flow of a feature from entry point through side effects to success or error exits.
+  </Card>
+  <Card title="explore-convention" href="/plugins/explore/skills/explore-convention">
+    Maps naming patterns, folder structure, idioms, and error/logging/test conventions so new code blends in.
+  </Card>
+</CardGroup>
+
+## Sub-agents
+
+<CardGroup cols={2}>
+  <Card title="architecture-explorer" href="/plugins/explore/agents/architecture-explorer">
+    Reads up to 20 files to map patterns, layers, conventions, and anti-patterns.
+  </Card>
+  <Card title="component-explorer" href="/plugins/explore/agents/component-explorer">
+    Reads up to 15 files, scores fit per candidate, and returns a single REUSE / EXTEND / NEW recommendation.
+  </Card>
+  <Card title="flow-explorer" href="/plugins/explore/agents/flow-explorer">
+    Reads up to 20 files, traces up to 5 hops deep, and returns entry, steps, side effects, and exit points.
+  </Card>
+  <Card title="convention-explorer" href="/plugins/explore/agents/convention-explorer">
+    Samples 8–12 files across sub-folders and returns naming, structure, idioms, and style sections.
+  </Card>
+</CardGroup>
+
+## Install
+
+```bash
+/plugin marketplace add shoto290/shoto
+/plugin install explore@shoto
+```

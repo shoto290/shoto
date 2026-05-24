@@ -3,11 +3,11 @@ title: "utils"
 description: "Shared utility skills used by other shoto plugins."
 ---
 
-The `utils` plugin (v0.2.0) provides foundational skills that other shoto plugins depend on. It has no sub-agents — only skills you invoke directly with `/utils:<name>`.
+The `utils` plugin (v0.3.0) provides foundational skills that other shoto plugins depend on. It has no sub-agents — only skills you invoke directly with `/utils:<name>`.
 
 ## Overview
 
-`utils` is the shared layer of the shoto marketplace. It handles three recurring tasks that every plugin eventually needs: exploring an unfamiliar codebase, knowing which Claude Code built-in tool to reach for, and bumping a plugin's semver version from its commit history.
+`utils` is the shared layer of the shoto marketplace. It handles two recurring tasks that every plugin eventually needs: knowing which Claude Code built-in tool to reach for, and bumping a plugin's semver version from its commit history.
 
 Install it once and every plugin that lists `utils` as a dependency can call these skills without additional setup.
 
@@ -25,10 +25,7 @@ If you haven't added the shoto marketplace yet, run this first:
 
 ## Skills
 
-<CardGroup cols={3}>
-  <Card title="explore" icon="magnifying-glass" href="/plugins/utils/skills/explore">
-    Explore a codebase area and return a compact, location-anchored report. Supports `survey`, `deep-dive`, and `targeted` profiles.
-  </Card>
+<CardGroup cols={2}>
   <Card title="tools" icon="wrench" href="/plugins/utils/skills/tools">
     Reference for Claude Code's built-in tools. Use it to pick the right tool, avoid common failures, and write correct permission rules.
   </Card>
