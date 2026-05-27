@@ -1,6 +1,6 @@
 # Mode calibration
 
-`ultraplan` exposes an intensity dial via `--mode quick|standard|deep`. The mode controls (i) how many `Skill({ skill: "explore:explore", args: "..." })` calls run during Phase 2, (ii) which fields each step must carry in Phase 3, and (iii) whether the Phase 4 mirroring gate is soft or hard.
+`blueprint` exposes an intensity dial via `--mode quick|standard|deep`. The mode controls (i) how many `Skill({ skill: "explore:explore", args: "..." })` calls run during Phase 2, (ii) which fields each step must carry in Phase 3, and (iii) whether the Phase 4 mirroring gate is soft or hard.
 
 Default mode when `--mode` is absent: `standard`.
 

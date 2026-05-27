@@ -1,15 +1,15 @@
 ---
-name: ultraplan
-description: Produce a concrete, codebase-grounded execution plan for a specific code change, mirroring the local patterns and conventions discovered in the repo. Use when the user asks to "ultraplan", "make a plan", "plan this", "plan an implementation", "plan a refactor", runs "/core:ultraplan", or invokes the "ultraplanner". Reads the repo via `Skill({ skill: "explore:explore", args: "..." })` to anchor every step on `path:line` precedents, then emits a stable markdown brief at `.claude/plans/<slug>.md`. Intensity dial via `--mode quick|standard|deep` controls how many explorer calls run, which step fields are required, and whether the mirroring gate is soft or hard. Different from `core:evolve` (meta-coordinator that decides which artifact types to create across the marketplace) — `ultraplan` writes the direct, step-by-step execution plan once the artifact and scope are already known.
+name: blueprint
+description: Produce a concrete, codebase-grounded execution plan for a specific code change, mirroring the local patterns and conventions discovered in the repo. Use when the user asks to "blueprint", "draft a blueprint", "make a blueprint", "make a plan", "plan this", "plan an implementation", "plan a refactor", runs "/core:blueprint", or invokes the "blueprinter". Reads the repo via `Skill({ skill: "explore:explore", args: "..." })` to anchor every step on `path:line` precedents, then emits a stable markdown brief at `.claude/plans/<slug>.md`. Intensity dial via `--mode quick|standard|deep` controls how many explorer calls run, which step fields are required, and whether the mirroring gate is soft or hard. Different from `core:evolve` (meta-coordinator that decides which artifact types to create across the marketplace) — `blueprint` writes the direct, step-by-step execution plan once the artifact and scope are already known.
 argument-hint: '[--mode quick|standard|deep] <goal in one sentence>'
 allowed-tools: [Read, Glob, Write, AskUserQuestion, Skill]
 ---
 
 > Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
 
-# Ultraplan
+# Blueprint
 
-`ultraplan` writes a codebase-grounded execution plan for a single, concrete code change. Every step cites the local precedent it mirrors, and the final brief lands in `.claude/plans/<slug>.md` ready to drive an implementation session.
+`blueprint` writes a codebase-grounded execution plan for a single, concrete code change. Every step cites the local precedent it mirrors, and the final brief lands in `.claude/plans/<slug>.md` ready to drive an implementation session.
 
 ## Detect intent
 
