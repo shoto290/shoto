@@ -1,13 +1,13 @@
 ---
-title: "The `ultraplan` skill"
+title: "The `blueprint` skill"
 description: "Produce a codebase-grounded execution plan for a concrete code change, with every step anchored on a real local precedent."
 ---
 
-`/core:ultraplan` writes a step-by-step execution plan for a single, concrete code change. It calls `explore:explore` to anchor every step on a real `path:line` precedent in your repo, then saves the finished brief to `.claude/plans/<slug>.md` ready to drive an implementation session.
+`/core:blueprint` writes a step-by-step execution plan for a single, concrete code change. It calls `explore:explore` to anchor every step on a real `path:line` precedent in your repo, then saves the finished brief to `.claude/plans/<slug>.md` ready to drive an implementation session.
 
 ## When to use
 
-Invoke `/core:ultraplan [--mode quick|standard|deep] <goal>` when you want to:
+Invoke `/core:blueprint [--mode quick|standard|deep] <goal>` when you want to:
 
 - Turn a one-sentence goal into an ordered, verifiable action list before touching any code.
 - Ensure every planned step mirrors a local convention rather than inventing a new pattern.
@@ -15,7 +15,7 @@ Invoke `/core:ultraplan [--mode quick|standard|deep] <goal>` when you want to:
 - Catch greenfield steps early — the `mirrors:` gate forces you to acknowledge when no precedent exists.
 
 <Tip>
-`ultraplan` is distinct from `core:evolve`. `evolve` is a meta-coordinator that decides which artifact types to create across the marketplace. `ultraplan` writes the direct execution plan once the artifact and scope are already known.
+`blueprint` is distinct from `core:evolve`. `evolve` is a meta-coordinator that decides which artifact types to create across the marketplace. `blueprint` writes the direct execution plan once the artifact and scope are already known.
 </Tip>
 
 ## How it works
@@ -88,14 +88,14 @@ Each step under `## Steps` is a `### Step N — <verb + object>` block with the 
 
 ## Arguments
 
-`/core:ultraplan [--mode quick|standard|deep] <goal in one sentence>`
+`/core:blueprint [--mode quick|standard|deep] <goal in one sentence>`
 
 - `--mode` is optional. Omitting it triggers an inference prompt where the skill recommends one of the three modes based on your goal and lets you confirm or pick another.
 - `<goal>` is required. If absent or too vague (one or two words with no scope), the skill asks one clarifying question before proceeding.
 
 ## Hard rules
 
-- **Never skips Phase 2 grounding.** Even an obvious goal gets the explorer calls prescribed by the active mode. The value of `ultraplan` is anchoring steps on real precedents, not generating steps from memory.
+- **Never skips Phase 2 grounding.** Even an obvious goal gets the explorer calls prescribed by the active mode. The value of `blueprint` is anchoring steps on real precedents, not generating steps from memory.
 - **Never invents `mirrors:` anchors.** Every `mirrors:` value is either a real `path:line-range` from a Phase 2 report or the exact escape hatch literal. Plausible-looking synthesized paths defeat the audit trail.
 - **Never narrates internal reasoning in the plan file.** The brief is for execution. No "I chose X because…", no coherence-check recap, no commentary on explorer output.
 - **No sub-agent wrapper.** v0 calls `explore:explore` directly in-skill. A dedicated sub-agent is deferred until a second consumer needs the same pattern-detection loop.
