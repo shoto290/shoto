@@ -82,6 +82,17 @@ Two integration patterns:
   skills: [base, foo]
   ```
 
+## 5. Delegation by composition
+
+Skills compose by delegating to one another instead of re-implementing capabilities that already exist. When this skill needs a capability another skill provides, delegate via `Skill({ skill: "<name>", args: "<topic>" })`.
+
+To find the canonical skill for a free-form intent in the current context:
+
+- Invoke `core:skills-suggest` with a one-sentence description of what you need — it owns the canonical intent → skill map for the marketplace and returns the best-fit installed skill(s) with justification.
+- Invoke `core:skills-list` to see every skill installed in the current context, grouped by source (global, project, marketplace cache).
+
+Re-implementation duplicates logic, drifts over time, and bypasses the careful structure of the canonical skill. Do not re-implement.
+
 ## Reference
 
 - [reference/naming.md](./reference/naming.md) — kebab-case files and directories, `name:` must match path, headings in title case.

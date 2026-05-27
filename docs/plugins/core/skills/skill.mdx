@@ -43,6 +43,10 @@ Only `SKILL.md` is required. Every other file is optional and must be linked fro
 - **Keep `SKILL.md` under 500 lines** — move detail into `reference/` or `examples/`.
 - **Test** — direct invocation via `/skill-name` or automatic trigger via a matching natural-language request.
 
+<Note>
+**Delegation hint (optional but recommended).** If your new skill needs a capability already covered by another core skill (codebase exploration, git operations, brainstorming, etc.), add a one-line delegation hint in the body referencing the canonical skill rather than re-implementing it. The `skill-architect` sub-agent auto-injects this hint when those triggers are detected in your description.
+</Note>
+
 ## Hard rules
 
 - `examples/` is for expected output samples only. Workflow patterns, prompt recipes, and complete `SKILL.md` examples belong in `reference/`.

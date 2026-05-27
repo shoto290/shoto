@@ -106,6 +106,8 @@ description: <what the skill does + when to use it, with trigger phrases>
 <instructions, kept concise>
 ```
 
+**Delegation hint (optional but recommended).** If your new skill needs one of the capabilities listed in [`core:base` section 5](../base/SKILL.md#5-delegation-targets) (codebase exploration, git operations, brainstorming, etc.), add a one-line delegation hint in your body referencing the canonical skill rather than re-implementing. The `skill-architect` subagent auto-injects this hint when triggers are detected in your description.
+
 `description` is the only recommended field. See [reference/frontmatter.md](./reference/frontmatter.md) for every field.
 
 ### 4. Add supporting files (only if needed)
