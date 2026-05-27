@@ -1,9 +1,9 @@
 ---
 title: "The `skills-suggest` skill"
-description: "Map a free-form intent to the canonical, already-installed skill(s) that best fit it, with a justification per candidate."
+description: "Owns the canonical intent → skill map for the marketplace. Routes a free-form intent to the best-fit already-installed skill(s) with justification."
 ---
 
-`/core:skills-suggest <intent>` routes a natural-language description of what you want to accomplish to the right already-installed skill. It reads the delegation table in [`core:base` section 5](/plugins/core/skills/base) as its source of truth, then cross-checks against what is actually installed via [`core:skills-list`](/plugins/core/skills/skills-list). It returns up to three ranked candidates, each with a one-line justification, a copy-pasteable invocation, and a boundary statement.
+`/core:skills-suggest <intent>` routes a natural-language description of what you want to accomplish to the right already-installed skill. It owns the canonical intent → skill map for the marketplace, cross-checks it against what is actually installed via [`core:skills-list`](/plugins/core/skills/skills-list), and returns up to three ranked candidates, each with a one-line justification, a copy-pasteable invocation, and a boundary statement.
 
 <Note>
   `core:skills-suggest` routes among skills you already have installed. To install a new skill, use `find-skills`. To create a new skill from scratch, use [`core:skill`](/plugins/core/skills/skill) or [`core:evolve`](/plugins/core/skills/evolve).
@@ -11,7 +11,27 @@ description: "Map a free-form intent to the canonical, already-installed skill(s
 
 ## Overview
 
-With dozens of installed skills, picking the right one is non-trivial. This skill removes that decision cost by matching your intent to the delegation map that the entire shoto marketplace converges on. Because it calls `core:skills-list` internally, it never recommends a skill you don't have.
+With dozens of installed skills, picking the right one is non-trivial. This skill removes that decision cost by owning the canonical map of intent → skill for the marketplace, cross-checking it against what is actually installed locally, and returning a ranked shortlist. Because it calls `core:skills-list` internally, it never recommends a skill you don't have.
+
+## Delegation map
+
+This is the single source of truth for capability → canonical skill. When a skill or sub-agent needs one of these capabilities, delegate to the listed skill rather than re-implementing.
+
+| Intent / capability | Canonical skill |
+| :--- | :--- |
+| Codebase exploration — understand code, find patterns, locate components, trace flows, audits | `explore:explore` |
+| Create or update a skill | `core:skill` |
+| Create or update a sub-agent | `core:subagent` |
+| Create or update a hook | `core:hooks` |
+| Brainstorm an idea before planning | `core:brainstorm` |
+| Plan a coordinated multi-artifact change (skill + sub-agent + hook) | `core:evolve` |
+| Make a single git commit | `git:commit` |
+| Open a pull request | `git:create` |
+| Rebase the current branch onto main | `git:rebase` |
+| Review PR comments / process review feedback | `git:review-comments` |
+| Apply review fix decisions | `git:review-fix` |
+| Review the current workspace diff | `git:review-diff` |
+| List skills available in the current context (global / project / marketplace) | `core:skills-list` |
 
 ## When to invoke it
 
@@ -31,20 +51,20 @@ The `<intent>` argument is required. If you omit it, the skill prompts you for i
   <Step title="Read the intent">
     Takes `$1` as the intent argument. If empty, asks via `AskUserQuestion` for a one-sentence description of the task.
   </Step>
-  <Step title="Read the canonical delegation map">
-    Opens `core:base` and parses section 5 ("Delegation targets"). This table is the authoritative intent → skill mapping for the entire marketplace.
+  <Step title="Match and rank candidates">
+    Finds the rows in the Delegation map above whose "Intent / capability" cell best matches the intent (keyword overlap and semantic match). Caps at 3 candidates, ordered best-fit first.
   </Step>
   <Step title="Check local availability">
-    Calls `core:skills-list` to get the full list of installed skills in the current context. Skills absent from this list are excluded from recommendations.
-  </Step>
-  <Step title="Match and rank candidates">
-    Finds the rows in the delegation table whose "Intent / capability" cell best matches the intent (keyword overlap and semantic match). Caps at 3 candidates, ordered best-fit first.
+    Calls `core:skills-list` to get the full list of installed skills in the current context. Drops any candidate that isn't actually installed here.
   </Step>
   <Step title="Render the recommendation">
-    For each candidate, produces: the skill name, a one-sentence "why it fits", a copy-pasteable `Skill(...)` invocation with `args` filled from the intent, and a one-sentence boundary statement.
+    For each remaining candidate, produces: the skill name, a one-sentence "why it fits", a copy-pasteable `Skill(...)` invocation with `args` filled from the intent, and a one-sentence boundary statement.
   </Step>
-  <Step title="Handle edge cases">
-    If no canonical skill fits, says so explicitly and recommends `find-skills` (to install an external skill) or `core:evolve` (to create a new skill for a structural gap). If two candidates overlap significantly, surfaces the overlap explicitly rather than silently picking one.
+  <Step title="Handle no-match">
+    If no canonical skill fits, says so explicitly and recommends `find-skills` (to install an external skill) or `core:evolve` (to create a new skill for a structural gap).
+  </Step>
+  <Step title="Handle overlap">
+    If two candidates overlap significantly, surfaces the overlap explicitly with the boundary of each — never silently picks one.
   </Step>
 </Steps>
 
@@ -70,14 +90,13 @@ Intent: `I need to find an existing component for a date picker`
 
 ## Anti-patterns
 
-- Don't invent skill names. Only recommend skills confirmed available by `core:skills-list` AND present in the delegation map.
+- Don't invent skill names. Only recommend skills confirmed available by `core:skills-list` AND present in the Delegation map.
 - Don't install or create. This skill is strictly routing.
 - Don't silently pick one candidate when two overlap — surface the overlap with boundary statements for both.
 - Don't skip the availability check (step 3). Without it, you may recommend a skill the user doesn't have.
 
 ## Reference
 
-- [`core:base` section 5](/plugins/core/skills/base) — canonical delegation map (primary input).
 - [`core:skills-list`](/plugins/core/skills/skills-list) — local availability check called in step 3.
 - `find-skills` — for installing skills if no match exists.
 - [`core:evolve`](/plugins/core/skills/evolve) — for creating skills if the gap is structural.

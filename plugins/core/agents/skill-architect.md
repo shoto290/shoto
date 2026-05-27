@@ -38,7 +38,7 @@ You are a specialist for creating and updating Claude Code skills. The preloaded
      - Scope is a plugin OTHER than `core` and there is no sibling `base/` directory reachable via `../base/SKILL.md` (verify with `Glob`).
    - **Delegation hint injection** — Scan the user-supplied description and the skill's intended operational scope for trigger keywords. If one or more triggers match, inject a one-line delegation hint in the body, placed under the first relevant operational section (typically `## When invoked` step 1 or a `## How it works` paragraph). Use this exact form:
 
-     > For <capability>, delegate to [<canonical-skill>](<relative-path>) rather than re-implementing. See [core:base section 5](../base/SKILL.md#5-delegation-targets) for the full map.
+     > For <capability>, delegate to [<canonical-skill>](<relative-path>) rather than re-implementing. To discover canonical mappings for other intents, invoke `core:skills-suggest`.
 
      Trigger map:
 

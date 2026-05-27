@@ -57,7 +57,7 @@ Use the skill-architect subagent to update the description on the `deploy` skill
 
     **Delegation hint injection** — before writing, the architect scans the user-supplied description and intended scope for trigger keywords. When a match is found, it injects a one-line delegation hint under the first relevant operational section:
 
-    > For \<capability\>, delegate to [\<canonical-skill\>](\<relative-path\>) rather than re-implementing. See [core:base section 5](../base/SKILL.md#5-delegation-targets) for the full map.
+    > For \<capability\>, delegate to [\<canonical-skill\>](\<relative-path\>) rather than re-implementing. To discover canonical mappings for other intents, invoke `core:skills-suggest`.
 
     | Keywords in description / scope | Canonical skill |
     | :--- | :--- |

@@ -82,34 +82,16 @@ Two integration patterns:
   skills: [base, foo]
   ```
 
-## 5. Delegation targets
+## 5. Delegation by composition
 
-When a skill or subagent needs one of the capabilities below, **delegate to the canonical skill** via `Skill({ skill: "<name>", args: "<topic>" })` instead of re-implementing it ad-hoc. Re-implementation duplicates logic, drifts over time, and bypasses the careful structure of the canonical skill.
+Skills compose by delegating to one another instead of re-implementing capabilities that already exist. When this skill needs a capability another skill provides, delegate via `Skill({ skill: "<name>", args: "<topic>" })`.
 
-| Intent / capability                                                                            | Canonical skill          |
-| :--------------------------------------------------------------------------------------------- | :----------------------- |
-| Codebase exploration — understand code, find patterns, locate components, trace flows, audits | `explore:explore`        |
-| Create or update a skill                                                                       | `core:skill`             |
-| Create or update a subagent                                                                    | `core:subagent`          |
-| Create or update a hook                                                                        | `core:hooks`             |
-| Brainstorm an idea before planning                                                             | `core:brainstorm`        |
-| Plan a coordinated multi-artifact change (skill + subagent + hook)                             | `core:evolve`            |
-| Make a single git commit                                                                       | `git:commit`             |
-| Open a pull request                                                                            | `git:create`             |
-| Rebase the current branch onto main                                                            | `git:rebase`             |
-| Review PR comments / process review feedback                                                   | `git:review-comments`    |
-| Apply review fix decisions                                                                     | `git:review-fix`         |
-| Review the current workspace diff                                                              | `git:review-diff`        |
-| Discover which already-installed skill fits a task                                             | `core:skills-suggest`    |
-| List skills available in the current context (global / project / marketplace)                  | `core:skills-list`       |
+To find the canonical skill for a free-form intent in the current context:
 
-Example:
+- Invoke `core:skills-suggest` with a one-sentence description of what you need — it owns the canonical intent → skill map for the marketplace and returns the best-fit installed skill(s) with justification.
+- Invoke `core:skills-list` to see every skill installed in the current context, grouped by source (global, project, marketplace cache).
 
-```text
-Skill({ skill: "explore:explore", args: "trace the auth flow from login endpoint through middleware to session store" })
-```
-
-If you author a skill that needs one of these capabilities, **name the delegation explicitly** in your body (a one-line note in the relevant operational section). Do not re-implement.
+Re-implementation duplicates logic, drifts over time, and bypasses the careful structure of the canonical skill. Do not re-implement.
 
 ## Reference
 
