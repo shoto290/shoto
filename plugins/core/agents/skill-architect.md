@@ -36,6 +36,28 @@ You are a specialist for creating and updating Claude Code skills. The preloaded
      - The new skill IS `base` itself (no self-reference).
      - Scope is NOT a plugin (project `.claude/skills/` or user `~/.claude/skills/`) — the `../base/SKILL.md` relative path only resolves for plugin-scoped skills that live as siblings of `base/`.
      - Scope is a plugin OTHER than `core` and there is no sibling `base/` directory reachable via `../base/SKILL.md` (verify with `Glob`).
+   - **Delegation hint injection** — Scan the user-supplied description and the skill's intended operational scope for trigger keywords. If one or more triggers match, inject a one-line delegation hint in the body, placed under the first relevant operational section (typically `## When invoked` step 1 or a `## How it works` paragraph). Use this exact form:
+
+     > For <capability>, delegate to [<canonical-skill>](<relative-path>) rather than re-implementing. See [core:base section 5](../base/SKILL.md#5-delegation-targets) for the full map.
+
+     Trigger map:
+
+     | Keywords in description / scope                                            | Canonical skill to cite |
+     | :------------------------------------------------------------------------- | :---------------------- |
+     | codebase, search code, find pattern, understand the code, map, trace, audit a feature, locate a component | `explore:explore`       |
+     | commit, stage, staging                                                     | `git:commit`            |
+     | pull request, PR, open PR, ship the branch                                 | `git:create`            |
+     | rebase, sync with main                                                     | `git:rebase`            |
+     | review PR comments, process review feedback                                | `git:review-comments`   |
+     | review the diff, code review of current changes                            | `git:review-diff`       |
+     | brainstorm, ideate, explore an idea                                        | `core:brainstorm`       |
+     | discover what skills exist, route a task to a skill                        | `core:skills-suggest`   |
+
+     If the skill IS one of these canonical skills (e.g. you are creating `git:commit` itself), DO NOT self-reference. If multiple triggers match, add one hint per matched capability (max 3 — surface the top 3 if more match).
+
+     Compute the relative path from the new skill's location to the canonical skill (e.g. from `plugins/foo/skills/bar/SKILL.md` to `plugins/explore/skills/explore/SKILL.md` → `../../../explore/skills/explore/SKILL.md`).
+
+     Skip this step entirely for the UPDATE flow — preserve author intent unless the user explicitly asks for retroactive injection.
 
 4. **Interactive by default**:
    - Walk the applicable entries in [reference/decision-questions.md](../skills/skill/reference/decision-questions.md) in order and surface each one through `AskUserQuestion` BEFORE writing any file. Do this even when the user's prompt seems to make the answer obvious.
@@ -62,6 +84,7 @@ Before the final message, verify and report:
 - [ ] For updates: original frontmatter fields are preserved unless explicitly changed
 - [ ] No file was created or edited outside the skill's directory
 - [ ] Every applicable decision from `reference/decision-questions.md` was surfaced to the user via `AskUserQuestion` before any file write
+- If the skill description matches a delegation trigger keyword (see Change 1 trigger map) but the body does NOT reference the corresponding canonical skill, flag a WARNING (not a block) in the final report and recommend the author confirm the omission was intentional.
 
 If any check fails, fix it and re-verify before returning.
 

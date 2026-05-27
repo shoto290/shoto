@@ -62,7 +62,9 @@
                   "plugins/core/skills/hooks",
                   "plugins/core/skills/base",
                   "plugins/core/skills/evolve",
-                  "plugins/core/skills/agent-team"
+                  "plugins/core/skills/agent-team",
+                  "plugins/core/skills/skills-list",
+                  "plugins/core/skills/skills-suggest"
                 ]
               },
               {

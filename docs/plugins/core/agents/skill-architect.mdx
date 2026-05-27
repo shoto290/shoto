@@ -54,9 +54,30 @@ Use the skill-architect subagent to update the description on the `deploy` skill
   </Step>
   <Step title="Write the files">
     Creates the skill directory and `SKILL.md`. Adds supporting files (`examples/`, `reference/`, `scripts/`, `template.md`) only when needed. Injects the `base` reference line at the top of the body for plugin-scoped skills inside `core`.
+
+    **Delegation hint injection** — before writing, the architect scans the user-supplied description and intended scope for trigger keywords. When a match is found, it injects a one-line delegation hint under the first relevant operational section:
+
+    > For \<capability\>, delegate to [\<canonical-skill\>](\<relative-path\>) rather than re-implementing. See [core:base section 5](../base/SKILL.md#5-delegation-targets) for the full map.
+
+    | Keywords in description / scope | Canonical skill |
+    | :--- | :--- |
+    | codebase, search code, find pattern, understand the code, map, trace, audit a feature, locate a component | `explore:explore` |
+    | commit, stage, staging | `git:commit` |
+    | pull request, PR, open PR, ship the branch | `git:create` |
+    | rebase, sync with main | `git:rebase` |
+    | review PR comments, process review feedback | `git:review-comments` |
+    | review the diff, code review of current changes | `git:review-diff` |
+    | brainstorm, ideate, explore an idea | `core:brainstorm` |
+    | discover what skills exist, route a task to a skill | `core:skills-suggest` |
+
+    If the new skill IS one of the canonical skills, no self-reference is injected. If multiple triggers match, at most three hints are added (top 3). This step is skipped entirely for the update flow.
   </Step>
   <Step title="Run the validation gate">
     Checks: `SKILL.md` exists at the expected path, frontmatter is valid YAML with both `name` and `description`, `name` is kebab-case, all internal Markdown links resolve to files that exist, no files were touched outside the skill directory.
+
+    <Warning>
+      If the skill description matches a delegation trigger keyword but the body does NOT reference the corresponding canonical skill, the gate flags a WARNING (not a block) and recommends the author confirm the omission was intentional.
+    </Warning>
   </Step>
 </Steps>
 
