@@ -65,7 +65,8 @@
                   "plugins/core/skills/agent-team",
                   "plugins/core/skills/skills-list",
                   "plugins/core/skills/skills-suggest",
-                  "plugins/core/skills/blueprint"
+                  "plugins/core/skills/blueprint",
+                  "plugins/core/skills/init"
                 ]
               },
               {
