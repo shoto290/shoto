@@ -20,7 +20,11 @@ allowed-tools: [Read, Glob, Write, AskUserQuestion, Skill]
 ## Phase 1 — Frame
 
 1. Restate the user's input as one crisp goal in a single sentence. Confirm the restatement out loud before continuing.
-2. Resolve `--mode`: parse `--mode quick|standard|deep` from `$ARGUMENTS` if present, otherwise default to `standard`. Announce the active mode in one short line. Do not re-explain the modes — calibration lives in [reference/mode-calibration.md](./reference/mode-calibration.md).
+2. Resolve `--mode`:
+   - If `$ARGUMENTS` contains an explicit `--mode quick|standard|deep`, adopt it as-is and announce the active mode in one short line. Skip the prompt.
+   - Otherwise, infer the most coherent mode from the restated goal using the "Mode inference rubric" in [reference/mode-calibration.md](./reference/mode-calibration.md), then call `AskUserQuestion` with all three options (`quick`, `standard`, `deep`); tag the inferred option's label with the suffix ` (Recommended)`. The user's answer (including an "Other" override) becomes the active mode. Announce the active mode in one short line.
+
+   Do not re-explain the modes — calibration lives in [reference/mode-calibration.md](./reference/mode-calibration.md).
 
 Do not skip Phase 1 even if the user's goal seems unambiguous.
 
@@ -64,6 +68,7 @@ No coherence-check narration in the final plan file — the gate runs in this sk
 1. **Slug** — compute a kebab-case slug from the goal (≤ 40 chars, lowercase letters/digits/hyphens only).
 2. **Path** — `.claude/plans/<slug>.md`. Use `Glob` on `.claude/plans/<slug>*.md` to check for collisions. If a file exists, append `-2`, `-3`, … until the path is free.
 3. **Write the plan** — use the schema from [reference/plan-template.md](./reference/plan-template.md) **exactly**, in section order. Fill the frontmatter (`name`, `mode`, `patterns`, `created`), the `## Context`, `## Reuse-first`, `## Steps`, and `## Verification` sections.
+3.5. **Meta-artifact pointer** — if either (a) the restated goal contains a meta-keyword (`skill`, `subagent`/`sub-agent`/`agent`, `hook`/`hooks`, `plugin`, `SKILL.md`, or a `/<plugin>:<skill>` slash-command reference), or (b) any drafted step's `action` or `verify` field references a path under `plugins/**/skills/*/SKILL.md`, `plugins/**/agents/*.md`, `.claude/hooks/**`, `.claude/settings.json`, or `.claude-plugin/**`, append the `## Next` section to the plan body before writing the file. Use the canonical text from [reference/plan-template.md](./reference/plan-template.md). Skip the section otherwise.
 4. **Print inline** — after `Write`, also print the full plan inline in the response, using the same schema, so the caller has both the file path and the structured content available immediately.
 
 Examples of well-formed plans: [examples/plan-quick.md](./examples/plan-quick.md), [examples/plan-deep.md](./examples/plan-deep.md).

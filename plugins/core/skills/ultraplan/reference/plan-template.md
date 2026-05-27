@@ -48,3 +48,7 @@ created: <YYYY-MM-DD>
 - [ ] <invariant or end-to-end check 1>
 - [ ] <invariant or end-to-end check 2>
 - [ ] <invariant or end-to-end check 3>
+
+## Next *(only when the goal touches skills / sub-agents / hooks)*
+
+This plan touches Claude Code artifacts (skills, sub-agents, or hooks). To execute it, invoke `/core:evolve` — the meta-coordinator that delegates artifact creation/update to `skill-architect`, `subagent-architect`, and the `hooks` skill.

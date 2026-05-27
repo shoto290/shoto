@@ -22,7 +22,7 @@ Invoke `/core:ultraplan [--mode quick|standard|deep] <goal>` when you want to:
 
 <Steps>
   <Step title="Frame">
-    Restates your goal as one crisp sentence and confirms the restatement. Resolves `--mode` (defaults to `standard`) and announces the active mode. This phase is never skipped.
+    Restates your goal as one crisp sentence and confirms the restatement. If `--mode` is provided, adopts it immediately and announces the active mode. Otherwise, infers a recommended mode from the goal and presents a 3-choice prompt (`quick`, `standard`, `deep`) — the inferred option is tagged `(Recommended)`. Your answer becomes the active mode. This phase is never skipped.
   </Step>
   <Step title="Ground">
     Calls `explore:explore` in-skill via `Skill({ skill: "explore:explore", args: "..." })`. The number of parallel calls depends on the active mode. Returns `path:line`-anchored reports that feed the `## Reuse-first` section and every `mirrors:` slot in the plan.
@@ -34,7 +34,7 @@ Invoke `/core:ultraplan [--mode quick|standard|deep] <goal>` when you want to:
     Walks every step before writing. In `standard` and `deep`, any step with neither a real `mirrors:` anchor nor the escape hatch literal causes a re-draft. In `quick`, the same condition emits a warning but does not block.
   </Step>
   <Step title="Output">
-    Computes a kebab-case slug from the goal, checks for filename collisions under `.claude/plans/`, writes the plan file, then prints the full plan inline so you have both the path and the content immediately.
+    Computes a kebab-case slug from the goal, checks for filename collisions under `.claude/plans/`, writes the plan file, then prints the full plan inline so you have both the path and the content immediately. When the goal touches Claude Code skills, sub-agents, or hooks, the plan ends with a `## Next` section that points to `/core:evolve` — the meta-coordinator that delegates artifact creation to the architects.
   </Step>
 </Steps>
 
@@ -45,7 +45,7 @@ The `--mode` flag controls how many explorer calls run, which step fields are re
 | Mode | Explorer calls | Required step fields | Mirroring gate |
 |---|---|---|---|
 | `quick` | 1 | `action` + `verify` + `mirrors` | soft (warning only) |
-| `standard` *(default)* | 2 parallel | `action` + `verify` + `mirrors` | hard (re-draft on failure) |
+| `standard` | 2 parallel | `action` + `verify` + `mirrors` | hard (re-draft on failure) |
 | `deep` | 4 parallel | `action` + `verify` + `mirrors` + `risk` + `rollback` | hard (re-draft on failure) |
 
 <Note>
@@ -81,6 +81,7 @@ created: <YYYY-MM-DD>
 ## Reuse-first
 ## Steps
 ## Verification
+## Next  *(optional — only when the goal touches skills, sub-agents, or hooks)*
 ```
 
 Each step under `## Steps` is a `### Step N — <verb + object>` block with the fields required by the active mode.
@@ -89,7 +90,7 @@ Each step under `## Steps` is a `### Step N — <verb + object>` block with the 
 
 `/core:ultraplan [--mode quick|standard|deep] <goal in one sentence>`
 
-- `--mode` is optional. Omitting it selects `standard`.
+- `--mode` is optional. Omitting it triggers an inference prompt where the skill recommends one of the three modes based on your goal and lets you confirm or pick another.
 - `<goal>` is required. If absent or too vague (one or two words with no scope), the skill asks one clarifying question before proceeding.
 
 ## Hard rules

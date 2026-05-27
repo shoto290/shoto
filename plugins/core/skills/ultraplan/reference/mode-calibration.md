@@ -66,3 +66,16 @@ The exact string is what the hard gate recognizes. Any paraphrase ("no example f
 ## Deferred modes
 
 `ultra` mode (all 8 explore specialists in parallel, alternatives per step) is deferred to a future release. For v0, `--mode ultra` is not accepted; users who request it are routed to `deep`.
+
+## Mode inference rubric
+
+Used by Phase 1 step 2 of [`../SKILL.md`](../SKILL.md) to pick the **Recommended** mode when the user does not pass `--mode`. The user can always override via the AskUserQuestion prompt or by passing `--mode` explicitly.
+
+| Signal in the restated goal | Recommended mode | Example goals |
+| :-- | :-- | :-- |
+| Small, isolated change — clearly under ~5 files, no architectural impact (typo, rename, single-component addition, one-liner) | **quick** | "fix typo in README", "rename a utility function", "add a CTA button to the landing page" |
+| Standard feature work — bounded module, no migration, no global refactor | **standard** | "add a date-picker component to the settings page", "wire a new API endpoint", "expose a config flag in the UI" |
+| Refactor, migration, or cross-package change — non-trivial risk, rollback matters | **deep** | "migrate the auth middleware from JWT to OAuth2", "refactor the data layer to use repositories", "split the auth module into its own package" |
+| Vague or unscoped goal | **standard** + ask the user to refine the goal | "improve performance", "clean up the code", "make it better" |
+
+Ties go to `standard`. When the goal mentions both a small change *and* a refactor (e.g. "add a button and refactor the layout"), recommend `standard` and let the user upgrade to `deep` if they want.
