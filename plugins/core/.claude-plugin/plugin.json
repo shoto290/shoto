@@ -1,7 +1,7 @@
 {
   "name": "core",
-  "description": "Core meta-tooling to brainstorm ideas, then create and evolve Claude Code skills, sub-agents and hooks.",
-  "version": "0.13.0",
+  "description": "Core meta-tooling to brainstorm ideas, then create and evolve Claude Code skills, sub-agents, hooks and MCP servers.",
+  "version": "0.14.0",
   "author": {
     "name": "shoto290"
   },

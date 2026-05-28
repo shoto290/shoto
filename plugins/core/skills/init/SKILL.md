@@ -46,6 +46,7 @@ Two steps:
    - `reuse` — existing artifact covers ≥70% of the need; recommend invoking it instead.
    - `update` — existing artifact partially covers; route to `core:evolve` for amendment.
    - `create` — no overlap; route to `core:evolve` for fresh authoring.
+   - `recommend-install` — an existing MCP server or published plugin that should be installed (not authored) — surfaced separately, exempt from the ≤3 cap.
 
 ## Phase 4 — Targeted brainstorm *(optional)*
 
@@ -60,11 +61,13 @@ Never auto-loop. Always end on user input. One round by default; user must expli
 
 ## Phase 5 — Final classification
 
-If Phase 4 returned `Converger` immediately, this phase is a pass-through using the Phase 3 result. Otherwise re-run the Phase 3 classification logic with the new ideas (from `Approfondir` or `Élargir`) folded in.
+If Phase 4 returned `Converger` immediately, this phase is a pass-through using the Phase 3 result. Otherwise re-run the Phase 3 classification logic — including the `recommend-install` value for existing MCP servers / published plugins — with the new ideas (from `Approfondir` or `Élargir`) folded in.
 
 ## Phase 6 — Batch approval gate
 
 Single `AskUserQuestion` presenting the full proposal as a numbered list (≤3 artifacts, each annotated with its `reuse` / `update` / `create` classification and target plugin or local `.claude/`).
+
+Present any `recommend-install` items (existing MCP servers / existing plugins) in a **separate list below** the ≤3 authored proposal. These are installs, not authored artifacts, so they do not consume artifact slots and are exempt from the ≤3 cap.
 
 Options:
 
@@ -79,6 +82,8 @@ If more than 3 artifacts seem warranted, present only the top 3 and offer to def
 Single `Skill({ skill: "core:evolve", args: "<consolidated approved proposal, including target plugin or local .claude/>" })` call.
 
 > Never write artifact files directly — `core:evolve` owns the entire write path, which routes to `skill-architect` / `subagent-architect` / `hooks` per [../evolve/reference/delegation-routing.md](../evolve/reference/delegation-routing.md).
+
+Approved `recommend-install` items are handled without authoring: MCP-server recommendations are routed through `core:evolve` → `core:mcp` (consistent with `core:evolve`'s delegation routing), while existing-plugin installs are surfaced as guidance (e.g. via `find-skills`), not authored.
 
 After delegation, `/core:init` is done — `core:evolve` produces the only execution report. Do not summarize, do not echo, do not write anything to disk.
 

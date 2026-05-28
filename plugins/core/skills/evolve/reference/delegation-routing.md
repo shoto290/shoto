@@ -7,6 +7,7 @@
 | Skill (create or update) | `skill-architect` subagent | `Agent({subagent_type: "skill-architect", prompt: "<full spec>"})` |
 | Subagent (create or update) | `subagent-architect` subagent | `Agent({subagent_type: "subagent-architect", prompt: "<full spec>"})` |
 | Hook (create or update) | `hooks` skill via the Skill tool | `Skill({skill: "hooks", args: "<event-or-pattern>"})` |
+| MCP server (recommend or configure) | `mcp` skill via the Skill tool | `Skill({skill: "mcp", args: "<recommend|add|debug> <signal-or-server>"})` |
 
 ## Spec template for each executor
 
@@ -37,6 +38,12 @@ Include in the prompt:
 
 - Pass the event (or matcher pattern) as `args`.
 - Let the `hooks` skill handle the rest of the flow (event selection, command shape, settings file edit).
+
+### `mcp`
+
+- Pass the intent (`recommend` / `add` / `debug`) plus the detected signal or target server as `args`.
+- Let the `mcp` skill own scope selection (project / local / user) and secret-via-env handling.
+- Never inline secrets.
 
 ## Notes
 
