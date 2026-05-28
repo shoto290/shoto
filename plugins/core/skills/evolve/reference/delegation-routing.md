@@ -6,6 +6,7 @@
 | :-- | :-- | :-- |
 | Skill (create or update) | `skill-architect` subagent | `Agent({subagent_type: "skill-architect", prompt: "<full spec>"})` |
 | Subagent (create or update) | `subagent-architect` subagent | `Agent({subagent_type: "subagent-architect", prompt: "<full spec>"})` |
+| Workflow (create or update) | `workflow-architect` subagent | `Agent({subagent_type: "workflow-architect", prompt: "<full spec>"})` |
 | Hook (create or update) | `hooks` skill via the Skill tool | `Skill({skill: "hooks", args: "<event-or-pattern>"})` |
 | MCP server (recommend or configure) | `mcp` skill via the Skill tool | `Skill({skill: "mcp", args: "<recommend|add|debug> <signal-or-server>"})` |
 
@@ -33,6 +34,17 @@ Include in the prompt:
 - Tools allowlist (only what the agent needs).
 - Model (`sonnet`, `opus`, etc.).
 - System prompt outline — sections and constraints.
+
+### `workflow-architect`
+
+Include in the prompt:
+
+- Scope: `project` (`.claude/workflows/`) or `personal` (`~/.claude/workflows/`).
+- Workflow name (kebab-case, `.js`).
+- One-sentence purpose (what it orchestrates).
+- Orchestration shape: fan-out / pipeline / loop-until-dry / judge-panel, and what fans out vs. verifies vs. synthesizes.
+- Per-stage agent prompts and any output `schema`.
+- Token-budget posture and whether agents need `isolation: 'worktree'`.
 
 ### `hooks`
 

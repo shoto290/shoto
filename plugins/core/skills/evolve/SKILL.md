@@ -79,6 +79,7 @@ Route each approved entry per [reference/delegation-routing.md](./reference/dele
 | :-- | :-- |
 | Skill (create or update) | `skill-architect` subagent |
 | Subagent (create or update) | `subagent-architect` subagent |
+| Workflow (create or update) | `workflow-architect` subagent |
 | Hook (create or update) | `hooks` skill via the Skill tool |
 | MCP server (create or update) | `mcp` skill via the Skill tool |
 

@@ -8,6 +8,7 @@
 | Static knowledge / project context Claude should know in the background | Skill with `user-invocable: false` | Background reference |
 | Specialized delegate with sandboxed tools | Subagent | One focused job, allowlisted tools |
 | Multi-step plan that must run in isolation from main thread | Subagent OR Skill with `context: fork` | Token isolation |
+| Multi-step task that fans work across several subagents in parallel, with verification before integration | Workflow | Deterministic JS orchestration (pipeline/parallel), adversarial verify, auto-resume |
 | Automatic enforcement (format-on-save, block edits, validate Bash) | Hook | Deterministic, pre-execution |
 | Inject context at session start | Hook (`SessionStart` event) | Runs before user prompt |
 | External service/tool integration (DB, browser, live docs, issue tracker, error tracking) Claude must query directly | MCP server (via `core:mcp`) | External capability — not authored as a skill/agent/hook |
