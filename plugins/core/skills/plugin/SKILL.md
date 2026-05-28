@@ -15,6 +15,7 @@ This skill covers the **plugin-level** concerns: manifest, layout, local testing
 - [skills/skill/SKILL.md](../skill/SKILL.md) — for `SKILL.md` files
 - [skills/subagent/SKILL.md](../subagent/SKILL.md) — for sub-agent definitions
 - [skills/hooks/SKILL.md](../hooks/SKILL.md) — for hook handlers
+- [skills/mcp/SKILL.md](../mcp/SKILL.md) — for project-level MCP servers (`.mcp.json` at the repo root, `claude mcp add`). This skill owns MCP **bundled inside a plugin** (`.mcp.json` at the plugin root, `mcpServers` in `plugin.json`).
 - [skills/evolve/SKILL.md](../evolve/SKILL.md) — when a change spans multiple artifact types
 
 ## Plugin vs Standalone `.claude/`

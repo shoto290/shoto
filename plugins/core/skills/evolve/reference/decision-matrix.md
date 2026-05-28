@@ -10,6 +10,7 @@
 | Multi-step plan that must run in isolation from main thread | Subagent OR Skill with `context: fork` | Token isolation |
 | Automatic enforcement (format-on-save, block edits, validate Bash) | Hook | Deterministic, pre-execution |
 | Inject context at session start | Hook (`SessionStart` event) | Runs before user prompt |
+| External service/tool integration (DB, browser, live docs, issue tracker, error tracking) Claude must query directly | MCP server (via `core:mcp`) | External capability — not authored as a skill/agent/hook |
 | Multi-asset feature (e.g., a `/deploy` flow + safety hook + deployer agent) | Combination — coordinate via `evolve` | Orchestration is the whole point |
 
 ## Update vs create heuristics
