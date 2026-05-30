@@ -1,10 +1,9 @@
 ---
 name: hooks
-description: 'Understand, design, and create or update Claude Code hooks (shell commands, prompts, agents, or HTTP endpoints that run at specific lifecycle events). Use when the user wants to learn how hooks work, decide which event/type to use, write a new hook in `settings.json`, edit an existing one, add a matcher or `if` filter, build a hook script, switch between exit-code and JSON output, scope a hook to user/project/local, auto-approve a permission prompt, block a tool call, inject context on session start, audit config changes, or debug a hook that isn''t firing. Triggers on: hook, hooks, PreToolUse, PostToolUse, SessionStart, SessionEnd, Stop, Notification, UserPromptSubmit, PermissionRequest, ConfigChange, FileChanged, CwdChanged, PreCompact, SubagentStart, SubagentStop, hook matcher, hook type, hook script, hook output, exit code 2, hookSpecificOutput, additionalContext, permissionDecision, allowedEnvVars, CLAUDE_PROJECT_DIR, CLAUDE_ENV_FILE, /hooks menu, disableAllHooks.'
+description: 'Understand, design, and create or update Claude Code hooks (shell commands, prompts, agents, or HTTP endpoints that run at specific lifecycle events).'
+when_to_use: 'Use when the user wants to learn how hooks work, decide which event/type to use, write a new hook in `settings.json`, edit an existing one, add a matcher or `if` filter, build a hook script, switch between exit-code and JSON output, scope a hook to user/project/local, auto-approve a permission prompt, block a tool call, inject context on session start, audit config changes, or debug a hook that isn''t firing. Triggers on: hook, hooks, PreToolUse, PostToolUse, SessionStart, SessionEnd, Stop, Notification, UserPromptSubmit, PermissionRequest, ConfigChange, FileChanged, CwdChanged, PreCompact, SubagentStart, SubagentStop, hook matcher, hook type, hook script, hook output, exit code 2, hookSpecificOutput, additionalContext, permissionDecision, allowedEnvVars, CLAUDE_PROJECT_DIR, CLAUDE_ENV_FILE, /hooks menu, disableAllHooks.'
 argument-hint: '[event-or-pattern]'
 ---
-
-> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
 
 # Hooks
 

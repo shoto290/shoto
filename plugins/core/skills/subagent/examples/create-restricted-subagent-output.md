@@ -1,6 +1,9 @@
 ---
 name: migration-reviewer
 description: Reviews database migration files for safety. Use immediately after a migration is written or edited.
+permissionMode: default
+skills: [core:base]
+color: orange
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

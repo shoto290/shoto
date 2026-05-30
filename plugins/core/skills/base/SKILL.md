@@ -1,14 +1,14 @@
 ---
 name: base
-description: Foundation rules, workflows, and reference docs shared by all skills and subagents in this plugin. Loaded explicitly via Markdown link from other skills, or via `skills:` preload from subagents.
-disable-model-invocation: true
+description: The global foundation — core principles, behavioral guidelines, and shared frontmatter / naming / git-safety rules that everything in this plugin builds on. Launch it to load a clean, principled prompt.
+when_to_use: Invoke explicitly — `/core:base`, or `Skill({skill:"core:base"})` from an agent — to (re)load the foundation rules for a clean, principled working prompt. Deliberate use only; not a match for vague requests.
 ---
 
 # Base
 
-This skill is the portable foundation other skills and subagents extend from. It does not auto-trigger from user prompts — it is loaded explicitly, the same way a parent class is imported by a subclass.
+This skill is the global foundation everything in this plugin builds on — the canonical statement of how work is done here. Launch it deliberately (`/core:base`, or `Skill({skill:"core:base"})` from an agent) to load a clean, principled prompt. It is not meant to fire automatically on vague prompt matches.
 
-Use it to keep one canonical statement of principles, behavioral guidelines, and shared workflows instead of duplicating them in every artifact.
+Use it to keep one canonical statement of principles, behavioral guidelines, and shared workflows instead of duplicating them everywhere.
 
 ## 1. Core principles (SIMPLE)
 
@@ -60,27 +60,23 @@ For multi-step tasks, state a brief plan with verification:
 
 Strong success criteria enable independent looping. Weak criteria ("make it work") force constant clarification.
 
-## 3. Common workflows
+## 3. Mandatory frontmatter
+
+Every skill in this marketplace MUST declare these three fields:
+
+| Field | Role |
+| :-- | :-- |
+| `name` | kebab-case identifier, matches the directory or filename. |
+| `description` | What the skill does. The trigger Claude matches against requests — put the key use case first. |
+| `when_to_use` | Additional context for when Claude should invoke the skill: trigger phrases or example requests. Appended to `description` in the skill listing and counts toward the 1,536-character cap. |
+
+Optional fields (`disable-model-invocation`, `allowed-tools`, `argument-hint`, …) remain permitted on top of the three required ones. Full rules and the validation gate live in [reference/frontmatter.md](./reference/frontmatter.md).
+
+## 4. Common workflows
 
 - **Inventory before proposing** — read existing artifacts before writing new ones. Reuse over duplication.
 - **Get explicit approval before destructive operations** — `git push --force`, `git reset --hard`, `git branch -D`, `rm -rf`. Never run without confirmation. See [reference/git-safety.md](./reference/git-safety.md).
-- **Validation gate before returning** — for any skill or subagent that produces files, verify: the file exists at the expected path, frontmatter is valid YAML with the required fields, every internal link resolves. See [reference/frontmatter.md](./reference/frontmatter.md).
-
-## 4. How to extend from this base
-
-Two integration patterns:
-
-- **From a skill**: add a quoted line at the top of the `SKILL.md` body:
-
-  ```markdown
-  > Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
-  ```
-
-- **From a subagent**: preload it via the `skills:` field in frontmatter:
-
-  ```yaml
-  skills: [base, foo]
-  ```
+- **Validation gate before returning** — for any skill that produces files, verify: the file exists at the expected path, frontmatter is valid YAML carrying the three mandatory fields, every internal link resolves. See [reference/frontmatter.md](./reference/frontmatter.md).
 
 ## 5. Delegation by composition
 
@@ -97,4 +93,4 @@ Re-implementation duplicates logic, drifts over time, and bypasses the careful s
 
 - [reference/naming.md](./reference/naming.md) — kebab-case files and directories, `name:` must match path, headings in title case.
 - [reference/git-safety.md](./reference/git-safety.md) — destructive git operations that require explicit confirmation.
-- [reference/frontmatter.md](./reference/frontmatter.md) — YAML must parse, `name` and `description` are mandatory for skills and subagents.
+- [reference/frontmatter.md](./reference/frontmatter.md) — YAML must parse; `name`, `description`, and `when_to_use` are mandatory for every skill.

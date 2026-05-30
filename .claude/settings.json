@@ -18,37 +18,5 @@
 			"Write(./secrets/**)",
 			"Bash(bun run dev)"
 		]
-	},
-	"enabledPlugins": {
-		"core@shoto": true,
-		"utils@shoto": true,
-		"git@shoto": true,
-		"docs@shoto": true,
-		"frontend@shoto": true,
-		"explore@shoto": true
-	},
-	"extraKnownMarketplaces": {
-		"shoto": {
-			"source": {
-				"source": "github",
-				"repo": "shoto290/shoto"
-			}
-		}
-	},
-	"hooks": {
-		"PostToolUse": [
-			{
-				"matcher": "Write|Edit|MultiEdit",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash",
-						"args": [
-							"${CLAUDE_PROJECT_DIR}/.claude/hooks/notify-docs-sync.sh"
-						]
-					}
-				]
-			}
-		]
 	}
 }

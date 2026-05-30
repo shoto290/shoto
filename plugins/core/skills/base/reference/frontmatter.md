@@ -11,16 +11,20 @@ Portable rules for the YAML frontmatter block at the top of every skill and suba
 ```yaml
 ---
 name: example
-description: One sentence covering what this does and when to use it.
+description: One sentence covering what this skill does — key use case first.
+when_to_use: Trigger phrases or example requests that should load this skill.
 ---
 ```
 
 ## Mandatory fields
 
+Every skill MUST declare all three of these. Subagents require `name` and `description`.
+
 | Field | Applies to | Notes |
 | :-- | :-- | :-- |
 | `name` | skills, subagents | kebab-case, must match the directory or filename. See [naming.md](./naming.md). |
-| `description` | skills, subagents | One concise sentence. For skills, this is the trigger Claude matches against user requests — put the key use case first. |
+| `description` | skills, subagents | What the artifact does. For skills, this is the trigger Claude matches against user requests — put the key use case first. |
+| `when_to_use` | skills | Additional context for when Claude should invoke the skill, such as trigger phrases or example requests. Appended to `description` in the skill listing and counts toward the 1,536-character cap. |
 
 ## Common optional fields (skills)
 
@@ -37,6 +41,7 @@ Before returning, verify:
 
 - [ ] The file exists at the expected path.
 - [ ] Frontmatter parses as valid YAML.
-- [ ] `name` and `description` are both present.
+- [ ] `name`, `description`, and `when_to_use` are all present (skills); `name` and `description` for subagents.
 - [ ] `name` is kebab-case and matches the directory or filename.
+- [ ] Combined `description` + `when_to_use` stays within the 1,536-character cap.
 - [ ] Every internal Markdown link in the body resolves to a real file.

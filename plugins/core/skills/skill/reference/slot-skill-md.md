@@ -2,7 +2,7 @@
 
 ## What it is
 
-The required entry point of every skill. A skill is a directory; `SKILL.md` is the single file Claude Code must find inside it. The file has two parts: YAML frontmatter between `---` markers at the top, then a markdown body. The directory name becomes the slash command unless `name:` in the frontmatter overrides it.
+The required entry point of every skill. A skill is a directory; `SKILL.md` is the single file Claude Code must find inside it. The file has two parts: YAML frontmatter between `---` markers at the top, then a markdown body. The directory name becomes the slash command; `name:` only sets the display label (except a plugin-root `SKILL.md`).
 
 Every other slot in the skill (`template.md`, `examples/`, `reference.md` / `reference/`, `scripts/`) is optional and only loaded when `SKILL.md` references it.
 
@@ -12,14 +12,15 @@ The canonical shape of the file:
 
 ```
 ---
-name: my-skill              # optional, defaults to directory name
-description: ...            # recommended — drives auto-loading
+name: my-skill              # mandatory — kebab-case, matches the directory
+description: ...            # mandatory — drives auto-loading, key use case first
+when_to_use: ...           # mandatory — trigger phrases / example requests
 ---
 
 <markdown body>
 ```
 
-The full list of supported frontmatter fields is documented in [frontmatter.md](./frontmatter.md). The only recommended field is `description`; it is what Claude matches against the user's request when deciding whether to auto-load the skill.
+The full list of supported frontmatter fields is documented in [frontmatter.md](./frontmatter.md). In this marketplace `name`, `description`, and `when_to_use` are mandatory; `description` plus `when_to_use` is what Claude matches against the user's request when deciding whether to auto-load the skill.
 
 ## Body content guidance
 

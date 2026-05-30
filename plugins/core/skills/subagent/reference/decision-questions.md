@@ -1,6 +1,6 @@
 # Decision Questions Catalog
 
-This catalog is consumed by [`subagent-architect`](../../../agents/subagent-architect.md). The agent must walk every applicable entry in order, present the options + implications + recommended option via `AskUserQuestion`, and treat any value already supplied in the user prompt as a pre-selection (not a reason to skip the question — surface the pre-selection for confirmation when it materially affects scope, tool access, or destructive actions).
+This catalog is consumed by [`subagent-smith`](../../../agents/subagent-smith.md). The agent must walk every applicable entry in order, present the options + implications + recommended option via `AskUserQuestion`, and treat any value already supplied in the user prompt as a pre-selection (not a reason to skip the question — surface the pre-selection for confirmation when it materially affects scope, tool access, or destructive actions).
 
 ---
 
@@ -100,13 +100,13 @@ This catalog is consumed by [`subagent-architect`](../../../agents/subagent-arch
 | `haiku` | Fastest, cheapest. Right for high-volume read-only lookups (search, log scans). | |
 | `sonnet` | Balanced. Right for review, analysis, data work. | |
 | `opus` | Strongest reasoning, most expensive. Right for hard debugging or design analysis. | |
-| Full model id | Pin to a specific version (e.g. `claude-opus-4-7`). Use when reproducibility matters. | |
+| Full model id | Pin to a specific version (e.g. `claude-opus-4-8`). Use when reproducibility matters. | |
 
 ### 8. Permission mode
 
 **Question**: Which permission mode should the subagent run in?
 **Multi-select**: no
-**Skip when**: target scope is Plugin (the field is silently dropped).
+**Skip when**: never — mandatory in this marketplace. For Plugin scope the field is loaded but ignored; still emit it and note the caveat in the recap.
 
 **Options**:
 
@@ -138,9 +138,9 @@ Reminder: a parent session in `bypassPermissions` / `acceptEdits` / `auto` overr
 
 ### 10. Preloaded skills
 
-**Question**: Should the subagent preload any skills at startup?
+**Question**: Which skills should the subagent preload at startup (beyond `core:base`)?
 **Multi-select**: yes
-**Skip when**: the agent's body fully covers its workflow and no shared convention skill applies.
+**Skip when**: never — `skills` is mandatory. `core:base` is **always** included as the first entry (the fully-qualified name resolves from any scope, including inside the `core` plugin); this question only chooses ADDITIONAL skills.
 
 **Options**: dynamically built from skills in scope. Each option = one skill name (e.g. `api-conventions`, `error-handling-patterns`). The full skill content is injected at startup (not just the description). Skills with `disable-model-invocation: true` cannot be preloaded.
 
@@ -221,7 +221,7 @@ Reminder: a parent session in `bypassPermissions` / `acceptEdits` / `auto` overr
 
 **Question**: Should the agent auto-submit a first-turn prompt when run as a main session (`claude --agent <name>`)?
 **Multi-select**: no
-**Skip when**: the agent is never intended to run as a main session.
+**Skip when**: never — mandatory decision. Default to "No" and omit the field; emit `initialPrompt` only when the agent is meant to run as a main session.
 
 **Options**:
 
@@ -234,9 +234,9 @@ Reminder: a parent session in `bypassPermissions` / `acceptEdits` / `auto` overr
 
 **Question**: Pick a display color for the agent in the task list?
 **Multi-select**: no
-**Skip when**: aesthetics not requested.
+**Skip when**: never — mandatory in this marketplace. Always pick one.
 
-**Options**: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan`. No default — leave unset unless the user asks for one.
+**Options**: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan`. No upstream default — propose one and confirm with the user.
 
 ---
 
