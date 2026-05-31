@@ -31,6 +31,10 @@
     {
       "name": "frontend",
       "source": "./plugins/frontend"
+    },
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow"
     }
   ]
 }
