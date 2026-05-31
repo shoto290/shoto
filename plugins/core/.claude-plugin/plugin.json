@@ -1,0 +1,10 @@
+{
+  "name": "core",
+  "description": "Foundation plugin for the shoto marketplace: artifact authors (skill/subagent/hook/mcp/plugin/workflow smiths), the alignment + base skills, the orchestrator agent, and shared infrastructure.",
+  "version": "0.10.0",
+  "author": {
+    "name": "shoto290"
+  },
+  "homepage": "https://github.com/shoto290/shoto",
+  "repository": "https://github.com/shoto290/shoto"
+}
