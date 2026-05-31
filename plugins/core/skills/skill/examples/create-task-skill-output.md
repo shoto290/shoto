@@ -1,5 +1,7 @@
 ---
+name: deploy-check
 description: Run the pre-deploy verification checklist
+when_to_use: Use before deploying to confirm tests and the build pass for the target environment.
 disable-model-invocation: true
 argument-hint: '[environment]'
 allowed-tools: Bash(npm test) Bash(npm run build)

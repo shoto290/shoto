@@ -1,10 +1,9 @@
 ---
 name: subagent
-description: 'Understand and create or update a Claude Code subagent (custom AI assistant with its own context, tools, and system prompt). Use when the user wants to learn how subagents work, decide if a task needs one, write a new subagent file, edit an existing one in `.claude/agents/` or `~/.claude/agents/`, restrict tools/permissions, preload skills, enable persistent memory, hook into the lifecycle, or invoke one via natural language, @-mention, or `--agent`. Triggers on: subagent, sub-agent, agent file, /subagent command, /agents UI, .claude/agents, --agent flag, agent frontmatter, agent description, agent tools, agent model, agent permissionMode, agent hooks, agent memory, fork mode, agent teams, Explore, Plan, general-purpose.'
+description: 'Understand and create or update a Claude Code subagent (custom AI assistant with its own context, tools, and system prompt). Use when the user wants to learn how subagents work, decide if a task needs one, write a new subagent file, edit an existing one in `.claude/agents/` or `~/.claude/agents/`, restrict tools/permissions, preload skills, enable persistent memory, hook into the lifecycle, or invoke one via natural language, @-mention, or `--agent`.'
+when_to_use: 'Triggers on: subagent, sub-agent, agent file, /subagent command, /agents UI, .claude/agents, --agent flag, agent frontmatter, agent description, agent tools, agent model, agent permissionMode, agent hooks, agent memory, fork mode, agent teams, Explore, Plan, general-purpose.'
 argument-hint: '[agent-name]'
 ---
-
-> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
 
 # Agents
 
@@ -19,9 +18,23 @@ A subagent is a **single Markdown file** — there is no directory layout, no su
 └── my-agent.md         # frontmatter + system prompt
 ```
 
-Only `name` and `description` are required in the frontmatter. Everything else (`tools`, `model`, `permissionMode`, `memory`, `skills`, `mcpServers`, `hooks`, `isolation`, `background`, …) is optional. The full field reference lives at [reference/frontmatter.md](./reference/frontmatter.md).
+Upstream, only `name` and `description` are required. **In this marketplace, seven fields are mandatory** — see [Required frontmatter (this marketplace)](#required-frontmatter-this-marketplace). Everything else (`tools`, `model`, `memory`, `mcpServers`, `hooks`, `background`, …) stays optional. The full field reference lives at [reference/frontmatter.md](./reference/frontmatter.md).
 
-Use the pattern recipes in [reference/](./reference/) as starting points when drafting a new agent, and the [examples/](./examples/) directory as a guide to the response shape the architect produces.
+Use the pattern recipes in [examples/](./examples/) as starting points when drafting a new agent (complete sample agent files), and the same directory's `*-output.md` files as a guide to the response shape the architect produces. The [reference/](./reference/) directory holds documentation only — field specs, behavior, troubleshooting.
+
+## Required frontmatter (this marketplace)
+
+Every create **and** update must decide all seven fields below. `base` is always the first preloaded skill.
+
+| Field | Rule |
+| :-- | :-- |
+| `name` | Always emitted. Lowercase letters and hyphens, starts with a letter. |
+| `description` | Always emitted. States *what* the agent does AND *when* to delegate. |
+| `permissionMode` | Always emitted. Default `default`. **Inert for plugin-scope agents** (loaded but ignored) — still required here for consistency. |
+| `skills` | Always emitted. **Always includes `core:base` first** — the fully-qualified name resolves from any scope, including inside the `core` plugin itself. Requires the `core` plugin enabled; if absent it is skipped with a warning. Add topic skills after. |
+| `color` | Always emitted. One of `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan`. |
+| `isolation` | Mandatory **decision**. Its only value is `worktree`, so emit `isolation: worktree` when the agent needs an isolated worktree, otherwise omit and record the decision as "none". |
+| `initialPrompt` | Mandatory **decision**. Emit only when the agent runs as a main session (`--agent`); otherwise omit and record as "none". |
 
 ## Detect intent
 
@@ -68,26 +81,29 @@ Propose defaults from the user's request; confirm before writing:
 | **Scope** | Project `.claude/agents/` (default, checked into git), User `~/.claude/agents/`, Plugin `<plugin>/agents/` |
 | **Purpose** | One specific task. Focused subagents win over generalists |
 | **Tools** | Allowlist via `tools:` (safer) or denylist via `disallowedTools:` (preserves inherited MCP tools). Omit → inherit everything |
-| **Model** | `inherit` (default), `haiku` (cheap), `sonnet` (balanced), `opus` (hard reasoning), or a full id like `claude-opus-4-7` |
-| **Permissions** | `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan` |
+| **Model** | `inherit` (default), `haiku` (cheap), `sonnet` (balanced), `opus` (hard reasoning), or a full id like `claude-opus-4-8` |
+| **Permissions** (required) | `permissionMode`: `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan`. Always emitted; inert for plugin scope |
+| **Preloaded skills** (required) | `skills:` always lists `core:base` first; add topic skills after. Injects full skill content at startup |
+| **Color** (required) | One of `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan` |
+| **Isolation** (required decision) | `isolation: worktree` for an isolated git worktree, else "none" |
+| **Initial prompt** (required decision) | `initialPrompt:` first-turn prompt when run as a main session (`--agent`), else "none" |
 | **Persistent memory** | `user`, `project`, or `local` (none by default) |
 | **Hooks** | `PreToolUse`, `PostToolUse`, `Stop` in frontmatter; `SubagentStart`/`SubagentStop` in `settings.json` |
 | **MCP scoping** | Inline server defs or string references in `mcpServers:` |
-| **Preloaded skills** | `skills:` injects full skill content at startup |
-| **Run mode** | `background: true` to always background; `isolation: worktree` for an isolated git worktree |
+| **Run mode** | `background: true` to always background |
 
-See [reference/decision-questions.md](./reference/decision-questions.md) for the canonical list of decisions to surface to the user, with options, implications, and recommended defaults. `subagent-architect` uses it to drive `AskUserQuestion` calls.
+See [reference/decision-questions.md](./reference/decision-questions.md) for the canonical list of decisions to surface to the user, with options, implications, and recommended defaults. `subagent-smith` uses it to drive `AskUserQuestion` calls.
 
 ### 2. Pick a pattern recipe
 
-Start from a complete pattern reference in [reference/](./reference/):
+Start from a complete sample agent file in [examples/](./examples/):
 
-- [reference/basic.md](./reference/basic.md) — minimum viable subagent (description + body)
-- [reference/code-reviewer.md](./reference/code-reviewer.md) — read-only review (`tools: Read, Grep, Glob, Bash`)
-- [reference/debugger.md](./reference/debugger.md) — analyze + fix (`Edit` allowed)
-- [reference/data-scientist.md](./reference/data-scientist.md) — domain specialist with `model: sonnet` pinned
-- [reference/db-reader-hooks.md](./reference/db-reader-hooks.md) — `PreToolUse` hook whitelists SELECT-only SQL
-- [reference/coordinator.md](./reference/coordinator.md) — main-thread agent that spawns specific workers via `Agent(worker, researcher)`
+- [examples/basic.md](./examples/basic.md) — minimum viable subagent (required fields + body)
+- [examples/code-reviewer.md](./examples/code-reviewer.md) — read-only review (`tools: Read, Grep, Glob, Bash`)
+- [examples/debugger.md](./examples/debugger.md) — analyze + fix (`Edit` allowed)
+- [examples/data-scientist.md](./examples/data-scientist.md) — domain specialist with `model: sonnet` pinned
+- [examples/db-reader-hooks.md](./examples/db-reader-hooks.md) — `PreToolUse` hook whitelists SELECT-only SQL
+- [examples/coordinator.md](./examples/coordinator.md) — main-thread agent that spawns specific workers via `Agent(worker, researcher)`
 
 ### 3. Create the file
 
@@ -96,14 +112,19 @@ mkdir -p <scope>/agents
 # write the file at <scope>/agents/<name>.md
 ```
 
-Frontmatter only requires `name` and `description`. The markdown body is the system prompt. The subagent does **not** see the full Claude Code system prompt — only this body plus environment details. Full field reference: [reference/frontmatter.md](./reference/frontmatter.md).
+Emit all seven required fields (see [Required frontmatter](#required-frontmatter-this-marketplace)). The markdown body is the system prompt. The subagent does **not** see the full Claude Code system prompt — only this body plus environment details. Full field reference: [reference/frontmatter.md](./reference/frontmatter.md).
 
 ```markdown
 ---
 name: <name>
 description: <what it does + when to delegate; use "proactively" / "use immediately" for auto-delegation triggers>
+permissionMode: default
+skills: [core:base]
+color: <red | blue | green | yellow | purple | orange | pink | cyan>
 tools: <comma-separated allowlist>          # optional
-model: <inherit | haiku | sonnet | opus>    # optional
+model: inherit                              # optional
+isolation: worktree                         # only when an isolated worktree is needed
+initialPrompt: <first-turn prompt>          # only when run as a main session (--agent)
 ---
 
 You are a <role>...
@@ -164,6 +185,7 @@ See [reference/decision-questions.md](./reference/decision-questions.md) for the
 ### 4. Apply the change
 
 - Edit via `Edit`; preserve what already works.
+- **Enforce the seven required fields on update too.** If the target is missing any of `permissionMode`, `skills` (with `core:base` first), `color`, or a recorded `isolation` / `initialPrompt` decision, add them — `skills` always gains `core:base` if absent. See [Required frontmatter](#required-frontmatter-this-marketplace).
 - **Warn before** renaming or moving scope — both change how the agent is discovered and invoked.
 - Plugin source? Either accept that `hooks` / `mcpServers` / `permissionMode` will be ignored, or copy the file out into `.claude/agents/` / `~/.claude/agents/`.
 
@@ -191,6 +213,8 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 
 ## Critical principles
 
+- **Seven fields are mandatory** — every create and update decides `name`, `description`, `permissionMode`, `skills`, `color`, `isolation`, `initialPrompt`. Never scaffold or edit a subagent without surfacing all seven. See [Required frontmatter](#required-frontmatter-this-marketplace).
+- **`core:base` is always preloaded** — `skills` lists `core:base` first (fully-qualified; resolves from any scope, requires the `core` plugin enabled). This applies on create and on update — add it if a target lacks it.
 - **One subagent, one job.** Description-based delegation only works when each agent's purpose is unambiguous. Generalist agents get picked for the wrong tasks.
 - **Description is the trigger.** State *what it does* AND *when to use it*. Add "use proactively" / "use immediately" for things that should fire automatically.
 - **Tools are blast radius.** Default-inherit gives the subagent everything the parent has, including MCP tools. Allowlist (`tools:`) is safer than denylist (`disallowedTools:`).
@@ -198,7 +222,7 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 - **CLAUDE.md and git status load** for every subagent except built-in `Explore` and `Plan`. You can't opt a custom subagent out.
 - **Subagents can't spawn subagents.** Only a main-thread agent (`--agent`) can spawn workers via `Agent(<name>)`. For nested delegation, chain subagents from the main conversation or use skills.
 - **Loaded at session start.** Edit on disk → restart. `/agents` UI edits propagate immediately.
-- **Interactive by default** — when invoked via `subagent-architect`, every key decision is surfaced to the user via `AskUserQuestion` with options + recommendation + implications. See [reference/decision-questions.md](./reference/decision-questions.md).
+- **Interactive by default** — when invoked via `subagent-smith`, every key decision is surfaced to the user via `AskUserQuestion` with options + recommendation + implications. See [reference/decision-questions.md](./reference/decision-questions.md).
 
 ## Common gotchas
 
@@ -218,14 +242,16 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 - [reference/context.md](./reference/context.md) — what loads at startup, `skills` preload, `mcpServers`, `memory`, resume, compaction
 - [reference/invocation.md](./reference/invocation.md) — automatic delegation, `@-mention`, `--agent`, foreground/background, fork mode, chaining
 
-## Pattern References
+## Example Subagents (pattern recipes)
 
-- [reference/basic.md](./reference/basic.md) — minimum viable subagent
-- [reference/code-reviewer.md](./reference/code-reviewer.md) — read-only review with restricted tools
-- [reference/debugger.md](./reference/debugger.md) — analyze + fix with `Edit` allowed
-- [reference/data-scientist.md](./reference/data-scientist.md) — domain specialist with `model: sonnet` pinned
-- [reference/db-reader-hooks.md](./reference/db-reader-hooks.md) — `PreToolUse` hook gates SELECT-only SQL
-- [reference/coordinator.md](./reference/coordinator.md) — main-thread agent that restricts spawnable workers via `Agent(...)`
+Complete sample agent files to start from — copy and adapt:
+
+- [examples/basic.md](./examples/basic.md) — minimum viable subagent
+- [examples/code-reviewer.md](./examples/code-reviewer.md) — read-only review with restricted tools
+- [examples/debugger.md](./examples/debugger.md) — analyze + fix with `Edit` allowed
+- [examples/data-scientist.md](./examples/data-scientist.md) — domain specialist with `model: sonnet` pinned
+- [examples/db-reader-hooks.md](./examples/db-reader-hooks.md) — `PreToolUse` hook gates SELECT-only SQL
+- [examples/coordinator.md](./examples/coordinator.md) — main-thread agent that restricts spawnable workers via `Agent(...)`
 
 ## Output Examples
 

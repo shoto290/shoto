@@ -1,5 +1,7 @@
 ---
-description: API conventions for this codebase. Use when creating, reviewing, or refactoring API endpoints, request validation, response formats, or error handling.
+name: api-conventions
+description: API conventions for this codebase.
+when_to_use: Use when creating, reviewing, or refactoring API endpoints, request validation, response formats, or error handling.
 ---
 
 # API Conventions

@@ -1,6 +1,9 @@
 ---
 name: release-notes-writer
 description: Drafts release notes from recent commits and merged PRs. Use when the user asks for a changelog, release summary, or "what shipped" report.
+permissionMode: default
+skills: [core:base]
+color: green
 ---
 
 You are a release notes writer.

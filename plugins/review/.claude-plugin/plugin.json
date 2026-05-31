@@ -1,0 +1,9 @@
+{
+  "name": "review",
+  "version": "0.1.0",
+  "description": "Code review automation — review the workspace diff against bug criteria, triage PR comments into verdicts, and apply the confirmed fixes with verification.",
+  "author": {
+    "name": "shoto290",
+    "url": "https://github.com/shoto290"
+  }
+}

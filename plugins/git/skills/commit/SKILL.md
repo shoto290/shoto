@@ -1,7 +1,8 @@
 ---
 name: commit
-description: Creates a single git commit with a Conventional Commit title (`type(scope): description`) from the current uncommitted changes. Auto-stages tracked changes, skips secrets (`.env`, `*.pem`, `*.key`, `*.cert`, `secrets/`), and requires user confirmation before committing. Use when the user types `/git:commit`, says `create commit`, `commit changes`, `stage and commit`, or `make a commit`. Never pushes — pushing is `/git:create`'s job. Exactly one commit per invocation.
-argument-hint: (none — operates on current uncommitted changes)
+description: "Creates a single git commit with a Conventional Commit title (`type(scope): description`) from the current uncommitted changes. Auto-stages tracked changes, skips secrets (`.env`, `*.pem`, `*.key`, `*.cert`, `secrets/`), and requires user confirmation before committing. Never pushes — pushing is `/git:create`'s job. Exactly one commit per invocation."
+when_to_use: Use when the user types `/git:commit`, says `create commit`, `commit changes`, `stage and commit`, or `make a commit`.
+argument-hint: '(none — operates on current uncommitted changes)'
 allowed-tools: Bash, Read, AskUserQuestion
 ---
 

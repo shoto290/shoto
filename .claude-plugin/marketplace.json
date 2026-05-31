@@ -21,12 +21,20 @@
       "source": "./plugins/git"
     },
     {
+      "name": "review",
+      "source": "./plugins/review"
+    },
+    {
       "name": "docs",
       "source": "./plugins/docs"
     },
     {
       "name": "frontend",
       "source": "./plugins/frontend"
+    },
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow"
     }
   ]
 }

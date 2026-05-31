@@ -1,7 +1,8 @@
 ---
 name: create
-description: Creates a pull request with a conventional commit title (`type(scope): description`), a concise human-readable changelog as the PR body, and pushes the current branch. Use when the user types `/git:create`, says `create pr`, `create pull request`, `open pr`, or asks to ship the current branch to a PR. Generic (no ticket-tracker integration); requires `gh` CLI and a GitHub remote.
-argument-hint: (none — operates on the current branch)
+description: "Creates a pull request with a conventional commit title (`type(scope): description`), a concise human-readable changelog as the PR body, and pushes the current branch. Generic (no ticket-tracker integration); requires `gh` CLI and a GitHub remote."
+when_to_use: Use when the user types `/git:create`, says `create pr`, `create pull request`, `open pr`, or asks to ship the current branch to a PR.
+argument-hint: '(none — operates on the current branch)'
 allowed-tools: Bash, Read, AskUserQuestion
 ---
 

@@ -1,6 +1,6 @@
 # Decision Questions Catalog
 
-This catalog is consumed by [`skill-architect`](../../../agents/skill-architect.md). The agent must walk every applicable entry in order, present the options + implications + recommended option via `AskUserQuestion`, and treat any value already supplied in the user prompt as a pre-selection (not a reason to skip the question — surface the pre-selection for confirmation when it materially affects scope, invocation, or destructive actions).
+This catalog is consumed by [`skill-smith`](../../../agents/skill-smith.md). The agent must walk every applicable entry in order, present the options + implications + recommended option via `AskUserQuestion`, and treat any value already supplied in the user prompt as a pre-selection (not a reason to skip the question — surface the pre-selection for confirmation when it materially affects scope, invocation, or destructive actions).
 
 ---
 
@@ -11,7 +11,7 @@ This catalog is consumed by [`skill-architect`](../../../agents/skill-architect.
 **Question**: not asked via `AskUserQuestion`.
 **Multi-select**: n/a
 **Skip when**: always skipped as a question — applied as a validation step on the proposed name.
-**Validation rule**: lowercase letters, digits, and hyphens only; must start with a letter; max 64 chars. Reject and ask the user to rename if the proposal fails. The chosen name becomes both the directory name and the slash command (unless overridden by `name:` in frontmatter).
+**Validation rule**: lowercase letters, digits, and hyphens only; must start with a letter; max 64 chars. Reject and ask the user to rename if the proposal fails. The chosen name becomes both the directory name and the slash command; `name:` in frontmatter only sets the display label (except a plugin-root `SKILL.md`).
 
 ### 2. Scope
 

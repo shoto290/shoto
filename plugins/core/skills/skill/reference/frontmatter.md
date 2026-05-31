@@ -1,19 +1,20 @@
 # Frontmatter reference
 
-Configure skill behavior via YAML between `---` markers at the top of `SKILL.md`. All fields are optional; only `description` is recommended.
+Configure skill behavior via YAML between `---` markers at the top of `SKILL.md`. Upstream (Anthropic spec) all fields are optional and only `description` is recommended. **In this marketplace, `name`, `description`, and `when_to_use` are mandatory on every skill** — see the Required column.
 
 ## Fields
 
 | Field | Required | Description |
 | :-- | :-- | :-- |
-| `name` | No | Display name (max 64 chars, lowercase / digits / hyphens). Defaults to the directory name. |
-| `description` | Recommended | What the skill does + when to use it. Claude uses this to auto-invoke. Combined with `when_to_use`, capped at 1,536 chars in the listing. Put the key use case first. |
-| `when_to_use` | No | Additional invocation context (trigger phrases, example requests). Appended to `description` in the listing. |
+| `name` | **Yes** | Marketplace rule (optional upstream). kebab-case, must match the directory. Defaults to the directory name when omitted, but we always set it. |
+| `description` | **Yes** | What the skill does + when to use it. Claude uses this to auto-invoke. Combined with `when_to_use`, capped at 1,536 chars in the listing. Put the key use case first. |
+| `when_to_use` | **Yes** | Marketplace rule (optional upstream). Additional invocation context (trigger phrases, example requests). Appended to `description` in the listing; counts toward the 1,536-char cap. |
 | `argument-hint` | No | Autocomplete hint, e.g. `[issue-number]` or `[filename] [format]`. |
 | `arguments` | No | Named positional arguments. Space-separated string or YAML list. Names map to positions in order, enabling `$name` substitution. |
 | `disable-model-invocation` | No | `true` blocks Claude from auto-loading. User can still invoke via `/name`. Also blocks preload into subagents. Default: `false`. |
 | `user-invocable` | No | `false` hides from `/` menu. Use for background knowledge skills. Default: `true`. |
 | `allowed-tools` | No | Tools pre-approved while skill is active. Space-separated string or YAML list. |
+| `disallowed-tools` | No | Tools removed from Claude's available pool while the skill is active (e.g. block `AskUserQuestion` in an autonomous loop). Space/comma-separated string or YAML list. Clears on your next message. |
 | `model` | No | Model override for this turn. Same values as `/model`, or `inherit`. |
 | `effort` | No | Effort override (`low`, `medium`, `high`, `xhigh`, `max`). Available levels depend on model. |
 | `context` | No | Set to `fork` to run in a subagent context (see [advanced.md](./advanced.md)). |

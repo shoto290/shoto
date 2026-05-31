@@ -16,9 +16,9 @@ my-skill/
 
 ## Strict scope
 
-Examples are **expected output samples only**. This skill enforces the rule in its own SKILL.md guidance: prompt recipes, complete sample `SKILL.md` files, workflow patterns, and API notes belong in `reference/`, not `examples/`.
+Examples are **expected output samples** — what this skill produces. Because this skill authors skills, a complete sample `SKILL.md` (a worked example skill) IS a valid output and belongs here.
 
-If a file under `examples/` would not be a valid response Claude might produce, it does not belong here. Move it to `reference/` — see [slot-reference.md](./slot-reference.md).
+What does not belong: documentation about how skills work — field specs, behavior notes, troubleshooting, API notes. That is reference material. Move it to `reference/` — see [slot-reference.md](./slot-reference.md).
 
 ## File naming
 
@@ -43,8 +43,7 @@ If an example is never linked, Claude will not load it.
 
 ## Anti-patterns
 
-- Putting prompt recipes or workflow patterns under `examples/` — those describe how to do something, not what the output should look like. They belong in `reference/`.
-- Putting a complete sample `SKILL.md` under `examples/` — same reasoning: it is reference material, not an expected output of the current skill.
+- Putting documentation (field specs, behavior notes, troubleshooting) under `examples/` — those describe how skills work, not what this skill outputs. They belong in `reference/`.
 - Creating an `examples.md` (singular) file at the skill root. This skill standardises on the directory form `examples/` because the docs describe a folder of outputs, not a single file.
 - Adding examples without linking them from `SKILL.md` — Claude cannot load what it does not know exists.
 

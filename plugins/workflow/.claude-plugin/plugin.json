@@ -1,0 +1,9 @@
+{
+  "name": "workflow",
+  "version": "0.1.0",
+  "description": "Dynamic multi-agent workflows for Claude Code — fan out subagents at scale and return only the final result. Ships /evolve: inventory the repo, plan skill/subagent/hook/plugin/MCP changes, and apply them across agents.",
+  "author": {
+    "name": "shoto290",
+    "url": "https://github.com/shoto290"
+  }
+}
