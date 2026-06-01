@@ -3,16 +3,26 @@
 // artifact. MCP servers and secret-dependent hooks are NOT executed here — an
 // autonomous agent cannot wire secrets/auth — they are returned in deferred[]
 // for the wrapper to hand to core:mcp / core:hooks in the main thread.
+// Finally, it always chains a deep-review over the freshly authored diff by
+// DELEGATING to the bundled deep-review + apply-fixes workflows (their paths
+// arrive as deepReviewScriptPath / applyFixesScriptPath in args, because the
+// sandbox has no fs/__dirname to resolve cross-skill paths). Nesting is one
+// level deep, so it runs deep-review READ-ONLY (never its --auto-fix path,
+// which would call workflow(apply-fixes) = a 2nd level and throw) and then
+// calls the apply-fixes leaf directly — both are single-level children here.
+// Zero duplication: review+triage stay in deep-review, fix+verify in apply-fixes.
 // JavaScript only. The script only coordinates agents; the spawned smiths are
 // the only things that touch files. It asks the user nothing.
 
 export const meta = {
   name: 'evolve-apply',
-  description: 'Fan-out applier of an approved evolve plan — routes each executable entry to the matching core smith (skill/subagent/hooks/plugin), verifies the authored files, and returns a report plus a deferred list of MCP/secret-hook items for the main thread.',
-  whenToUse: 'Invoked by the evolve wrapper skill AFTER the user approves the plan. Authors and edits files via the core smiths; defers anything needing secrets or live MCP setup.',
+  description: 'Fan-out applier of an approved evolve plan — routes each executable entry to the matching core smith (skill/subagent/hooks/plugin), verifies the authored files, then chains a deep-review (and optional auto-fix) over the diff, and returns a report plus a deferred list of MCP/secret-hook items for the main thread.',
+  whenToUse: 'Invoked by the evolve wrapper skill AFTER the user approves the plan. Authors and edits files via the core smiths; defers anything needing secrets or live MCP setup; always finishes by reviewing the authored diff.',
   phases: [
     { title: 'Apply', detail: 'One agent per executable entry, routed by agentType to the matching core smith with a full no-questions spec' },
     { title: 'Verify', detail: 'One agent per applied artifact confirms the file exists and its name frontmatter matches its path' },
+    { title: 'Review', detail: 'Delegates to the bundled deep-review workflow (read-only) over the freshly authored diff, returning numbered findings and verdicts' },
+    { title: 'Fix', detail: 'When the review yields FIX/FIX-STYLE verdicts, delegates to the bundled apply-fixes workflow to apply them per file and verify once' },
   ],
 }
 
@@ -62,6 +72,12 @@ try {
 
 const allEntries = Array.isArray(plan && plan.entries) ? plan.entries : []
 if (!allEntries.length) return { error: 'Approved plan has no entries to apply.' }
+
+// Cross-skill workflow paths for the final review chain (the sandbox cannot
+// resolve them itself). When absent, the review chain is skipped silently.
+const deepReviewScriptPath = (plan && plan.deepReviewScriptPath) || ''
+const applyFixesScriptPath = (plan && plan.applyFixesScriptPath) || ''
+const reviewBase = (plan && plan.base) || 'origin/main'
 
 // Drop reuse entries (no action needed). Split the rest into executable vs deferred:
 // deferred = mcp servers and any hook needing secrets — an autonomous agent
@@ -157,6 +173,59 @@ const verified = toVerify.length
 
 log('Verified ' + verified.length + ' artifact(s)')
 
+// ─── Review: always chain a deep-review over the freshly authored diff ───
+// Single-level children only: deep-review runs READ-ONLY (autoFix:false) so it
+// never calls workflow(apply-fixes) itself, then we call the apply-fixes leaf
+// directly from here. Both calls are wrapped so a review failure never discards
+// the apply report — the artifacts are already written.
+let review = null
+let fixReport = null
+
+if (deepReviewScriptPath) {
+  phase('Review')
+  try {
+    const reviewResult = await workflow({
+      scriptPath: deepReviewScriptPath,
+      args: JSON.stringify({ autoFix: false, base: reviewBase }),
+    })
+    review =
+      reviewResult && typeof reviewResult === 'object' && !reviewResult.error
+        ? {
+            comments: Array.isArray(reviewResult.comments) ? reviewResult.comments : [],
+            verdicts: Array.isArray(reviewResult.verdicts) ? reviewResult.verdicts : [],
+            summary: reviewResult.summary || '',
+          }
+        : { comments: [], verdicts: [], summary: 'deep-review returned no usable result.' }
+  } catch (e) {
+    review = { comments: [], verdicts: [], summary: 'deep-review failed: ' + (e && e.message ? e.message : String(e)) }
+  }
+
+  const hasFixable = review.verdicts.some(v => v && (v.verdict === 'FIX' || v.verdict === 'FIX-STYLE'))
+
+  if (hasFixable && applyFixesScriptPath) {
+    phase('Fix')
+    try {
+      const fr = await workflow({
+        scriptPath: applyFixesScriptPath,
+        args: JSON.stringify({ comments: review.comments, verdicts: review.verdicts, base: reviewBase }),
+      })
+      fixReport =
+        fr && typeof fr === 'object' && !fr.error
+          ? fr
+          : { applied: [], skipped: [], verification: { tests: 'skipped', linter: 'skipped', types: 'skipped' }, newTickets: [] }
+    } catch (e) {
+      fixReport = {
+        applied: [],
+        skipped: [],
+        verification: { tests: 'skipped', linter: 'skipped', types: 'skipped' },
+        newTickets: [],
+        error: 'apply-fixes failed: ' + (e && e.message ? e.message : String(e)),
+      }
+    }
+    log('Auto-fix applied ' + (Array.isArray(fixReport.applied) ? fixReport.applied.length : 0) + ' fix(es)')
+  }
+}
+
 return {
   applied: applied.map(r => {
     const v = verified.find(x => x.name === r.name)
@@ -174,4 +243,6 @@ return {
   deferred,
   restartRequired: plan.restartRequired === true,
   testCommands: Array.isArray(plan.testPlan) ? plan.testPlan : [],
+  review,
+  fixReport,
 }
