@@ -35,6 +35,10 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow"
+    },
+    {
+      "name": "design-engineer",
+      "source": "./plugins/design-engineer"
     }
   ]
 }
