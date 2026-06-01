@@ -2,14 +2,14 @@
 // requested capability into artifact entries, and a dependency-ordered plan.
 // JavaScript only. The script only coordinates agents — it never touches the
 // filesystem or shell directly, and it asks the user nothing (the wrapper owns
-// every AskUserQuestion). All reads happen inside read-only Explore agents.
+// every AskUserQuestion). All reads happen inside read-only inventory subagents.
 
 export const meta = {
   name: 'evolve-plan',
   description: 'Read-only evolve planner — inventory existing skills/subagents/hooks/MCP, classify a requested capability into artifact entries, and emit a dependency-ordered plan with conflicts, restart flags, and a test plan.',
   whenToUse: 'Invoked by the evolve wrapper skill to produce a structured PLAN before any approval gate. Read-only: it never authors or edits files.',
   phases: [
-    { title: 'Inventory', detail: 'Parallel read-only Explore agents map skills, subagents, hooks/settings, and plugins/MCP under targetRoot' },
+    { title: 'Inventory', detail: 'Parallel read-only inventory:inventory-context subagents map skills, subagents, hooks/settings, and plugins/MCP under targetRoot' },
     { title: 'Classify', detail: 'One agent maps the capability to create/update/reuse entries via the decision matrix' },
     { title: 'Plan', detail: 'One agent surfaces conflicts, orders by dependency, flags restarts, and writes a test plan' },
   ],
@@ -109,7 +109,7 @@ if (!capability || !targetRoot) {
   return { error: 'evolve-plan requires { capability, targetRoot } in args.' }
 }
 
-// ─── Inventory (read-only, one Explore agent per surface) ───
+// ─── Inventory (read-only, one inventory:inventory-context agent per surface) ───
 phase('Inventory')
 
 const INVENTORY_TASKS = [
@@ -148,7 +148,7 @@ const inventoryResults = (await parallel(
     agent(task.prompt, {
       label: 'inventory:' + task.surface,
       phase: 'Inventory',
-      agentType: 'Explore',
+      agentType: 'inventory:inventory-context',
       schema: INVENTORY_SCHEMA,
     })
   )
