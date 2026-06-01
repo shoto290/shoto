@@ -9,14 +9,6 @@
       "source": "./plugins/core"
     },
     {
-      "name": "utils",
-      "source": "./plugins/utils"
-    },
-    {
-      "name": "explore",
-      "source": "./plugins/explore"
-    },
-    {
       "name": "git",
       "source": "./plugins/git"
     },
@@ -25,20 +17,16 @@
       "source": "./plugins/review"
     },
     {
-      "name": "docs",
-      "source": "./plugins/docs"
-    },
-    {
-      "name": "frontend",
-      "source": "./plugins/frontend"
-    },
-    {
       "name": "workflow",
       "source": "./plugins/workflow"
     },
     {
       "name": "design-engineer",
       "source": "./plugins/design-engineer"
+    },
+    {
+      "name": "inventory",
+      "source": "./plugins/inventory"
     }
   ]
 }
