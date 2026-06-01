@@ -43,6 +43,8 @@ Workflow({
 
 The wrapper does scope-clarification (`AskUserQuestion`) **before** the run and renders the structured result **after**. See [examples/deep-research.md](./examples/deep-research.md).
 
+**Awaiting a background run.** The `Workflow` tool launches the script as a harness-tracked **background** task and returns immediately with a task ID. The wrapper must **block on it with a single synchronous wait** — `TaskOutput({ task_id, block: true })` — then render the result **exactly once**. Never `ScheduleWakeup` or poll the run: harness-tracked tasks re-invoke the wrapper on completion, so a fallback wakeup fires a *second* time and re-renders a redundant `already completed` report. One run → one wait → one render. (The wrapper skill must include `TaskOutput` in its `allowed-tools`.)
+
 ## The script DSL (summary)
 
 Full reference: [reference/dsl.md](./reference/dsl.md). A workflow script is JavaScript (not TypeScript) with:
@@ -67,6 +69,37 @@ These are enforced by `workflow-smith` and stated to the user. Full list: [refer
 - **JavaScript only.** `meta` is a pure literal. No `Date.now()`, `Math.random()`, or `new Date()` in the script.
 - **Spawned subagents run in `acceptEdits` mode**, inherit the tool allowlist, and use the session model unless a stage routes to another.
 - **Prefer `pipeline()` over a `parallel()` barrier** unless a stage genuinely needs all prior results at once.
+- **Every write/apply workflow MUST end with a deep-review of its own diff.** If a workflow writes or mutates files (it has a write/apply phase — any stage that authors, edits, or deletes files, directly or via spawned agents), its flow MUST chain a deep-review over the freshly authored diff before returning. Read-only workflows (search, analysis, planning, reporting — no file mutations) are exempt. This mirrors the evolve-apply pattern (the canonical reference).
+
+## Mandatory review chain for write workflows
+
+Any authored workflow that mutates files must finish by reviewing its own diff, reusing the bundled deep-review + apply-fixes workflows rather than re-implementing review logic. The pattern has two parts.
+
+1. **Wrapper injects the script paths via args.** The wrapper skill cannot let the sandboxed script resolve cross-skill sibling paths (no fs/`__dirname`), so it passes them in the args object. The exact injection shape used by evolve:
+
+```
+Workflow({
+  scriptPath: "${CLAUDE_PLUGIN_ROOT}/skills/<name>/scripts/<name>.workflow.js",
+  args: JSON.stringify({
+    ...input,
+    deepReviewScriptPath: "${CLAUDE_PLUGIN_ROOT}/skills/deep-review/scripts/deep-review.workflow.js",
+    applyFixesScriptPath: "${CLAUDE_PLUGIN_ROOT}/skills/deep-review/scripts/apply-fixes.workflow.js",
+    base: "origin/main"
+  })
+})
+```
+
+The deep-review + apply-fixes scripts live in the workflow plugin (`plugins/workflow/skills/deep-review/scripts/`). A workflow bundled in a DIFFERENT plugin must reference them by the path the wrapper can resolve at its plugin root, or the user must have the workflow plugin installed — state this as a prerequisite; do not over-engineer cross-plugin resolution.
+
+2. **The script runs deep-review READ-ONLY, then calls apply-fixes directly.** Because `workflow()` nesting is ONE LEVEL DEEP, the script must NOT trigger deep-review's own `--auto-fix` path (that would call `workflow(apply-fixes)` at a second level and throw). Instead it:
+   - (a) reads `deepReviewScriptPath` / `applyFixesScriptPath` / `base` from the parsed args (skip the review chain silently if `deepReviewScriptPath` is absent);
+   - (b) in a `Review` phase, `await workflow({ scriptPath: deepReviewScriptPath, args: JSON.stringify({ autoFix: false, base }) })`;
+   - (c) if any returned verdict is `FIX` or `FIX-STYLE` AND `applyFixesScriptPath` is present, in a `Fix` phase `await workflow({ scriptPath: applyFixesScriptPath, args: JSON.stringify({ comments, verdicts, base }) })`;
+   - (d) wrap BOTH calls in try/catch so a review failure never discards the apply report — the files are already written.
+
+   Add the `review` (`{ comments[], verdicts[], summary }` or `null`) and `fixReport` (`{ applied[], skipped[], verification, newTickets[] }` or `null`) fields to the script's final return object, and add matching `{ title, detail }` entries `Review` and `Fix` to `meta.phases` (titles must match the `phase()` calls per the existing meta-alignment rule).
+
+Reference implementation: the bundled evolve-apply workflow — `plugins/workflow/skills/evolve/scripts/evolve-apply.workflow.js` (the script) and `plugins/workflow/skills/evolve/SKILL.md` (the wrapper injection).
 
 ## Create flow
 
@@ -85,11 +118,11 @@ Surface these with `AskUserQuestion` only if the request is ambiguous; pre-selec
 
 ### 2. Delegate authoring
 
-Spawn the `workflow-smith` subagent via the **Agent** tool, passing a full spec (name, distribution model, phases, fan-out shape, schemas, constraints) so it needs no follow-ups. The smith writes the wrapper `SKILL.md` + `scripts/<name>.workflow.js` (plugin-bundled) or the bare native script, then validates.
+Spawn the `workflow-smith` subagent via the **Agent** tool, passing a full spec (name, distribution model, phases, fan-out shape, schemas, constraints) so it needs no follow-ups. The smith writes the wrapper `SKILL.md` + `scripts/<name>.workflow.js` (plugin-bundled) or the bare native script, then validates. If the workflow writes or mutates files, the spec passed to `workflow-smith` MUST require the mandatory review chain (deep-review read-only → apply-fixes for `FIX`/`FIX-STYLE`, one-level nesting) and the wrapper MUST inject `deepReviewScriptPath` + `applyFixesScriptPath` + `base` in its args.
 
 ### 3. Validate
 
-Confirm the smith's validation gate passed: `meta` is a pure literal, `meta.phases` titles align one-to-one with the `phase()` calls, every `schema` is valid JSON Schema, no banned constructs (`Date.now`/`Math.random`/`new Date`/filesystem/shell/`AskUserQuestion` in the script), and the concurrency / agent-count constraints are respected.
+Confirm the smith's validation gate passed: `meta` is a pure literal, `meta.phases` titles align one-to-one with the `phase()` calls, every `schema` is valid JSON Schema, no banned constructs (`Date.now`/`Math.random`/`new Date`/filesystem/shell/`AskUserQuestion` in the script), and the concurrency / agent-count constraints are respected. For any write/apply workflow, confirm the deep-review chain is present (`Review`/`Fix` phases, `deepReviewScriptPath` read from args, deep-review invoked with `autoFix:false`, apply-fixes called directly only on `FIX`/`FIX-STYLE` verdicts) and that read-only workflows correctly omit it.
 
 ## Update flow
 
@@ -116,6 +149,7 @@ Same gate as create. Preserve `meta` fields and stage structure unless the user 
 - **`meta` is a pure literal, phases must align.** A variable, call, or spread in `meta`, or a `phases` title that doesn't match a `phase()` call, breaks the run.
 - **Prefer pipelines.** A `parallel()` barrier blocks on the slowest task; `pipeline()` lets each item flow through stages independently. Use a barrier only when a stage needs the whole pool at once.
 - **Delegate, don't hand-write.** This skill clarifies and validates; `workflow-smith` authors the files.
+- **One run → one wait → one render.** A wrapper blocks on its background `Workflow` run with a single `TaskOutput(block=true)` and renders once. Never `ScheduleWakeup` or poll a harness-tracked run — it re-invokes you on completion, and a redundant wakeup re-renders the report.
 
 ## Reference
 
