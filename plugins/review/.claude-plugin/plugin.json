@@ -1,7 +1,7 @@
 {
   "name": "review",
-  "version": "0.1.0",
-  "description": "Code review automation — review the workspace diff against bug criteria, triage PR comments into verdicts, and apply the confirmed fixes with verification.",
+  "version": "0.2.0",
+  "description": "Code review automation — review the workspace diff against bug criteria, triage PR comments into verdicts, and apply the confirmed fixes with verification; also ships reusable review subagents (review-diff / review-comments / review-fix) consumed by the deep-review workflow.",
   "author": {
     "name": "shoto290",
     "url": "https://github.com/shoto290"
