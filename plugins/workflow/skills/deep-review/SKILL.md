@@ -6,8 +6,6 @@ argument-hint: "[--auto-fix] [--base <branch>]"
 allowed-tools: [AskUserQuestion, Workflow, Read, Bash]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # Deep Review
 
 `deep-review` runs a multi-agent review of the current branch diff. It is a **thin wrapper** around one bundled workflow (`deep-review.workflow.js`): lens agents review the diff in parallel, their findings are deduped and triaged into verdicts, and — only when `--auto-fix` is passed — the FIX/FIX-STYLE items are applied with verification. The human gate lives here, in the main thread, **after** the read-only run; the workflow itself never asks the user anything.

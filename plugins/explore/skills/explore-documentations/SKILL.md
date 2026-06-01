@@ -6,8 +6,6 @@ argument-hint: '[library or topic]'
 allowed-tools: Read, Glob, Grep, mcp__context7__resolve-library-id, mcp__context7__query-docs, WebFetch, WebSearch, AskUserQuestion
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # explore-documentations
 
 A thin coordinator that returns precise, version-accurate documentation for a library the repo uses. Ground the lookup in the repo's real dependency version first, then fetch exact docs via context7. READ-ONLY — never edits repo files.

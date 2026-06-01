@@ -9,8 +9,6 @@ user-invocable: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # inventory-services
 
 You are running inside the `inventory-services` subagent. Map the service layer — service modules, their public operations, and how they wire to data and external systems. Return only the canonical contract below — no preamble, no closing.

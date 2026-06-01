@@ -6,8 +6,6 @@ argument-hint: '[workflow name or description of what to orchestrate]'
 allowed-tools: [Agent, AskUserQuestion, Read, Glob, Grep]
 ---
 
-> Apply the rules from [core:base](../base/SKILL.md) in addition to those below.
-
 # Workflow
 
 A **dynamic workflow** is a JavaScript script run by Claude Code's Workflow runtime in the background. It orchestrates many subagents at scale: the plan lives in code (loops, branching, and intermediate results held in script variables), and only the **final return value** flows back into Claude's context. The canonical worked example is the bundled deep-research workflow — see [examples/deep-research.md](./examples/deep-research.md).

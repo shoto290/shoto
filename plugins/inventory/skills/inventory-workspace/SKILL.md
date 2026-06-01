@@ -9,8 +9,6 @@ user-invocable: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # inventory-workspace
 
 You are running inside the `inventory-workspace` subagent. Map the repository/workspace structure so a caller can understand the layout before changing it. Return only the canonical contract below — no preamble, no closing.

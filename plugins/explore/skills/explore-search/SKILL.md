@@ -6,8 +6,6 @@ argument-hint: '[topic]'
 allowed-tools: Read, Glob, Grep, WebSearch, WebFetch, AskUserQuestion
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # explore-search
 
 Answer one external question by grounding it in how this repo uses the thing, running a focused web search, and returning a short cited answer. Single-pass, read-only. No agent fan-out, no scripts.

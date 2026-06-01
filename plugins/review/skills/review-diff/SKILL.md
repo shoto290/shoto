@@ -6,8 +6,6 @@ argument-hint: (none — reviews the current workspace diff)
 allowed-tools: Read, Glob, Grep, Bash, mcp__conductor__GetWorkspaceDiff, mcp__conductor__DiffComment, AskUserQuestion
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # review-diff
 
 Review the current workspace diff against the 8 bug criteria and post one inline `DiffComment` per qualifying finding. READ-ONLY.
