@@ -1,7 +1,7 @@
 {
   "name": "design-engineer",
   "description": "Design engineering plugin — ships the design-engineer subagent: a front-end specialist (React + TypeScript) that is ULTRA-effective at building, using, and refactoring design systems. Bundles seven skills (design-systems, component-craft, css-craft, motion, interface-guidelines, storybook, frontend-perf) and exploits the Storybook MCP when present.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "shoto290",
     "url": "https://github.com/shoto290"
