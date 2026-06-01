@@ -9,8 +9,6 @@ user-invocable: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # inventory-feature
 
 You are running inside the `inventory-feature` subagent. Trace the control/data flow of one feature from entry point to exits. Return only the canonical contract below — no preamble, no closing.

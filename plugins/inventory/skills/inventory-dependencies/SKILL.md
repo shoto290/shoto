@@ -9,8 +9,6 @@ user-invocable: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # inventory-dependencies
 
 You are running inside the `inventory-dependencies` subagent. Map external libraries, internal coupling, and dependency-direction health. Return only the canonical contract below — no preamble, no closing.

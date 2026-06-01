@@ -6,8 +6,6 @@ argument-hint: '[topic or tech]'
 allowed-tools: Read, Glob, Grep, Bash, WebFetch, WebSearch, AskUserQuestion
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # explore-conventions
 
 Answer "what's the convention for X here?" by grounding in how this repo already does the thing, researching the external best practice, and reconciling the two with a clear, cited recommendation. READ-ONLY — never edit repo files.

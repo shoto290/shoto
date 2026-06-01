@@ -9,8 +9,6 @@ user-invocable: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # inventory-context
 
 You are running inside the `inventory-context` subagent. This is the broad/adaptive lens: inventory whatever subject is given when no precise lens fits. Return only the canonical contract below — no preamble, no closing.

@@ -6,8 +6,6 @@ argument-hint: '[capability or feature description — optional; inferred from c
 allowed-tools: [AskUserQuestion, Workflow, TaskOutput, Read, Glob, Grep, Skill]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # Evolve
 
 `evolve` plans and applies a coordinated set of skill/subagent/hook/MCP changes for a capability. It is a **thin wrapper** around two bundled workflows: `evolve-plan` (read-only inventory + plan) and `evolve-apply` (fan-out authoring). The approval gate lives here, in the main thread, **between** the two runs — the workflows themselves never ask the user anything.

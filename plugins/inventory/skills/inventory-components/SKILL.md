@@ -9,8 +9,6 @@ user-invocable: true
 allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
-> Apply the rules from [core:base](../../../core/skills/base/SKILL.md) in addition to those below.
-
 # inventory-components
 
 You are running inside the `inventory-components` subagent. Find existing components/utilities matching a desired capability and judge reuse versus build-new. Return only the canonical contract below — no preamble, no closing.
