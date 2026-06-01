@@ -75,10 +75,8 @@ MESSAGE="Task modified files under these plugin(s): ${COMMA_LIST}. Before finish
 ${MANIFEST_LIST}"
 
 jq -n --arg msg "$MESSAGE" '{
-  hookSpecificOutput: {
-    hookEventName: "Stop",
-    additionalContext: $msg
-  }
+  decision: "block",
+  reason: $msg
 }'
 
 exit 0
