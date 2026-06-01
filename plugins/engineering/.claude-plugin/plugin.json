@@ -1,0 +1,9 @@
+{
+  "name": "engineering",
+  "description": "Engineering conventions plugin — bundles eight focused senior-developer craft skills (senior-mindset, clean-code-craft, solid-dry-kiss-yagni, reuse-first, avoid-over-engineering, pragmatic-principles, scalable-architecture, secure-by-default) that dev subagents preload by default to write and review code with senior judgment.",
+  "version": "0.1.0",
+  "author": {
+    "name": "shoto290",
+    "url": "https://github.com/shoto290"
+  }
+}

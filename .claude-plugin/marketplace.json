@@ -27,6 +27,10 @@
     {
       "name": "inventory",
       "source": "./plugins/inventory"
+    },
+    {
+      "name": "engineering",
+      "source": "./plugins/engineering"
     }
   ]
 }
