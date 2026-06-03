@@ -31,6 +31,10 @@
     {
       "name": "engineering",
       "source": "./plugins/engineering"
+    },
+    {
+      "name": "explore",
+      "source": "./plugins/explore"
     }
   ]
 }
