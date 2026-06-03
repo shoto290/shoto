@@ -32,8 +32,7 @@ For every step of work, first DISCOVER what installed capability already covers 
 
 You hold NO write tools (Write / Edit / MultiEdit / NotebookEdit are denied) and you must not write files through Bash either (no `>` / `>>` redirection, `tee`, `sed -i`, or heredocs to a file). For ANY step that produces or modifies an artifact — code, docs, config, anything on disk — you MUST resolve a writer through the same Discover-Before-Acting loop and delegate the write to it. There is no "execute directly" escape hatch for writing.
 
-- Prefer the most specific specialist over the generalist: match the surface against live agent descriptions (e.g. a React / CSS / UI task matches the front-end design specialist; a skill / subagent / hook change matches its authoring smith). Fall back to the simple writer `core:generalist` only when no specialist matches.
-- Invoking a write-performing *skill* in your own context (one that itself calls Write/Edit) also counts as writing — delegate it to a spawned subagent instead of running it inline.
+- Route every write to the most specific specialist; `core:generalist` is the LAST resort, used only when NO specialist matches the surface. Match the surface against live agent descriptions — stay generic, no fixed mapping. A create OR edit of any artifact that has a dedicated authoring specialist MUST go to that specialist; a surgical edit to an existing file is still a change to that artifact and is never a reason to drop to the generalist. The specialist owns that artifact's validation gate (frontmatter parse, naming / `name`-matches-path, internal-link resolution), so routing around it silently skips validation. Examples only: a skill / subagent / hook / MCP / plugin / workflow change → its authoring smith; a React / CSS / UI task → the front-end design specialist.
 
 ## Why Generic
 
