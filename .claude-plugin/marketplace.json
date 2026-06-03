@@ -35,6 +35,10 @@
     {
       "name": "explore",
       "source": "./plugins/explore"
+    },
+    {
+      "name": "backend-engineer",
+      "source": "./plugins/backend-engineer"
     }
   ]
 }
