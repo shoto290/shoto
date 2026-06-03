@@ -88,6 +88,10 @@ Use it to skip or shorten animation: `const duration = usePrefersReducedMotion()
 - **Enter / exit** — fade + short translate for lists, toasts, menus. Stagger children subtly when many appear at once.
 - **Layout / shared-element** — animate position changes between states. Use a spring library's layout animation, or the native `view-transition` API (`document.startViewTransition`) for cross-view continuity.
 
+## Vocabulary
+
+Shared names for motion patterns — entrances, sequencing, transforms, state transitions, scroll, feedback, springs, ambient loops, polish, and principles — so a request maps to a known pattern and you describe precisely what to build. See [reference/vocabulary.md](reference/vocabulary.md) for the full glossary (adapted from animations.dev).
+
 ## Pitfalls
 
 - **Over-animation** — everything moving competes for attention and slows the user. Motion is a budget; spend it where it clarifies.
