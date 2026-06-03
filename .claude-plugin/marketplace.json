@@ -39,6 +39,10 @@
     {
       "name": "backend-engineer",
       "source": "./plugins/backend-engineer"
+    },
+    {
+      "name": "designer",
+      "source": "./plugins/designer"
     }
   ]
 }
