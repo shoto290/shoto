@@ -1,35 +1,38 @@
 ---
 name: onboard
-description: 'Personalize your Claude Code orchestrator. Runs a short professional interview (role, communication tone, output style, delegation rules) and generates a thin-wrapper orchestrator agent that inherits the live core:orchestrator contract plus your operator profile, then wires it as the default agent in .claude/settings.local.json. The generated orchestrator is personal and never committed; re-run anytime to update your profile.'
+description: 'Personalize and commit a project orchestrator. Runs a short professional interview and generates a thin-wrapper orchestrator agent — committed to `.claude/agents/` — that inherits the live core:orchestrator contract plus an operator profile. Each user opts in locally via `.claude/settings.local.json` (gitignored). Re-run to keep your local opt-in or reconfigure the committed orchestrator.'
 when_to_use: "/workflow:onboard, 'set up my orchestrator', 'personalize my orchestrator', 'create my operator profile', 'tune how Claude works for me', 'onboard me'. NOT for adding or evolving skills/subagents/hooks (use /workflow:evolve), and NOT for generating a CLAUDE.md (use the built-in /init)."
-argument-hint: '[--global | --project] [--show]'
+argument-hint: '[--show]'
 allowed-tools: [AskUserQuestion, Read, Glob, Bash, Agent]
 ---
 
 # Onboard
 
-`onboard` personalizes the default Claude Code orchestrator for one operator. It runs a short professional interview (role, tone, output style, delegation rules), reads the live `core:orchestrator` contract as the source of truth, and assembles a thin-wrapper orchestrator agent that **inherits** that contract verbatim plus an injected operator-profile block. It never writes files itself — it delegates all writes to a `core:generalist` subagent — and wires the result as the default agent in `.claude/settings.local.json`. The generated orchestrator is personal and gitignored; re-running updates the embedded profile in place.
+`onboard` personalizes a **committed project orchestrator** and a **per-user local opt-in**. It runs a short professional interview (role, tone, output style, delegation rules), reads the live `core:orchestrator` contract as the source of truth, and assembles a thin-wrapper orchestrator agent that **inherits** that contract verbatim plus an injected operator-profile block. The agent is a committed artifact under `.claude/agents/`; each teammate opts in locally by setting `"agent": "<name>"` in the gitignored `.claude/settings.local.json`. The skill never writes files itself — it delegates every write and commit to a `core:generalist` subagent. On re-run, if an orchestrator already exists, the very first question is **Keep as-is vs Reconfigure**.
 
 ```
 /workflow:onboard
- ├─ parse flags (--global | --project | --show)
- ├─ locate the LIVE core orchestrator (source of truth) → mirror its contract + body
- ├─ detect existing generated profile → prefill interview defaults (re-run aware)
- ├─ interview (4 rounds via AskUserQuestion): role · tone · output · delegation
- ├─ resolve name + output location (global vs project)
- ├─ build generated orchestrator content (mirrored contract + ## Operator profile)
- ├─ delegate the writes to ONE core:generalist subagent (agent file + settings + gitignore)
- └─ report what changed + restart reminder
+ ├─ parse flags (--show)
+ ├─ locate LIVE core:orchestrator (source of truth)            [unchanged]
+ ├─ detect existing PROJECT orchestrator in .claude/agents/
+ │    ├─ found → FIRST QUESTION: Keep as-is | Reconfigure
+ │    │    ├─ Keep as-is → wire settings.local.json + gitignore → report (STOP; no interview)
+ │    │    └─ Reconfigure → prefill from existing → interview → rewrite same file
+ │    └─ none → fresh: interview
+ ├─ interview (3 rounds)                                       [unchanged]
+ ├─ resolve name (<repo>-orchestrator) → .claude/agents/<name>.md (committed)
+ ├─ build content (mirrored contract + ## Operator profile)    [unchanged]
+ ├─ confirm write + commit
+ ├─ delegate to core:generalist: write agent + merge settings.local.json + ensure gitignore + targeted commit
+ └─ report + restart reminder + opt-in note
 ```
 
-This skill owns the interview, sourcing, name/location resolution, and rendering. All file writes are delegated, keeping `onboard` compatible with the no-write orchestrator contract.
+This skill owns the interview, sourcing, name resolution, and rendering. All file writes and the commit are delegated, keeping `onboard` compatible with the no-write orchestrator contract.
 
 ## 1. Parse flags
 
-- `--global` → preset output location to `~/.claude/agents/<name>.md`; skip the location question.
-- `--project` → preset output location to `.claude/agents/<name>.md`; skip the location question.
-- `--show` → locate the current generated orchestrator (see §3), Read its `## Operator profile` block, render it to the user, and **exit without changes**. If none is found, say so and stop.
-- Flags are not combined beyond the above; an unknown flag is ignored.
+- `--show` → locate the existing project orchestrator (see §3), Read its `## Operator profile` block, render it to the user, and **exit without changes**. If none is found, say so and stop.
+- An unknown flag is ignored.
 
 ## 2. Locate the live orchestrator (source of truth)
 
@@ -43,18 +46,27 @@ This skill owns the interview, sourcing, name/location resolution, and rendering
 
 **Never hardcode the orchestrator's behavior or skills list.** Always read them live here so the generated wrapper tracks upstream changes to `core:orchestrator`. If no source matches, tell the user the `core` plugin must be installed and **stop** — there is nothing to inherit.
 
-## 3. Detect existing profile (re-run aware)
+## 3. Detect existing project orchestrator (re-run aware)
 
-Look for a previously generated orchestrator so a re-run prefills, not restarts:
+Find any orchestrator this skill previously committed to the repo:
 
-- Read `.claude/settings.local.json` (if present) and capture any existing top-level `agent` value.
-- For that name, look for `~/.claude/agents/<that-name>.md` and `.claude/agents/<that-name>.md`.
+- `Glob` `.claude/agents/*.md`; `Read` each and select those whose body contains a `## Operator profile` block (the onboard signature).
+- If **exactly one** → that is the existing project orchestrator; capture its `name:` and its `## Operator profile` block.
+- If **multiple** → ask via `AskUserQuestion` which one is the target.
+- If **none** → this is a fresh creation; skip the §4 gate and go straight to the interview (§5).
 
-If one is found, Read its `## Operator profile` block and use it to **prefill** the interview defaults in §4. Re-running **updates** the embedded profile and regenerates the file — the embedded block is the single source of truth, so there is no separate profile artifact to reconcile.
+Also Read `.claude/settings.local.json` and capture any top-level `agent` value — it tells whether **this** user is already opted in.
 
-## 4. Interview (3 rounds via AskUserQuestion)
+## 4. First-question gate (re-run only)
 
-Run three `AskUserQuestion` rounds. Each option set is ≤4 options; rely on the automatic free-text **Other** for anything outside the list. **Pre-select / pre-fill** from any profile detected in §3.
+Runs **only** when §3 found an existing orchestrator, **before** any interview. `AskUserQuestion` with two options:
+
+- **Keep as-is** — no interview, agent untouched. Delegate a lightweight wiring step (the keep path of §9): merge `.claude/settings.local.json` `"agent": "<name>"` (preserve siblings); ensure `.gitignore` covers `.claude/settings.local.json` (append if missing); if `.gitignore` changed, confirm + commit ONLY `.gitignore`. Then report (§10) and **STOP**.
+- **Reconfigure** — prefill the interview defaults from the detected `## Operator profile`, proceed to §5, and rewrite the **same file/name** in place (no rename).
+
+## 5. Interview (3 rounds via AskUserQuestion)
+
+Run three `AskUserQuestion` rounds. Each option set is ≤4 options; rely on the automatic free-text **Other** for anything outside the list. On a **Reconfigure** (§4), pre-select / pre-fill every option from the detected profile.
 
 - **Round A — Role & expertise**
   1. Role/title — Backend eng · Frontend/Design eng · Full-stack · Lead/Staff
@@ -72,19 +84,18 @@ Run three `AskUserQuestion` rounds. Each option set is ≤4 options; rely on the
   3. Autonomy — Ask before acting · Act then report · By risk level
   4. Verification rigor — Always test/lint · By impact · Fast
 
-Collect the answers into a single resolved profile used in §6.
+Collect the answers into a single resolved profile used in §7.
 
-## 5. Resolve name & output location
+## 6. Resolve name & location
 
-- Derive a default agent name from the role/identity — a short kebab-case `<handle>-orchestrator`. Confirm it or let the user override via `AskUserQuestion` (with Other). The name MUST be kebab-case and unique among existing agents.
-- If neither `--global` nor `--project` was passed, ask the output location via `AskUserQuestion`:
-  - **Global** — `~/.claude/agents/<name>.md` (per-user, applies to every project, never lives in a repo).
-  - **Project** — `.claude/agents/<name>.md` (this repo only, will be gitignored).
-- The `settings.local.json` `agent` value equals the **bare** `name:` for a user/project agent — NOT plugin-namespaced, since these are not plugin agents.
+- Location is **always** `.claude/agents/<name>.md` in the repo — a committed artifact. There is no global/project question.
+- On **Reconfigure** → reuse the detected name/path; do **not** rename.
+- On **fresh** → derive the default name `<repo>-orchestrator`, where `<repo>` is the kebab-cased basename of `git rev-parse --show-toplevel`. Confirm it or let the user override via `AskUserQuestion` (with Other). The name MUST be kebab-case and unique among existing agents.
+- The `settings.local.json` `agent` value equals the **bare** `name:` — NOT plugin-namespaced, since this is not a plugin agent.
 
-## 6. Build the generated orchestrator content
+## 7. Build the generated orchestrator content
 
-Assemble the file content from the mirrored values captured in §2 and the profile from §4. Only `name`, `description`, and the `## Operator profile` block are personalized — the body sentence and the behavior-contract frontmatter are mirrored, **never invented**:
+Assemble the file content from the mirrored values captured in §2 and the profile from §5. Only `name`, `description`, and the `## Operator profile` block are personalized — the body sentence and the behavior-contract frontmatter are mirrored, **never invented**:
 
 ```
 ---
@@ -108,31 +119,41 @@ Apply this profile to every task: shape tone, verbosity and output format to it.
 
 If the source declared `model`, include the mirrored `model` line; otherwise omit it.
 
-## 7. Delegate the writes (core:generalist)
+## 8. Confirm write + commit
 
-This skill MUST NOT Write/Edit itself — it may run under the no-write orchestrator. Spawn **one** `core:generalist` subagent via `Agent`, passing the full resolved file content from §6 and these exact instructions:
+Before any write, `AskUserQuestion` summarizing the planned effect — the agent will be committed to `.claude/agents/<name>.md`; `settings.local.json` stays local/gitignored; `.gitignore` is ensured — with three options:
 
-1. Write the generated orchestrator markdown to the chosen path (`~/.claude/agents/<name>.md` or `<repo>/.claude/agents/<name>.md`); create parent directories if needed.
+- **Proceed & commit** — write everything and run the targeted commit (§9.4).
+- **Proceed, no commit** — write everything, skip the commit.
+- **Cancel** — stop with nothing written.
+
+## 9. Delegate the writes + commit (core:generalist)
+
+This skill MUST NOT Write/Edit itself — it may run under the no-write orchestrator. Spawn **one** `core:generalist` subagent via `Agent`, passing the full resolved file content from §7 and these exact instructions:
+
+1. Write/overwrite the orchestrator markdown to `<repo>/.claude/agents/<name>.md` (create parent dirs). This is a **COMMITTED** artifact — do NOT add it to `.gitignore`.
 2. Merge into `<repo>/.claude/settings.local.json`: set the top-level key `"agent": "<name>"`. If the file is absent, create it as `{ "agent": "<name>" }`. If present, ADD/REPLACE only the `agent` key and PRESERVE all sibling keys (e.g. `ultracode`) — never replace the whole object.
-3. If the output location is project-local, ensure `.claude/agents/<name>.md` is gitignored: if `.gitignore` does not already cover it, append a line. (For global output there is nothing to gitignore — `settings.local.json` is already gitignored.)
-4. Return the list of paths written or updated.
+3. Ensure `.gitignore` covers `.claude/settings.local.json` (append the line if missing). The agent file is NOT gitignored.
+4. If the user chose **Proceed & commit**: run a targeted commit — `git add .claude/agents/<name>.md` plus `.gitignore` ONLY if it changed, then `git commit` with a Conventional Commit message: `feat(orchestrator): add <name> project orchestrator` (fresh) or `chore(orchestrator): reconfigure <name>` (reconfigure). NEVER `git add` `settings.local.json`. No co-author line, no "Generated with Claude Code".
+5. Return the list of paths written/updated and the commit result (or "no commit").
 
 After the subagent returns, report what changed.
 
-## 8. Report & restart
+## 10. Report & restart
 
 Summarize:
 
-- the generated orchestrator path,
-- the `settings.local.json` wiring (`"agent": "<name>"`),
+- the committed orchestrator path,
+- the local `settings.local.json` wiring (`"agent": "<name>"`),
 - the `.gitignore` touch, if any,
+- the commit result, if any,
 - the captured `## Operator profile`.
 
-Flag that a Claude Code **restart is required** for the new default agent to take effect, and that `/reload-plugins` (or a restart) was needed for `/workflow:onboard` itself to appear.
+Flag that a Claude Code **restart is required** for the new default agent to take effect, and that `/reload-plugins` (or a restart) was needed for `/workflow:onboard` itself to appear. Note that **teammates opt in** by re-running `/workflow:onboard` and choosing **Keep as-is**.
 
 ## Critical principles
 
+- **Commits the orchestrator, never the opt-in.** The orchestrator agent is a committed project artifact; `.claude/settings.local.json` is the per-user opt-in — never committed, always gitignored.
 - **No hardcoding.** Behavior, skills, and the body sentence are always read live from the installed core orchestrator (§2); only identity and the `## Operator profile` block are personalized.
-- **Never commits anything personal.** The generated orchestrator goes to a user or gitignored location; `settings.local.json` is already gitignored.
-- **The skill never writes files itself.** It delegates every write to `core:generalist`, staying compatible with the no-write orchestrator contract.
-- **Re-runnable.** The embedded `## Operator profile` block is the single source; re-running updates it in place rather than spawning a second artifact.
+- **The skill never writes files itself.** It delegates every write and the commit to `core:generalist`, staying compatible with the no-write orchestrator contract.
+- **Re-runnable with a first-question gate.** An existing orchestrator → Keep as-is (local opt-in only) or Reconfigure (rewrite the committed file in place).
