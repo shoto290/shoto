@@ -1,7 +1,7 @@
 ---
 name: design-systems-craft
-description: Build, structure, and scale a design system — design tokens (primitive vs semantic), component variants and properties, atomic design, naming conventions, documentation, and governance. Use when creating or restructuring a design system, tokens, or a component library.
-when_to_use: Trigger phrases like 'build a design system', 'set up design tokens', 'structure our components', 'name our components/variants', 'scale the design system', 'document the library', or 'atomic design'.
+description: 'Build, structure, and scale a design system - design tokens, component variants, and atomic-design naming and governance.'
+when_to_use: 'When creating or restructuring a design system, tokens, or a component library, or naming and documenting components.'
 ---
 
 # Design Systems Craft

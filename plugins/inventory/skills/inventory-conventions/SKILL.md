@@ -1,7 +1,7 @@
 ---
 name: inventory-conventions
-description: Inventories naming, structure, and idiom conventions across the codebase with one sample each for error handling, logging, and tests, and returns the unified anchored contract. Use when you need to match house style before writing new code.
-when_to_use: Use on `/inventory:inventory-conventions`, `what are the conventions here`, `match the house style`, `how is naming/error handling/logging done`, `inventory conventions`.
+description: Inventories naming, structure, and idiom conventions with one sample each for error handling, logging, and tests, and returns the contract.
+when_to_use: Use to match house style before writing new code.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-conventions

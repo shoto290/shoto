@@ -1,7 +1,7 @@
 ---
 name: inventory-test
-description: Inventories test locations, runner, and which modules have tests versus which do not, and returns the unified anchored contract. Use when you need to know test coverage shape and find untested modules before changing code.
-when_to_use: Use on `/inventory:inventory-test`, `where are the tests`, `what test runner is used`, `which modules lack tests`, `find untested code`, `inventory test coverage`.
+description: Inventories test locations, runner, and which modules have tests versus which do not, and returns the anchored contract.
+when_to_use: Use to know test coverage shape and find untested modules before changing code.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-test

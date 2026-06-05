@@ -1,7 +1,7 @@
 ---
 name: inventory-dependencies
-description: Inventories external libraries and internal cross-module coupling, flags dependency-direction violations and unused/oversized deps, and returns the unified anchored contract. Use when you need to understand what the code depends on and where coupling violates layering.
-when_to_use: Use on `/inventory:inventory-dependencies`, `what does this depend on`, `map the dependencies`, `find unused deps`, `check layering violations`, `inventory dependencies`.
+description: Inventories external libraries and internal coupling, flags dependency-direction and unused/oversized deps, and returns the contract.
+when_to_use: Use to understand what the code depends on and where coupling violates layering.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-dependencies

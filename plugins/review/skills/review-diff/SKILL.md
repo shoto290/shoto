@@ -1,7 +1,7 @@
 ---
 name: review-diff
-description: "Reviews the current workspace diff and posts inline findings via mcp__conductor__DiffComment. READ-ONLY — never modifies files. Applies 8 bug criteria from the review guidelines (impact, discreteness, rigor parity, introduced-in-commit, author would fix, no unstated assumptions, provable cross-file impact, not intentional). Posts one comment per distinct issue and returns a numbered markdown summary."
-when_to_use: Use on `/review:review-diff`, `review my changes`, `review the workspace diff`, `code review of current changes`.
+description: 'Reviews the current workspace diff against the 8 bug criteria and posts one inline DiffComment per finding. Read-only; numbered summary.'
+when_to_use: Use to review the current workspace diff and post inline findings.
 argument-hint: (none — reviews the current workspace diff)
 allowed-tools: Read, Glob, Grep, Bash, mcp__conductor__GetWorkspaceDiff, mcp__conductor__DiffComment, AskUserQuestion
 ---

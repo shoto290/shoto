@@ -1,7 +1,7 @@
 ---
 name: paper-craft
-description: Design on the Paper.design spatial canvas in the age of agents — HTML/CSS-native artboards, code-to-design and design-to-code flows, human↔agent collaboration — and drive the Paper MCP server to read and edit the canvas. Use when designing in Paper.design or moving between live code and the canvas.
-when_to_use: Trigger phrases like 'in Paper' / 'paper.design', 'use the Paper MCP', 'code to design', 'design to code', 'pull this component onto the canvas', 'write HTML to the canvas', or 'iterate on variants spatially'.
+description: 'Design on the Paper.design canvas - HTML/CSS artboards, code-to-design and design-to-code - via the Paper MCP.'
+when_to_use: 'When designing in Paper.design or moving between live code and the canvas via the Paper MCP.'
 ---
 
 # Paper Craft

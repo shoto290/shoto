@@ -1,6 +1,6 @@
 ---
 name: skill-smith
-description: Use this subagent PROACTIVELY whenever the user wants to create, scaffold, write, build, modify, edit, refactor, rename, or update a Claude Code skill (SKILL.md). It owns the full create + update flow defined by the `core:skill` skill — picks scope, drafts frontmatter, lays out supporting files (examples/, reference/, scripts/, template.md), and validates the result before returning. Do not use for explaining how skills work or for unrelated tasks.
+description: 'Author a Claude Code skill PROACTIVELY when the user wants to create or update a SKILL.md - owns scope, frontmatter, supporting files, and the validation gate. Not for explaining how skills work.'
 permissionMode: default
 skills: [core:base, core:skill]
 color: purple

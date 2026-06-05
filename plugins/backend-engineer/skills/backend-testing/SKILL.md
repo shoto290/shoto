@@ -1,7 +1,7 @@
 ---
 name: backend-testing
-description: Test backends strategically — the test pyramid (many unit, fewer integration, few E2E), testing behavior not implementation, mocking at boundaries, real-dependency integration tests with testcontainers, triaging flaky tests, and explicitly testing resilience patterns. Use when writing or reviewing backend tests or a test strategy.
-when_to_use: Trigger phrases like 'write tests for this service', 'unit vs integration vs E2E', 'mock this dependency', 'set up testcontainers', 'fix a flaky test', 'how much coverage', or 'test the retry/circuit breaker'.
+description: 'Test backends strategically: the test pyramid, asserting behavior over implementation, and integration tests with real dependencies.'
+when_to_use: 'When writing or reviewing backend tests, choosing unit vs integration vs E2E, mocking at boundaries, or fixing flaky tests.'
 ---
 
 # Backend Testing

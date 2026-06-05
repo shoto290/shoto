@@ -1,7 +1,7 @@
 ---
 name: inventory-workspace
-description: Inventories repo/workspace structure — monorepo vs single package, workspace globs, and each package's name/path/role — and returns the unified anchored contract. Use when you need a map of how the repository is laid out before touching it.
-when_to_use: Use on `/inventory:inventory-workspace`, `map the workspace`, `is this a monorepo`, `list the packages/apps`, `where are the workspace roots`, `inventory repo structure`.
+description: Inventories repo/workspace structure (monorepo vs single, workspace globs, each package's name/path/role) and returns the contract.
+when_to_use: Use for a map of how the repository is laid out before touching it.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-workspace

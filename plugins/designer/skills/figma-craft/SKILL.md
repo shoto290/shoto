@@ -1,7 +1,7 @@
 ---
 name: figma-craft
-description: Work effectively in Figma — variants, auto layout (fill/hug/fixed), variables and tokens, slash-separated component naming, file/page organization, and Dev Mode — and drive the Figma MCP server (figma-desktop and figma-remote) to read designs and generate or connect code. Use when building, organizing, or extracting from Figma files.
-when_to_use: Trigger phrases like 'in Figma', 'set up auto layout', 'organize variants', 'create Figma variables', 'name these components', 'use the Figma MCP', 'get design context / variables / screenshot from Figma', or 'Dev Mode / code connect'.
+description: 'Work in Figma - variants, auto layout, variables and tokens - and drive the Figma MCP to read designs and generate or connect code.'
+when_to_use: 'When building, organizing, or extracting from Figma files, or driving the Figma MCP for design context, variables, or Dev Mode code connect.'
 ---
 
 # Figma Craft

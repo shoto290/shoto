@@ -1,7 +1,7 @@
 ---
 name: review-comments
-description: "Review PR comments systematically and produce a structured decision list (FIX / FIX-STYLE / INTENTIONAL / OUT-OF-SCOPE / DISCUSS) with confidence per comment. READ-ONLY — no files are modified. Triages every comment inline against the cited code and project conventions. Output feeds into `review:review-fix`."
-when_to_use: Use on `/review:review-comments`, `review these PR comments`, `process review feedback`, `handle PR issues`.
+description: 'Triages PR comments into a verdict list (FIX, FIX-STYLE, INTENTIONAL, OUT-OF-SCOPE, DISCUSS). Read-only; output feeds review:review-fix.'
+when_to_use: Use to triage PR review comments into per-comment fix decisions.
 argument-hint: "[paste PR comments or @PR-url]"
 allowed-tools: Read, Glob, Grep, AskUserQuestion
 ---

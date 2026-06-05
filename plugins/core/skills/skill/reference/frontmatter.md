@@ -7,8 +7,8 @@ Configure skill behavior via YAML between `---` markers at the top of `SKILL.md`
 | Field | Required | Description |
 | :-- | :-- | :-- |
 | `name` | **Yes** | Marketplace rule (optional upstream). kebab-case, must match the directory. Defaults to the directory name when omitted, but we always set it. |
-| `description` | **Yes** | What the skill does + when to use it. Claude uses this to auto-invoke. Combined with `when_to_use`, capped at 1,536 chars in the listing. Put the key use case first. |
-| `when_to_use` | **Yes** | Marketplace rule (optional upstream). Additional invocation context (trigger phrases, example requests). Appended to `description` in the listing; counts toward the 1,536-char cap. |
+| `description` | **Yes** | What the skill does + when to use it. Claude uses this to auto-invoke. Combined with `when_to_use`, capped at 1,536 chars in the listing. Put the key use case first. Keep it to one sentence; no parenthetical definitions or file-path lists. The cap is a ceiling, not a target. |
+| `when_to_use` | **Yes** | Marketplace rule (optional upstream). Additional invocation context (trigger phrases, example requests). Appended to `description` in the listing; counts toward the 1,536-char cap. Keep it to one sentence of distinctive scenarios; no exhaustive keyword/trigger dumps. |
 | `argument-hint` | No | Autocomplete hint, e.g. `[issue-number]` or `[filename] [format]`. |
 | `arguments` | No | Named positional arguments. Space-separated string or YAML list. Names map to positions in order, enabling `$name` substitution. |
 | `disable-model-invocation` | No | `true` blocks Claude from auto-loading. User can still invoke via `/name`. Also blocks preload into subagents. Default: `false`. |

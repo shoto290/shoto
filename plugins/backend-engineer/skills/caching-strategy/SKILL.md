@@ -1,7 +1,7 @@
 ---
 name: caching-strategy
-description: Add caching deliberately — choose a strategy by access pattern (cache-aside, read-through, write-through, write-behind), plan invalidation first, prevent the thundering herd, pick the right eviction policy, and layer caches across the stack. Use when introducing or debugging a cache.
-when_to_use: Trigger phrases like 'add a cache', 'use Redis', 'cache invalidation', 'this endpoint is slow / hits the DB too much', 'set a TTL', 'cache stampede / thundering herd', or 'CDN/edge caching'.
+description: 'Add caching deliberately: pick a strategy by access pattern, plan invalidation first, and prevent the thundering herd.'
+when_to_use: 'When introducing or debugging a cache, setting a TTL, fixing a slow DB-heavy endpoint, or handling a cache stampede.'
 ---
 
 # Caching Strategy

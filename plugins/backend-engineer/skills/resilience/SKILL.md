@@ -1,7 +1,7 @@
 ---
 name: resilience
-description: Build backends that fail gracefully under partial failure — circuit breakers, timeouts on every external call, bulkhead isolation, idempotent retries with backoff, graceful degradation, and backpressure (patterns from Release It!). Use when calling external services, queues, or any dependency that can fail or slow down.
-when_to_use: Trigger phrases like 'this calls an external API/service', 'add retries', 'circuit breaker', 'set a timeout', 'handle downstream failure', 'rate limit / backpressure', 'graceful degradation', or hardening a critical path.
+description: 'Build backends that fail gracefully under partial failure: circuit breakers, timeouts, and idempotent retries with backoff.'
+when_to_use: 'When calling external services or queues, adding retries or timeouts, handling downstream failure, or hardening a critical path.'
 ---
 
 # Resilience

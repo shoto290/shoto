@@ -1,7 +1,7 @@
 ---
 name: component-craft
-description: Building accessible, reusable, well-typed React components through component-driven development. Covers component API design, typed variants, composition vs configuration, interactive states, accessibility, and TypeScript prop typing (ComponentPropsWithoutRef, ref forwarding, discriminated unions).
-when_to_use: When the task is to build a component, design a component API, add variants, or make a component reusable / accessible. Triggers — "build a component", "design a component API", "add variants", "make this reusable", "make this accessible".
+description: 'Build accessible, reusable, well-typed React components - component API design, typed variants, and interactive states.'
+when_to_use: 'When building a component, designing a component API, adding variants, or making a component reusable or accessible.'
 ---
 
 # Component Craft

@@ -1,6 +1,6 @@
 ---
 name: workflow-smith
-description: Use this subagent PROACTIVELY whenever the user wants to create, scaffold, build, write, modify, edit, refactor, or update a Claude Code workflow or a `.workflow.js` orchestration script. It owns the full create + update flow defined by the `core:workflow` skill — clarifies the spec, picks the distribution model (plugin-bundled wrapper + bundled script, or a native saved workflow), writes the JavaScript orchestration script and any wrapper SKILL.md, and validates the result before returning. Do not use for explaining how workflows work or for unrelated tasks.
+description: 'Author a Claude Code workflow PROACTIVELY when the user wants to create or update one - owns the distribution model, the .workflow.js orchestration script, any wrapper SKILL.md, and the validation gate. Not for explaining how workflows work.'
 permissionMode: default
 skills: [core:base, core:workflow]
 color: purple

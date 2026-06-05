@@ -1,7 +1,7 @@
 ---
 name: explore-documentations
-description: "Triggers when the user needs precise, version-accurate documentation for a library/framework/SDK/CLI/API — e.g. \"fetch the docs for <lib>\", \"how does <library>'s API work\", \"what changed in <lib> v X\". External doc lookup grounded in the version this repo actually uses: read the real version from the repo first, then fetch precise docs via context7."
-when_to_use: "When the user wants current, exact docs for a dependency the repo uses. Pull the real version from the repo first (package.json, lockfiles, requirements/pyproject, go.mod, Cargo.toml, Gemfile, or import statements), then fetch precise docs via context7, falling back to official-docs web search only when context7 has nothing."
+description: 'Fetch precise, version-accurate docs for a library, framework, SDK, CLI, or API, pinned to the repo''s version via context7. READ-ONLY.'
+when_to_use: 'Use when the user wants current, exact docs for a dependency the repo actually uses, pinned to its installed version.'
 argument-hint: '[library or topic]'
 allowed-tools: Read, Glob, Grep, mcp__context7__resolve-library-id, mcp__context7__query-docs, WebFetch, WebSearch, AskUserQuestion
 ---

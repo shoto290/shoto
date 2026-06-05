@@ -1,6 +1,6 @@
 {
   "name": "backend-engineer",
   "description": "Backend engineering plugin — ships the backend-engineer subagent: a server-side specialist that is ULTRA-effective at designing APIs, modeling data, and building secure, observable, resilient services. Bundles seven skills (api-design, database-craft, service-architecture, caching-strategy, observability, resilience, backend-testing) and exploits database/docs MCP servers when present.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": { "name": "shoto290", "url": "https://github.com/shoto290" }
 }

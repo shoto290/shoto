@@ -1,6 +1,6 @@
 ---
 name: subagent-smith
-description: Use this subagent PROACTIVELY whenever the user wants to create, scaffold, write, build, modify, edit, refactor, rename, or update a Claude Code subagent. It owns the full create + update flow defined by the `core:subagent` skill — picks scope, drafts frontmatter (the seven required fields plus any optional ones the spec needs), writes the markdown system prompt, and validates the result before returning. Do not use for explaining how subagents work or for unrelated tasks.
+description: 'Author a Claude Code subagent PROACTIVELY when the user wants to create or update one - owns scope, frontmatter, the markdown system prompt, and the validation gate. Not for explaining how subagents work.'
 permissionMode: default
 skills: [core:base, core:subagent]
 color: purple

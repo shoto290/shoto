@@ -1,7 +1,7 @@
 ---
 name: rebase
-description: "Rebases the current branch onto the repo's default branch with interactive per-file conflict resolution and an automatic local backup branch. Never pushes without explicit confirmation. Complements `/git:create` (rebase locally → then open a squash-merge PR with a clean linear history)."
-when_to_use: Use when the user types `/git:rebase`, says `rebase my branch`, `rebase onto main`, `sync my branch with main`, or `update my branch via rebase`.
+description: 'Rebases the current branch onto the default branch with per-file conflict resolution and a local backup branch. Never auto-pushes.'
+when_to_use: Use to rebase the current branch onto the default branch with per-file conflict resolution.
 argument-hint: '[base-branch]'
 allowed-tools: Bash, Read, AskUserQuestion, Edit
 ---

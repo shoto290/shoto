@@ -1,7 +1,7 @@
 ---
 name: subagent
-description: 'Understand and create or update a Claude Code subagent (custom AI assistant with its own context, tools, and system prompt). Use when the user wants to learn how subagents work, decide if a task needs one, write a new subagent file, edit an existing one in `.claude/agents/` or `~/.claude/agents/`, restrict tools/permissions, preload skills, enable persistent memory, hook into the lifecycle, or invoke one via natural language, @-mention, or `--agent`.'
-when_to_use: 'Triggers on: subagent, sub-agent, agent file, /subagent command, /agents UI, .claude/agents, --agent flag, agent frontmatter, agent description, agent tools, agent model, agent permissionMode, agent hooks, agent memory, fork mode, agent teams, Explore, Plan, general-purpose.'
+description: 'Understand, create, or update a Claude Code subagent with its own context, tools, and prompt.'
+when_to_use: 'Use to write or edit a subagent file in .claude/agents/ - tools, permissions, preloaded skills, memory, or lifecycle hooks.'
 argument-hint: '[agent-name]'
 ---
 

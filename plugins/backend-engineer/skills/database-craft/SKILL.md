@@ -1,7 +1,7 @@
 ---
 name: database-craft
-description: Model data and write queries like a senior backend engineer — normalization, indexing, transaction isolation, eliminating N+1 queries, connection pooling, zero-downtime migrations, and SQL-vs-NoSQL tradeoffs. Use when designing schemas, tuning queries, or planning migrations.
-when_to_use: Trigger phrases like 'design a schema/table', 'add an index', 'this query is slow', 'fix N+1', 'pick SQL or NoSQL', 'write a migration', 'choose an isolation level', or any data-modeling/query work.
+description: 'Model data and write queries with senior judgment: normalization, indexing, and transaction isolation tradeoffs.'
+when_to_use: 'When designing schemas, tuning slow queries, fixing N+1, planning zero-downtime migrations, or choosing SQL vs NoSQL.'
 ---
 
 # Database Craft

@@ -1,7 +1,7 @@
 ---
 name: inventory-services
-description: Inventories the service layer — service classes/modules, their public operations, wiring, and relations to repositories and external clients — and returns the unified anchored contract. Use when you need to understand business-logic services before extending them.
-when_to_use: Use on `/inventory:inventory-services`, `map the service layer`, `what services exist`, `how is business logic organized`, `which service calls which repository`, `inventory services`.
+description: Inventories the service layer (classes, public operations, wiring, relations to repos and clients) and returns the anchored contract.
+when_to_use: Use to understand business-logic services before extending them.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-services
