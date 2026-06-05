@@ -1,18 +1,19 @@
 ---
 name: review-fix
-description: Applies the fix decisions produced by `review:review-comments`. WRITE operation — modifies files. Paste the `/review:review-comments` output into the prompt; this skill executes ONLY comments marked FIX or FIX-STYLE, one at a time, surgically. Skips INTENTIONAL / OUT-OF-SCOPE / DISCUSS. After all fixes, runs auto-detected verification commands (tests / lint / typecheck) based on the project's package manager.
+description: Applies the fix decisions produced by `review:review-comments`. WRITE operation — modifies files. Paste the `/review:review-comments` output into the prompt; this skill delegates each comment marked FIX or FIX-STYLE to its own subagent, one fix at a time, with minimal surgical edits. Skips INTENTIONAL / OUT-OF-SCOPE / DISCUSS. After all fixes, runs auto-detected verification commands (tests / lint / typecheck) based on the project's package manager.
 when_to_use: Triggers on `/review:review-fix`, `apply review fixes`, `fix the review comments`.
 argument-hint: "[paste /review:review-comments output]"
-allowed-tools: Read, Edit, Bash, Glob, Grep
+allowed-tools: Agent, Read, Bash, Glob, Grep
 ---
 
 # review-fix
 
-WRITE counterpart to `review:review-comments`. Consumes a verdict list (FIX / FIX-STYLE / INTENTIONAL / OUT-OF-SCOPE / DISCUSS) and applies ONLY the FIX and FIX-STYLE items, one at a time, with minimal surgical edits.
+WRITE counterpart to `review:review-comments`. Consumes a verdict list (FIX / FIX-STYLE / INTENTIONAL / OUT-OF-SCOPE / DISCUSS) and delegates each FIX and FIX-STYLE item to its own subagent, one fix at a time, each making minimal surgical edits.
 
 ## Hard rules
 
-- **One fix at a time.** Do NOT batch changes across multiple files or comments in one operation. Edit, confirm, then move to the next.
+- **One subagent per fix.** Delegate each FIX / FIX-STYLE to its own subagent and process them one at a time — spawn, confirm, then the next. Never batch multiple fixes into one subagent or one edit.
+- **Let the orchestrator choose the specialist.** Spawn a subagent suited to the fix's domain, but do NOT prescribe which agent here — routing each fix to the best-fit specialist is the orchestrator's job.
 - **Minimal changes only.** The fix must address EXACTLY what the comment says. No refactoring, renaming, or "improvement" of adjacent code.
 - **Never re-open a rejected comment.** If `review:review-comments` marked it INTENTIONAL, OUT-OF-SCOPE, or DISCUSS — do not touch it. Those decisions were already made.
 - **Stop on regression.** If a fix creates a new problem (test breaks, type error, lint failure surfaced by the change), STOP, report which fix caused which failure, and do NOT continue with remaining fixes.
@@ -34,18 +35,18 @@ If no `FIX` / `FIX-STYLE` comments are present in the input, stop and report:
 Nothing to apply.
 ```
 
-### 3. Apply fixes one at a time
+### 3. Delegate each fix to its own subagent
 
 Process each FIX / FIX-STYLE comment in the order it appears in the decision list. For each comment:
 
-1. Use `Read` to load the current state of the file at the referenced line.
-2. Use `Edit` to apply the minimal change that resolves the comment.
-3. Do NOT refactor, rename, or "improve" adjacent code.
-4. Print confirmation immediately:
+1. Spawn ONE subagent via the `Agent` tool, scoped to EXACTLY that one fix. Pass it the finding tuple (N, file, line, verdict, text), the repo rules from `CLAUDE.md` / `AGENTS.md`, and the constraints: the minimal change that resolves exactly the comment; no refactor, rename, or "improvement" of adjacent code; never re-open a rejected comment. Let the orchestrator route the spawn to the best-fit specialist for the fix's domain — do NOT name or map specific agents here.
+2. Wait for the subagent's confirmation, then print:
 
    ```
    [#N] Fixed — [File:line] — [one sentence describing the change]
    ```
+
+3. If a subagent reports it could not apply the fix cleanly or introduced a regression, STOP — record which fix failed and do NOT spawn the remaining ones.
 
 If a fix uncovers a separate problem (something else broken nearby that this fix doesn't address), note it for the "New tickets to create" list. Do NOT fix it.
 
