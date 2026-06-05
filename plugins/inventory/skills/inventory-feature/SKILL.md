@@ -1,7 +1,7 @@
 ---
 name: inventory-feature
-description: Traces the control/data flow of a single feature — entry point, ordered steps, branches, side effects, and success/error exits — and returns the unified anchored contract. Use when you need to understand how a feature actually executes before modifying it.
-when_to_use: Use on `/inventory:inventory-feature`, `trace this feature`, `how does X flow`, `what's the control flow`, `walk the code path`, `inventory a feature`.
+description: Traces a single feature's control/data flow (entry, steps, branches, side effects, exits) and returns the anchored contract.
+when_to_use: Use to understand how a feature actually executes before modifying it.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-feature

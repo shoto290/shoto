@@ -1,6 +1,6 @@
 ---
 name: mcp-smith
-description: Use this subagent PROACTIVELY whenever the user wants to recommend, add, configure, register, modify, edit, or debug a Claude Code MCP server. It owns the full configure + update flow defined by the `core:mcp` skill — recommends a server for a need or scans a repo and proposes servers, picks a transport (stdio/SSE/HTTP) and scope, writes the `mcpServers` entry into `.mcp.json` or `~/.claude.json` as a sibling, wires secrets via env vars, runs `claude mcp add`, verifies the connection, and debugs a server that won't connect. Do not use for explaining how MCP works in the abstract, or for MCP bundled inside a plugin — that routes to plugin-smith.
+description: 'Configure, add, or debug a Claude Code MCP server PROACTIVELY when the user needs one - recommends a server, picks transport and scope, wires secrets, verifies the connection. Not for plugin-bundled MCP (use plugin-smith).'
 permissionMode: default
 skills: [core:base, core:mcp]
 color: purple

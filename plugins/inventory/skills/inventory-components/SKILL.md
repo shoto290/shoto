@@ -1,7 +1,7 @@
 ---
 name: inventory-components
-description: Inventories existing components/utilities matching a desired capability, scores their fit, and returns the unified anchored contract with a REUSE / EXTEND / NEW verdict. Use when you need to know whether to reuse, extend, or build new before adding a component.
-when_to_use: Use on `/inventory:inventory-components`, `is there an existing component for X`, `can I reuse something`, `should I build new or extend`, `find similar utilities`, `inventory components`.
+description: Inventories existing components/utilities for a desired capability and returns the anchored contract with a REUSE / EXTEND / NEW verdict.
+when_to_use: Use before adding a component to decide whether to reuse, extend, or build new.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-components

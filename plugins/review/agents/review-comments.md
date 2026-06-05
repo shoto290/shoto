@@ -1,6 +1,6 @@
 ---
 name: review-comments
-description: "Read-only triage subagent. Spawned by the deep-review workflow (agentType:'review:review-comments') to triage a numbered list of review findings into exactly one verdict each — FIX, FIX-STYLE, INTENTIONAL, OUT-OF-SCOPE, or DISCUSS — with a confidence and a one-sentence reason. Verifies each finding against the cited code and project conventions. Never modifies files and never asks the user anything."
+description: 'Read-only triage subagent spawned by the deep-review workflow. Triages each review finding into one verdict (FIX, FIX-STYLE, INTENTIONAL, OUT-OF-SCOPE, DISCUSS) with confidence, verified against the code.'
 permissionMode: default
 skills: [core:base]
 color: cyan

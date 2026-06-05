@@ -1,7 +1,7 @@
 ---
 name: orchestrator
-description: "The orchestrator agent's operating contract: align intent first, plan, then deliver every step by discovering and delegating to the best-fit installed subagent / workflow / skill — it never writes files itself. A GENERIC routing contract that carries NO fixed capability->delegate table. Preloaded by the orchestrator agent; it writes no artifact and starts no task of its own."
-when_to_use: "Preloaded by the core:orchestrator agent as its operating contract. Invoke explicitly via /core:orchestrator or Skill({skill:\"core:orchestrator\"}) to (re)load it. Deliberate / preload use only — not a match for vague free-form requests."
+description: 'Operating contract for the orchestrator agent: align, plan, then delegate every step to the best-fit installed delegate - it never writes files itself.'
+when_to_use: 'Preloaded by the core:orchestrator agent; invoke explicitly via /core:orchestrator to reload. Not auto-delegated - deliberate use only.'
 disable-model-invocation: true
 user-invocable: false
 ---

@@ -1,7 +1,7 @@
 ---
 name: mcp
-description: 'Understand, recommend, configure, and debug project-level MCP (Model Context Protocol) servers — the external tools and services Claude connects to over stdio, SSE, or HTTP.'
-when_to_use: 'Use when the user wants to learn how MCP works, decide which server fits a need, scan a repo and recommend servers, add a server to a project `.mcp.json` or `~/.claude.json`, run `claude mcp add`, pick a transport or scope, handle secrets via env vars, or debug a server that will not connect. Triggers on: mcp, mcp server, .mcp.json, claude mcp add, connect MCP, configure MCP, debug MCP, --mcp-debug, recommend an MCP server, which MCP server, stdio/SSE/HTTP transport, mcpServers, context7, Playwright MCP, Puppeteer MCP, Supabase MCP, Convex MCP, Postgres MCP, Neon MCP, Turso MCP, GitHub MCP, GitLab MCP, Linear MCP, AWS MCP, Cloudflare MCP, Vercel MCP, Sentry MCP, Datadog MCP, Slack MCP, Notion MCP, Docker MCP, Kubernetes MCP, Exa MCP, Memory MCP. This skill covers MCP at the project/repo level (`.mcp.json`, `claude mcp add`, `~/.claude.json`). For MCP bundled and distributed inside a plugin (`.mcp.json` at the plugin root, `mcpServers` in `plugin.json`), route to `core:plugin`.'
+description: 'Recommend, configure, and debug project-level MCP servers Claude connects to.'
+when_to_use: 'Use to add, choose, or debug an MCP server in .mcp.json - transport, scope, secrets. For plugin-bundled MCP, route to core:plugin.'
 argument-hint: '[recommend | add <server> | debug | explain]'
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: deep-review
-description: 'Multi-agent code-review workflow. Fans out diff-review agents by lens (correctness, security, performance, style/maintainability) over the current branch diff, dedupes their findings, validates each into a verdict (FIX / FIX-STYLE / INTENTIONAL / OUT-OF-SCOPE / DISCUSS) using review-comments criteria, then — gated by a param — either stops for your review (default) or autonomously applies the FIX/FIX-STYLE items via review-fix and runs verification.'
-when_to_use: "Use on `/workflow:deep-review`, 'run a deep/parallel review of my changes', 'review my diff from multiple angles then fix'."
+description: 'Multi-agent code review that fans out diff-review agents by lens over the branch diff, triages findings, and optionally auto-fixes them.'
+when_to_use: 'Use to review the current branch diff from multiple angles in parallel, optionally applying the safe fixes afterward.'
 argument-hint: "[--auto-fix] [--base <branch>]"
 allowed-tools: [AskUserQuestion, Workflow, Read, Bash]
 ---

@@ -1,7 +1,7 @@
 ---
 name: inventory-context
-description: Broad adaptive lens that inventories any subject when no precise lens fits — including Claude Code artifact roots (skills, subagents, hooks, manifests, MCP) — and returns the unified anchored contract. Use when the subject does not match a specific inventory lens or when mapping a plugin/artifact root.
-when_to_use: Use on `/inventory:inventory-context`, `inventory this`, `what's in this directory`, `map this plugin/artifact root`, `list the skills/agents/hooks`, when no precise inventory lens fits.
+description: Broad adaptive lens that inventories any subject when no precise lens fits, including Claude Code artifact roots, and returns the contract.
+when_to_use: Use when the subject matches no specific inventory lens or when mapping a plugin/artifact root.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-context

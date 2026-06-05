@@ -1,6 +1,6 @@
 ---
 name: inventory-services
-description: "Read-only inventory specialist. Spawned by the inventory-services skill (context:fork) or routed via agentType:'inventory:inventory-services'. Maps services and returns the unified anchored contract (Subject/Items/Patterns/Relations/Gaps & risks/Summary). Never modifies files; never asks the user anything."
+description: 'Read-only inventory specialist that maps the service layer and returns the unified anchored contract. Never modifies files; never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

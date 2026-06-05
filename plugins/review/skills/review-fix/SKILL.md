@@ -1,7 +1,7 @@
 ---
 name: review-fix
-description: Applies the fix decisions produced by `review:review-comments`. WRITE operation — modifies files. Paste the `/review:review-comments` output into the prompt; this skill delegates each comment marked FIX or FIX-STYLE to its own subagent, one fix at a time, with minimal surgical edits. Skips INTENTIONAL / OUT-OF-SCOPE / DISCUSS. After all fixes, runs auto-detected verification commands (tests / lint / typecheck) based on the project's package manager.
-when_to_use: Triggers on `/review:review-fix`, `apply review fixes`, `fix the review comments`.
+description: 'Applies review:review-comments decisions by delegating each FIX or FIX-STYLE item to its own subagent, then runs auto-detected verification.'
+when_to_use: Use to apply the FIX and FIX-STYLE decisions from review-comments.
 argument-hint: "[paste /review:review-comments output]"
 allowed-tools: Agent, Read, Bash, Glob, Grep
 ---

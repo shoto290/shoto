@@ -1,6 +1,6 @@
 ---
 name: generalist
-description: "A simple, general-purpose worker the orchestrator delegates to for STRAIGHTFORWARD file edits, creations, and shell actions when NO specialized agent fits — e.g. editing a plain doc or config value, creating a small non-UI file, or running a shell task. It is the catch-all writer fallback: prefer a specialist (design-engineer for UI, the skill/subagent/hook smiths for those artifacts) whenever one matches; use generalist only when none does. Keeps changes surgical and follows SIMPLE."
+description: 'Catch-all writer fallback the orchestrator delegates to for straightforward file edits, creations, and shell tasks when no specialist fits. Keeps changes surgical. Prefer a specialist whenever one matches.'
 tools: Read, Write, Edit, Bash, Grep, Glob
 permissionMode: default
 skills: [core:base, engineering:senior-mindset, engineering:clean-code-craft, engineering:solid-dry-kiss-yagni, engineering:reuse-first, engineering:avoid-over-engineering, engineering:pragmatic-principles]

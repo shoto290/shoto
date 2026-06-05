@@ -1,7 +1,7 @@
 ---
 name: ux-principles
-description: Apply senior UX judgment — usability heuristics, Laws of UX, cognitive psychology, ethical and inclusive design, and clear decision-making and communication. Use when making product/UX decisions, critiquing a flow, justifying a design choice, or prioritizing usability.
-when_to_use: Trigger phrases like 'is this usable', 'critique this flow', 'why this design', 'reduce cognitive load', 'apply Laws of UX', 'design ethically', or 'justify this decision to stakeholders'.
+description: 'Apply senior UX judgment - usability heuristics, Laws of UX, and ethical, inclusive decision-making.'
+when_to_use: 'When making product/UX decisions, critiquing a flow, justifying a design choice, or prioritizing usability.'
 ---
 
 # UX Principles

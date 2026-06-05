@@ -1,6 +1,6 @@
 ---
 name: plugin-smith
-description: Use this subagent PROACTIVELY whenever the user wants to create, scaffold, build, package, version, distribute, or migrate a Claude Code plugin. It owns the full create + update flow defined by the `core:plugin` skill — scaffolds a new plugin, edits and validates its `.claude-plugin/plugin.json` manifest, lays out the plugin directory, manages versioning, wires marketplace distribution (`.claude-plugin/marketplace.json`), and migrates a standalone `.claude/` setup into a plugin. Do not use for authoring individual skills, sub-agents, or hooks (route those to skill-smith / subagent-smith / hooks-smith), for explaining how plugins work, or for unrelated tasks.
+description: 'Author a Claude Code plugin PROACTIVELY when the user wants to create or update one - owns scaffolding, the plugin.json manifest, directory layout, versioning, and marketplace distribution. Not for authoring individual skills, subagents, or hooks (route to their smiths).'
 permissionMode: default
 skills: [core:base, core:plugin]
 color: purple

@@ -1,7 +1,7 @@
 {
   "name": "explore",
   "description": "Codebase-grounded external research: precise library docs (context7), conventions/best-practices, and focused web search tied to how this repo actually uses things.",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "author": {
     "name": "shoto290"
   },

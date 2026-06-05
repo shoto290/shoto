@@ -1,6 +1,6 @@
 ---
 name: git-flow
-description: Use this subagent PROACTIVELY when the user wants to ship the current work end-to-end through git — commit the changes, rebase onto the default branch, then open a pull request. Delegate to it for requests like "commit and open a PR", "ship this branch", "rebase then create the PR", or "run the full git flow". It owns the commit → rebase → create sequence and never pushes or rewrites shared history without explicit confirmation.
+description: 'Delegate when shipping current work end-to-end through git: commit, rebase onto the default branch, then open a PR. Owns the commit -> rebase -> create sequence; never force-pushes shared history without confirmation.'
 permissionMode: default
 skills: [core:base, git:commit, git:rebase, git:create]
 color: green

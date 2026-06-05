@@ -1,7 +1,7 @@
 ---
 name: explore-conventions
-description: "Triggers when the user asks about conventions or best practices for a technology AS THIS REPO USES IT — e.g. \"what's the convention for X\", \"best practice for <tech> here\", \"how should we structure Y\". Researches the external community/official best practice and reconciles it against the repo's current patterns, flagging drift and recommending the fit that best honors the repo's SIMPLE principles. READ-ONLY."
-when_to_use: "When the user wants to know the established/community convention for something and how it compares to how this repo already does it. Triggers on `/explore:explore-conventions`, \"what's the convention for X\", \"best practice for <tech> here\", \"how should we structure Y in this repo\"."
+description: 'Research the external best practice for a technology, reconcile it against how this repo does it, and recommend a fit. READ-ONLY.'
+when_to_use: 'Use to learn the community convention for something and how it compares to this repo''s current patterns.'
 argument-hint: '[topic or tech]'
 allowed-tools: Read, Glob, Grep, Bash, WebFetch, WebSearch, AskUserQuestion
 ---

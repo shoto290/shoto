@@ -1,7 +1,7 @@
 ---
 name: inventory-repositories
-description: Inventories the data-access/repository layer — repos/DAOs, ORM vs raw, entity-to-table mapping, migrations — and returns the unified anchored contract. Use when you need to understand persistence and data access before changing queries or schema.
-when_to_use: Use on `/inventory:inventory-repositories`, `map the data-access layer`, `where are the repositories/DAOs`, `how is the DB accessed`, `entity to table mapping`, `inventory repositories`.
+description: Inventories the data-access layer (repos/DAOs, ORM vs raw, entity-table mapping, migrations) and returns the anchored contract.
+when_to_use: Use to understand persistence and data access before changing queries or schema.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-repositories

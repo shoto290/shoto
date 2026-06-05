@@ -1,6 +1,6 @@
 ---
 name: inventory-components
-description: "Read-only inventory specialist. Spawned by the inventory-components skill (context:fork) or routed via agentType:'inventory:inventory-components'. Maps components and returns the unified anchored contract (Subject/Items/Patterns/Relations/Gaps & risks/Summary). Never modifies files; never asks the user anything."
+description: 'Read-only inventory specialist that maps components and returns the unified anchored contract. Never modifies files; never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

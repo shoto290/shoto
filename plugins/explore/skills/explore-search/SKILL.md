@@ -1,7 +1,7 @@
 ---
 name: explore-search
-description: "Triggers when the user wants focused external web research on a topic that is OUTSIDE the codebase but LINKED to how the repo uses it — e.g. \"research <topic> for how we use it\", \"find out about <external thing> relevant to this project\". Lightweight, codebase-grounded web search: one focused pass that grounds the question in the repo, searches the web, and returns a short cited answer tied to current repo usage."
-when_to_use: "When the user wants a quick, cited external answer tied to current repo usage (a library, API, error, config, or version the codebase actually uses). IMPORTANT: this is the lightweight single-pass option — it does NOT do heavy, multi-source, fact-checked research. When the scope is large, spans many sources, or needs verification, STOP and defer to the `deep-research` skill (if available) instead of fanning out here."
+description: 'Lightweight single-pass web search: ground the question in current repo usage, search the web, and return a short cited answer.'
+when_to_use: 'Use for a quick cited external answer tied to current repo usage; for heavy multi-source research, defer to deep-research.'
 argument-hint: '[topic]'
 allowed-tools: Read, Glob, Grep, WebSearch, WebFetch, AskUserQuestion
 ---

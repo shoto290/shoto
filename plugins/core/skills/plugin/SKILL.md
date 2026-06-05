@@ -1,7 +1,7 @@
 ---
 name: plugin
-description: Author, package, test, and distribute a Claude Code plugin as a whole — the `plugin.json` manifest, plugin directory layout, local testing with `--plugin-dir` / `--plugin-url`, `/reload-plugins`, LSP servers (`.lsp.json`), background monitors (`monitors/monitors.json`), plugin-level `settings.json`, version management, marketplace distribution (`.claude-plugin/marketplace.json`), community-marketplace submission, and migration from a standalone `.claude/` directory.
-when_to_use: Use when the user wants to scaffold a new plugin, edit its manifest, validate or debug a plugin, ship it, submit it to `claude-plugins-official` or `claude-community`, or convert an existing `.claude/` setup. Not for authoring individual skills, sub-agents, or hooks — route those to the `skill`, `subagent`, and `hooks` skills.
+description: 'Author, package, test, and distribute a Claude Code plugin and its manifest.'
+when_to_use: 'Use to scaffold, validate, ship, or migrate a plugin as a whole - not for individual skills, subagents, or hooks.'
 argument-hint: '[action — e.g. "new", "validate", "migrate"]'
 ---
 

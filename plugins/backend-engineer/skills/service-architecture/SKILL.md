@@ -1,7 +1,7 @@
 ---
 name: service-architecture
-description: Structure backend code with senior judgment — repository/service-layer/skinny-controller separation, dependency injection, persistence ignorance, and DDD bounded contexts and aggregates, plus the modular-monolith-to-microservices decision. Use when laying out a service, drawing module boundaries, or deciding how to split a system.
-when_to_use: Trigger phrases like 'structure this service', 'repository vs service layer', 'where does this logic go', 'should this be a microservice', 'set up dependency injection', 'organize by domain', or DDD/bounded-context questions.
+description: 'Structure backend code with senior judgment: layered repository/service/controller separation, DI, and DDD bounded contexts.'
+when_to_use: 'When laying out a service, drawing module boundaries, deciding monolith vs microservice, or asking where logic belongs.'
 ---
 
 # Service Architecture

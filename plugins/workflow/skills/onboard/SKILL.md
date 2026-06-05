@@ -1,7 +1,7 @@
 ---
 name: onboard
-description: "Set up a committed project orchestrator and, optionally, your personal operator profile. Runs a short PROJECT interview (stack + conventions) and generates a thin-wrapper orchestrator agent — committed to `.claude/agents/` — that inherits the live core:orchestrator contract plus a `## Project profile`. Optionally runs a personal interview and writes a preloadable `operator-profile` skill to `~/.claude/skills/` (per-user, never committed). Each user opts in locally via `.claude/settings.local.json` (gitignored). Re-run to keep or reconfigure either."
-when_to_use: "/workflow:onboard, 'set up my orchestrator', 'configure the project orchestrator', 'set the project stack and conventions', 'personalize for myself', 'create my operator profile', 'tune how Claude works for me', 'onboard me'. NOT for adding or evolving skills/subagents/hooks (use /workflow:evolve), and NOT for generating a CLAUDE.md (use the built-in /init)."
+description: 'Set up a committed project orchestrator from a short stack-and-conventions interview, and optionally a per-user operator profile.'
+when_to_use: 'Use to configure the project orchestrator or personalize one for yourself, not to add skills or hooks (use evolve) or generate a CLAUDE.md (use /init).'
 argument-hint: '[--show]'
 allowed-tools: [AskUserQuestion, Read, Glob, Bash, Agent]
 ---

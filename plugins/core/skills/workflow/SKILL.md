@@ -1,7 +1,7 @@
 ---
 name: workflow
-description: 'Create or update a Claude Code dynamic workflow — a JavaScript orchestration script (`.workflow.js`) that fans out many subagents at scale and returns only the final result to Claude. Handles both new workflows and updates to existing ones; covers the wrapper-skill + bundled-script pattern and bare native saved scripts.'
-when_to_use: 'Use when the user wants to create, build, scaffold, write, modify, edit, refactor, or update a workflow, a `.workflow.js`, an orchestration script, a multi-agent workflow, or anything that fans out / parallelizes agents at scale. Triggers on: workflow, .workflow.js, orchestration script, fan out agents, multi-agent workflow, pipeline of agents, parallel agents, bundled workflow, native saved workflow. NOT for explaining how workflows work in the abstract, and NOT for unrelated tasks.'
+description: 'Create or update a .workflow.js orchestration script that fans out subagents at scale.'
+when_to_use: 'Use to write or edit a workflow that parallelizes agents - not for explaining workflows in the abstract.'
 argument-hint: '[workflow name or description of what to orchestrate]'
 allowed-tools: [Agent, AskUserQuestion, Read, Glob, Grep]
 ---

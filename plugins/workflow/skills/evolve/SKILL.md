@@ -1,7 +1,7 @@
 ---
 name: evolve
-description: 'Analyze the project''s existing skills, subagents, hooks, and MCP to propose and apply what to create or update for a new capability. Use when the user describes a high-level need ("I want to add X", "how should I structure Y", "what''s the cleanest way to evolve our setup for Z") or when a feature spans multiple artifact types (skill + agent + hook). When invoked without arguments, infers the capability from the current conversation so the user does not have to repeat themselves.'
-when_to_use: 'Use when the user describes a capability or feature to add and it may span several artifact surfaces (skill, subagent, hook, MCP, plugin). Triggers on: "I want to add X", "how should I structure Y", "evolve our setup for Z", "add a /command plus a hook", a feature that needs both an agent and a skill. When invoked with no args, infer the capability from the current conversation.'
+description: 'Plan and apply a coordinated set of skill, subagent, hook, and MCP changes for a new capability, inferred from the conversation if no args.'
+when_to_use: 'Use when adding a capability that may span several artifact surfaces at once, rather than a single skill, subagent, or hook.'
 argument-hint: '[capability or feature description — optional; inferred from conversation if omitted]'
 allowed-tools: [AskUserQuestion, Agent, Workflow, TaskOutput, Read, Glob, Grep, Skill]
 ---

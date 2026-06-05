@@ -1,6 +1,6 @@
 ---
 name: review-fix
-description: "Write subagent. Spawned by the deep-review workflow (agentType:'review:review-fix') only on the auto-fix path. Consumes a numbered list of findings with verdicts and applies ONLY the FIX and FIX-STYLE items, one at a time, with minimal surgical edits; skips INTENTIONAL / OUT-OF-SCOPE / DISCUSS. After all fixes, auto-detects and runs verification (tests / lint / typecheck). Never commits, never pushes, never asks the user anything."
+description: 'Write subagent spawned by the deep-review workflow on the auto-fix path. Applies only FIX and FIX-STYLE findings one at a time with surgical edits, then runs auto-detected verification. Never commits or pushes.'
 permissionMode: default
 skills: [core:base]
 color: orange

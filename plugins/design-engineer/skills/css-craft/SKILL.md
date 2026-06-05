@@ -1,7 +1,7 @@
 ---
 name: css-craft
-description: Modern CSS mastery for layout, responsive design, and maintainable styling — flexbox, grid, container queries, logical properties, cascade layers, and intrinsic responsive layout.
-when_to_use: Triggers when the user says "lay this out", "make it responsive", "fix this CSS/layout", "center this", or "use grid/flex/container queries". Use for any component layout, responsive behavior, or styling-architecture decision in React + TypeScript.
+description: Modern CSS mastery for layout, responsive design, and maintainable styling architecture.
+when_to_use: Use for any component layout, responsive behavior, or styling-architecture decision.
 ---
 
 # CSS Craft

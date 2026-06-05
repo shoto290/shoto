@@ -1,6 +1,6 @@
 ---
 name: hooks-smith
-description: Use this subagent PROACTIVELY whenever the user wants to create, scaffold, write, build, modify, edit, refactor, or update a Claude Code hook (a shell command, prompt, agent, or HTTP endpoint that fires at a lifecycle event). It owns the full create + update flow defined by the `core:hooks` skill — clarifies the event/type/matcher, picks a recipe, writes the hook into the correct settings file as a sibling under the existing `hooks` block, authors any hook script, and validates the result before returning. Do not use for explaining how hooks work or for unrelated tasks.
+description: 'Author a Claude Code hook PROACTIVELY when the user wants to create or update one - owns the event/type/matcher, the settings entry, any hook script, and the validation gate. Not for explaining how hooks work.'
 permissionMode: default
 skills: [core:base, core:hooks]
 color: purple

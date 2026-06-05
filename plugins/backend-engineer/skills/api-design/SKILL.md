@@ -1,7 +1,7 @@
 ---
 name: api-design
-description: Design HTTP/GraphQL API contracts like a senior engineer — resource-centric REST, idempotency, pagination, versioning, a consistent error envelope, and disciplined HTTP status codes. Use when designing or reviewing endpoints, request/response shapes, or API evolution.
-when_to_use: Trigger phrases like 'design an API/endpoint', 'REST vs GraphQL', 'how should I version this API', 'paginate this list', 'standardize error responses', 'make this endpoint idempotent', or any request/response contract work.
+description: 'Design durable HTTP/GraphQL API contracts: resource-centric REST, versioning, and consistent error envelopes.'
+when_to_use: 'When designing or reviewing endpoints, request/response shapes, pagination, idempotency, or API versioning and evolution.'
 ---
 
 # API Design

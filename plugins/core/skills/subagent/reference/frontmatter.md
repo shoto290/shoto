@@ -23,7 +23,7 @@ The **Required** column below reflects the upstream Claude Code spec. Fields thi
 | Field | Required | What it does |
 | :-- | :-- | :-- |
 | `name` | YES | Unique lowercase-hyphenated id. Hooks receive this as `agent_type`. Filename does **not** have to match. |
-| `description` | YES | Tells Claude when to delegate. State *what* and *when*. Add "use proactively" / "use immediately" to encourage automatic delegation. |
+| `description` | YES | Tells Claude when to delegate. State *what* and *when*. Add "use proactively" / "use immediately" to encourage automatic delegation. Keep it to 1-2 sentences (what + when + a one-line scope boundary); no keyword dumps or 'do not use for...' enumerations. |
 | `tools` | no | Comma-separated allowlist. Omit → inherit everything from parent (including MCP tools). |
 | `disallowedTools` | no | Denylist applied to the inherited or specified pool. |
 | `model` | no | `sonnet`, `opus`, `haiku`, a full model id (e.g. `claude-opus-4-8`), or `inherit`. Default: `inherit`. |

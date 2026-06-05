@@ -1,7 +1,7 @@
 ---
 name: observability
-description: Make backend systems observable by default — the three pillars (logs, metrics, traces), structured JSON logging with correlation IDs, sane log levels, the golden signals, and SLO-driven alerting. Use when adding logging, instrumentation, metrics, tracing, or alerts.
-when_to_use: Trigger phrases like 'add logging', 'structured logs', 'add metrics/tracing', 'correlation/trace id', 'set up alerting', 'define an SLO', 'OpenTelemetry/Prometheus/Grafana', or debugging a distributed request.
+description: 'Make backends observable by default: the three pillars of logs, metrics, and traces with correlation IDs and SLO-driven alerting.'
+when_to_use: 'When adding structured logging, metrics, or tracing, defining an SLO, setting up alerts, or debugging a distributed request.'
 ---
 
 # Observability

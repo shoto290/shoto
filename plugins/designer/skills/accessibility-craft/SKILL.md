@@ -1,7 +1,7 @@
 ---
 name: accessibility-craft
-description: Design accessible, inclusive interfaces to WCAG — color contrast, focus order, target sizes, accessible palettes, forms, and documenting states and interactions. Use when checking or designing for accessibility, contrast, keyboard, or inclusive UX.
-when_to_use: Trigger phrases like 'is this accessible', 'check contrast', 'WCAG', 'focus order', 'tap/target size', 'accessible color palette', 'design an accessible form', or 'document the states'.
+description: Design accessible, inclusive interfaces to WCAG - contrast, focus order, target sizes, forms, and state documentation.
+when_to_use: Use when checking or designing for accessibility, contrast, keyboard, or inclusive UX.
 ---
 
 # Accessibility Craft
