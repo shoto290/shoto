@@ -1,7 +1,6 @@
 ---
 name: rebase
-description: 'Rebases the current branch onto the default branch with per-file conflict resolution and a local backup branch. Never auto-pushes.'
-when_to_use: When the branch is behind or needs syncing onto the default branch — replay the current branch on top of the latest default with per-file conflict resolution and a backup branch.
+description: 'Rebases the current branch onto the default branch; never pushes.'
 argument-hint: '[base-branch]'
 allowed-tools: Bash, Read, AskUserQuestion, Edit
 ---

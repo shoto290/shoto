@@ -1,7 +1,6 @@
 ---
 name: scalable-architecture
-description: 'Architecture judgment for scale and robustness: deep vs shallow interfaces, hiding complexity, evolutionary architecture, and pragmatic system-design tradeoffs.'
-when_to_use: 'Reach for it when designing a module boundary, an API surface, or a system that must grow — to choose the interface depth and the right amount of upfront structure.'
+description: Architecture for scale - deep interfaces and evolutionary design.
 ---
 
 # Scalable Architecture

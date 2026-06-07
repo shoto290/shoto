@@ -1,7 +1,6 @@
 ---
 name: avoid-over-engineering
-description: 'Write less code: the senior paradox, delete over add, the Rule of Three, and avoiding premature abstraction, premature optimization, and golden-hammer overreach.'
-when_to_use: 'Reach for it when tempted to add an abstraction, a config flag, a generic layer, or an optimization — to check whether the simpler or smaller solution is right.'
+description: Write less code; resist premature abstraction and optimization.
 ---
 
 # Avoid Over-Engineering

@@ -1,7 +1,6 @@
 ---
 name: ux-principles
-description: 'Apply senior UX judgment - usability heuristics, Laws of UX, and ethical, inclusive decision-making.'
-when_to_use: 'When making product/UX decisions, critiquing a flow, justifying a design choice, or prioritizing usability.'
+description: Applying senior UX judgment to product decisions.
 ---
 
 # UX Principles

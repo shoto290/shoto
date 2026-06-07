@@ -1,7 +1,6 @@
 ---
 name: backend-testing
-description: 'Test backends strategically: the test pyramid, asserting behavior over implementation, and integration tests with real dependencies.'
-when_to_use: 'When writing or reviewing backend tests, choosing unit vs integration vs E2E, mocking at boundaries, or fixing flaky tests.'
+description: Strategic backend testing via the test pyramid.
 ---
 
 # Backend Testing

@@ -1,7 +1,6 @@
 ---
 name: storybook
-description: Authoring Storybook stories (CSF3) to document and develop a design system, and exploiting the Storybook MCP when present. Covers typed Meta/StoryObj stories, args/argTypes/controls, autodocs component documentation, play functions, and design-system docs.
-when_to_use: Use when asked to "write a story" / "write stories", "document this component in Storybook", "set up Storybook for the design system", or "use the Storybook MCP" to introspect or drive Storybook.
+description: Authoring CSF3 Storybook stories for a design system.
 ---
 
 # Storybook

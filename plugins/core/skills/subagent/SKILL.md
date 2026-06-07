@@ -1,7 +1,6 @@
 ---
 name: subagent
-description: 'Create or update a Claude Code subagent — a Markdown file in .claude/agents/ with its own isolated context, restricted tools, and system prompt. Use when a specialized delegate is needed for a recurring task (review, debug, db-read), when delegation does not fire and the description needs sharpening, or when editing an agent''s tools, model, permissions, preloaded skills, memory, or lifecycle hooks. Not for authoring a reusable /command skill (use core:skill); not for a multi-agent fan-out script (use core:workflow).'
-when_to_use: 'When the user says create/write/edit/update/rename a subagent or agent, scopes one to .claude/agents/, or asks why an agent is not being delegated to. Triggers: "make an agent for X", "lock down this agent''s tools", "preload skills", "add a hook to the agent", "convert to a coordinator". Not for slash-command skills (core:skill) or workflow orchestration scripts (core:workflow).'
+description: Create or update a Claude Code subagent.
 argument-hint: '[agent-name]'
 ---
 

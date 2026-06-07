@@ -1,7 +1,6 @@
 ---
 name: caching-strategy
-description: 'Add caching deliberately: pick a strategy by access pattern, plan invalidation first, and prevent the thundering herd.'
-when_to_use: 'When introducing or debugging a cache, setting a TTL, fixing a slow DB-heavy endpoint, or handling a cache stampede.'
+description: 'Deliberate caching: strategy, invalidation, stampede defense.'
 ---
 
 # Caching Strategy

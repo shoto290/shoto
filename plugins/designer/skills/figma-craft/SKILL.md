@@ -1,7 +1,6 @@
 ---
 name: figma-craft
-description: 'Work in Figma - variants, auto layout, variables and tokens - and drive the Figma MCP to read designs and generate or connect code.'
-when_to_use: 'When building, organizing, or extracting from Figma files, or driving the Figma MCP for design context, variables, or Dev Mode code connect.'
+description: Working in Figma and driving the Figma MCP.
 ---
 
 # Figma Craft

@@ -1,7 +1,6 @@
 ---
 name: reuse-first
-description: 'Reuse-first discipline: search for and extend existing components, utilities, and design-system primitives before creating new ones; prefer composition over inheritance.'
-when_to_use: Reach for it before adding any new component, util, hook, or helper — to decide reuse vs extend vs build new. Not for inventorying what components already exist — use inventory:inventory-components.
+description: Reuse-first - extend existing code before writing anything new.
 ---
 
 # Reuse First

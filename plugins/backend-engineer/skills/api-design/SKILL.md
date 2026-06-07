@@ -1,7 +1,6 @@
 ---
 name: api-design
-description: 'Design durable HTTP/GraphQL API contracts: resource-centric REST, versioning, and consistent error envelopes.'
-when_to_use: 'When designing or reviewing endpoints, request/response shapes, pagination, idempotency, or API versioning and evolution.'
+description: Design durable, versioned HTTP/GraphQL API contracts.
 ---
 
 # API Design

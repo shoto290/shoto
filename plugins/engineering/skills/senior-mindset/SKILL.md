@@ -1,7 +1,6 @@
 ---
 name: senior-mindset
-description: "Background-only senior-developer disposition - surface tradeoffs, ask before guessing, take accountability, bias toward the simplest defensible choice. Not a task skill: preloaded as standing context by dev agents, never matched to a specific coding request."
-when_to_use: Background convention only - preload as standing disposition for a dev agent. Do not match to concrete engineering tasks (those go to the specific css/component/architecture/testing skills); load explicitly when an agent needs the senior-judgment frame.
+description: Senior-developer judgment - surface tradeoffs, ask before guessing.
 ---
 
 # Senior Mindset

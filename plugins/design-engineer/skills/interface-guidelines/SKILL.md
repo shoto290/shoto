@@ -1,7 +1,6 @@
 ---
 name: interface-guidelines
-description: A practical checklist for UI/UX polish and accessibility (a11y) — keyboard navigation, focus, aria, tap targets, color contrast, forms, and layout stability. Distills Web Interface Guidelines into actionable pass/fail checks for building and reviewing interfaces.
-when_to_use: Use when asked to "polish this UI", "review accessibility / UX", "check a11y", "make it keyboard accessible", or "audit my interface" — and as a pre-ship pass over any React component. Not for design-side accessible-design decisions (contrast, focus order, inclusive UX in the design) - use designer:accessibility-craft.
+description: Checklist for UI/UX polish and accessibility.
 ---
 
 # Interface Guidelines

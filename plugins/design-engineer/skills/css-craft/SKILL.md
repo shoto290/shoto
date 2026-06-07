@@ -1,7 +1,6 @@
 ---
 name: css-craft
-description: Modern CSS mastery for layout, responsive design, and maintainable styling architecture.
-when_to_use: Use when laying out a component (flexbox vs grid, subgrid), implementing responsive behavior (container queries, breakpoints, fluid type), or making a styling-architecture decision (cascade layers, scoping, naming) - "lay out this component", "make it responsive", "structure these styles".
+description: Modern CSS for layout, responsive design, and styling architecture.
 ---
 
 # CSS Craft

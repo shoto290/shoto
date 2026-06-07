@@ -1,7 +1,6 @@
 ---
 name: database-craft
-description: 'Model data and write queries with senior judgment: normalization, indexing, and transaction isolation tradeoffs.'
-when_to_use: 'When designing schemas, tuning slow queries, fixing N+1, planning zero-downtime migrations, or choosing SQL vs NoSQL.'
+description: Schema modeling, indexing, and query tuning.
 ---
 
 # Database Craft

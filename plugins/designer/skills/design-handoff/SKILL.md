@@ -1,7 +1,6 @@
 ---
 name: design-handoff
-description: 'Hand off designs to developers cleanly - responsive intent, edge and error states, annotations, and a Dev Mode handoff checklist.'
-when_to_use: 'When preparing a design for development, annotating it, or reviewing handoff readiness for engineering.'
+description: Handing off designs to developers cleanly.
 ---
 
 # Design Handoff

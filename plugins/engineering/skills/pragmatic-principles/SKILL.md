@@ -1,7 +1,6 @@
 ---
 name: pragmatic-principles
-description: 'Pragmatic Programmer working principles: orthogonality and decoupling, tracer bullets, good-enough software, and dont-repeat-yourself applied to knowledge.'
-when_to_use: 'Reach for it when designing module boundaries, deciding how to start a risky feature end-to-end, or judging when software is good enough to ship.'
+description: Pragmatic Programmer principles - orthogonality, tracer bullets, DRY.
 ---
 
 # Pragmatic Principles

@@ -1,7 +1,6 @@
 ---
 name: accessibility-craft
-description: Design accessible, inclusive interfaces to WCAG - contrast, focus order, target sizes, forms, and state documentation.
-when_to_use: Use when checking contrast ratios, planning keyboard operability and focus order, sizing tap/target areas, designing accessible forms and states, or running WCAG checks on a design - "check contrast", "is this WCAG AA", "design the focus order", "make this inclusive". Not for the engineering-side a11y/UX polish checklist over React components - use design-engineer:interface-guidelines.
+description: Designing accessible, WCAG-compliant interfaces.
 ---
 
 # Accessibility Craft
