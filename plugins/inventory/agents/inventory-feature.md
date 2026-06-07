@@ -1,6 +1,6 @@
 ---
 name: inventory-feature
-description: 'Read-only inventory specialist that maps a feature''s flow and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before modifying a feature''s flow — traces its control and data flow (entry, steps, branches, side effects, exits) so you know how it actually executes. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

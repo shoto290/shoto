@@ -1,6 +1,6 @@
 ---
 name: inventory-repositories
-description: 'Read-only inventory specialist that maps the data-access layer and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before changing queries or schema — maps the data-access layer (repos/DAOs, ORM vs raw, entity-table mapping, migrations) so you understand persistence first. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

@@ -1,13 +1,17 @@
 ---
 name: subagent
-description: 'Understand, create, or update a Claude Code subagent with its own context, tools, and prompt.'
-when_to_use: 'Use to write or edit a subagent file in .claude/agents/ - tools, permissions, preloaded skills, memory, or lifecycle hooks.'
+description: 'Create or update a Claude Code subagent — a Markdown file in .claude/agents/ with its own isolated context, restricted tools, and system prompt. Use when a specialized delegate is needed for a recurring task (review, debug, db-read), when delegation does not fire and the description needs sharpening, or when editing an agent''s tools, model, permissions, preloaded skills, memory, or lifecycle hooks. Not for authoring a reusable /command skill (use core:skill); not for a multi-agent fan-out script (use core:workflow).'
+when_to_use: 'When the user says create/write/edit/update/rename a subagent or agent, scopes one to .claude/agents/, or asks why an agent is not being delegated to. Triggers: "make an agent for X", "lock down this agent''s tools", "preload skills", "add a hook to the agent", "convert to a coordinator". Not for slash-command skills (core:skill) or workflow orchestration scripts (core:workflow).'
 argument-hint: '[agent-name]'
 ---
 
 # Agents
 
 A **subagent** is a Markdown file with YAML frontmatter that defines a specialized AI assistant. It runs in its own isolated context window with a custom system prompt, restricted tools, and independent permissions. Claude delegates to it automatically when its `description` matches the task, or you invoke it explicitly with `@agent-<name>`, natural language, or `claude --agent <name>`.
+
+## Trigger-rich descriptions
+
+A subagent's `description` must (a) lead with the capability (what it does), (b) then name the concrete situations and contexts that should trigger delegation (the words a user would type or the state the repo is in), (c) add a disambiguating "not for X — use Y instead" clause whenever a sibling overlaps. Never use injunction keywords (`use PROACTIVELY`, `MUST`, `ALWAYS`, `IMPORTANT`) — they do not make delegation fire more reliably. Exemplar to imitate: `plugins/git/agents/git-flow.md` — "Delegate when shipping current work end-to-end through git: commit, rebase onto the default branch, then open a PR…" — capability first, scenario-grounded, zero injunction keywords.
 
 ## Subagent file structure (canonical)
 

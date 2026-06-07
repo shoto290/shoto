@@ -1,7 +1,7 @@
 ---
 name: inventory-conventions
 description: Inventories naming, structure, and idiom conventions with one sample each for error handling, logging, and tests, and returns the contract.
-when_to_use: Use to match house style before writing new code.
+when_to_use: Use to match house style before writing new code. Not for researching the external community best practice — use explore:explore-conventions.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-conventions

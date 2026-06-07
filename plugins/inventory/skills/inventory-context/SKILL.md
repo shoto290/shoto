@@ -1,7 +1,7 @@
 ---
 name: inventory-context
-description: Broad adaptive lens that inventories any subject when no precise lens fits, including Claude Code artifact roots, and returns the contract.
-when_to_use: Use when the subject matches no specific inventory lens or when mapping a plugin/artifact root.
+description: Fallback inventory lens used only when no specific inventory lens fits the subject, or when mapping a Claude Code plugin or artifact root; returns the contract.
+when_to_use: Use as the fallback when no specific inventory lens (components, conventions, dependencies, services, etc.) matches the subject, or when mapping a plugin or artifact root. Prefer a specific lens whenever one fits.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-context

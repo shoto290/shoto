@@ -1,6 +1,6 @@
 ---
 name: mcp-smith
-description: 'Configure, add, or debug a Claude Code MCP server PROACTIVELY when the user needs one - recommends a server, picks transport and scope, wires secrets, verifies the connection. Not for plugin-bundled MCP (use plugin-smith).'
+description: 'Delegate when a project-level MCP server must be added, configured, or debugged - the user wants to connect an MCP server, pick its transport and scope, wire its secrets via env vars, or fix one that will not connect. Owns the .mcp.json or ~/.claude.json entry and the connection check. Not for MCP bundled inside a plugin (plugin-smith); not for explaining how MCP works.'
 permissionMode: default
 skills: [core:base, core:mcp]
 color: purple

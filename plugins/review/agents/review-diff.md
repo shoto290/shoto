@@ -1,6 +1,6 @@
 ---
 name: review-diff
-description: 'Read-only single-lens reviewer spawned by the deep-review workflow; the lens is passed in the prompt. Reviews the branch diff but surfaces only findings under its lens via the 8 bug criteria. Returns findings[].'
+description: 'Read-only single-lens reviewer spawned by the deep-review workflow; the lens is passed in the prompt. Reviews the branch diff but surfaces only findings under its lens via the 8 bug criteria. Returns findings[]. Internal to the deep-review workflow - not a standalone delegate.'
 permissionMode: default
 skills: [core:base]
 color: cyan

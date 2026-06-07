@@ -1,7 +1,7 @@
 ---
 name: plugin
-description: 'Author, package, test, and distribute a Claude Code plugin and its manifest.'
-when_to_use: 'Use to scaffold, validate, ship, or migrate a plugin as a whole - not for individual skills, subagents, or hooks.'
+description: 'Author, package, test, and distribute a whole Claude Code plugin and its manifest — scaffold the directory, write the plugin.json, bundle skills/subagents/hooks/MCP, and ship it.'
+when_to_use: 'When packaging, scaffolding, or shipping a plugin as a whole: create a new plugin and its plugin.json manifest, lay out the directory, validate it, distribute it through a marketplace, or migrate an existing plugin. For a single skill, subagent, hook, or project MCP inside it, route to the matching author.'
 argument-hint: '[action — e.g. "new", "validate", "migrate"]'
 ---
 

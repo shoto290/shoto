@@ -1,7 +1,7 @@
 ---
 name: review-diff
 description: 'Reviews the current workspace diff against the 8 bug criteria and posts one inline DiffComment per finding. Read-only; numbered summary.'
-when_to_use: Use to review the current workspace diff and post inline findings.
+when_to_use: When you want to review the workspace diff — a single inline pass over the current diff against the 8 bug criteria, posting one DiffComment per finding. Not for a multi-lens parallel review of the whole branch — use workflow:deep-review.
 argument-hint: (none — reviews the current workspace diff)
 allowed-tools: Read, Glob, Grep, Bash, mcp__conductor__GetWorkspaceDiff, mcp__conductor__DiffComment, AskUserQuestion
 ---

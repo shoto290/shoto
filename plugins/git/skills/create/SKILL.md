@@ -1,7 +1,7 @@
 ---
 name: create
 description: "Creates a pull request with a conventional commit title (`type(scope): description`), a concise human-readable changelog as the PR body, and pushes the current branch. Generic (no ticket-tracker integration); requires `gh` CLI and a GitHub remote."
-when_to_use: Use to open a pull request and push the current branch.
+when_to_use: When you want to open a PR and push the branch — turn the current branch's commits into a pull request with a conventional title and changelog body.
 argument-hint: '(none — operates on the current branch)'
 allowed-tools: Bash, Read, AskUserQuestion
 ---

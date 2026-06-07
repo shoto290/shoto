@@ -1,7 +1,7 @@
 ---
 name: mcp
-description: 'Recommend, configure, and debug project-level MCP servers Claude connects to.'
-when_to_use: 'Use to add, choose, or debug an MCP server in .mcp.json - transport, scope, secrets. For plugin-bundled MCP, route to core:plugin.'
+description: 'Recommend, configure, and debug project-level MCP servers — connect Claude to an external server, data source, or API so it can query a database, drive a browser, read issues, or search the web.'
+when_to_use: 'When connecting Claude to an external server, data source, or third-party API: add an MCP server to .mcp.json or via claude mcp add, choose between stdio/SSE/HTTP transport, set scope, handle secrets, or debug a server that fails to connect or expose tools. For MCP bundled inside a plugin, route to core:plugin.'
 argument-hint: '[recommend | add <server> | debug | explain]'
 ---
 

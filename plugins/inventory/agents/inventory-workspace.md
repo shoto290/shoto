@@ -1,6 +1,6 @@
 ---
 name: inventory-workspace
-description: 'Read-only inventory specialist that maps workspace structure and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before touching repo layout — maps repo/workspace structure (monorepo vs single, workspace globs, each package''s name, path, and role). Returns the unified anchored contract; read-only — never modifies files, never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

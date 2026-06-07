@@ -1,6 +1,6 @@
 ---
 name: review-comments
-description: 'Read-only triage subagent spawned by the deep-review workflow. Triages each review finding into one verdict (FIX, FIX-STYLE, INTENTIONAL, OUT-OF-SCOPE, DISCUSS) with confidence, verified against the code.'
+description: 'Read-only triage subagent spawned by the deep-review workflow. Triages each review finding into one verdict (FIX, FIX-STYLE, INTENTIONAL, OUT-OF-SCOPE, DISCUSS) with confidence, verified against the code. Internal to the deep-review workflow - not a standalone delegate.'
 permissionMode: default
 skills: [core:base]
 color: cyan

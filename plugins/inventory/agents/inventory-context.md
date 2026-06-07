@@ -1,6 +1,6 @@
 ---
 name: inventory-context
-description: 'Read-only inventory specialist that maps any subject and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Fallback-only lens — use when the subject matches no specific inventory lens, or when mapping a Claude Code plugin/artifact root (skills, subagents, hooks, manifests, MCP config). Prefer the specific inventory-* lens whenever one fits. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

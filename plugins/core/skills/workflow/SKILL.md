@@ -1,7 +1,7 @@
 ---
 name: workflow
-description: 'Create or update a .workflow.js orchestration script that fans out subagents at scale.'
-when_to_use: 'Use to write or edit a workflow that parallelizes agents - not for explaining workflows in the abstract.'
+description: 'Create or update a .workflow.js orchestration script that fans out subagents at scale — run a batch orchestration across many items, looping and branching in code with only the final result returning to context.'
+when_to_use: 'When fanning out subagents at scale or running a batch orchestration across many items: parallelize agents over a list, loop and branch in script code, hold intermediate results in variables, and surface only the final return value. For explaining how workflows work in the abstract, answer conceptually and write nothing.'
 argument-hint: '[workflow name or description of what to orchestrate]'
 allowed-tools: [Agent, AskUserQuestion, Read, Glob, Grep]
 ---

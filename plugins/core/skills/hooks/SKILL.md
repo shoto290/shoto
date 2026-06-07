@@ -1,7 +1,7 @@
 ---
 name: hooks
-description: 'Understand, create, or update Claude Code hooks that run at lifecycle events.'
-when_to_use: 'Use to learn how hooks work, or to write, edit, scope, or debug a hook in settings.json.'
+description: 'Understand, create, or update Claude Code hooks — make a lifecycle event run a command (on save, before a commit, after a tool call) and configure it in settings.json.'
+when_to_use: 'When a lifecycle event should trigger a command: format on save, block edits to protected files, validate a Bash command before it runs, audit changes after a tool call, run a check before commit, re-inject context after compaction, or notify on idle. Also for editing, scoping, or debugging an existing hook in settings.json.'
 argument-hint: '[event-or-pattern]'
 ---
 

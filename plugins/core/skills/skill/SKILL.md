@@ -9,6 +9,10 @@ argument-hint: '[skill-name]'
 
 A skill is a `SKILL.md` file with YAML frontmatter + markdown instructions. Users invoke it with `/skill-name`; Claude auto-loads it when the `description` matches the request.
 
+## Trigger-rich descriptions
+
+`description` and `when_to_use` must (a) lead with the capability (what it does), (b) then name the concrete situations, symptoms, and contexts that should trigger it (the words a user would actually type or the state the repo is in), (c) add a disambiguating "not for X — use Y instead" clause whenever a sibling overlaps. Never use injunction keywords (`use PROACTIVELY`, `MUST`, `ALWAYS`, `IMPORTANT`) — they do not make a description match better. Exemplar to imitate: `plugins/git/agents/git-flow.md` — "Delegate when shipping current work end-to-end through git: commit, rebase onto the default branch, then open a PR…" — capability first, scenario-grounded, zero injunction keywords.
+
 ## Skill structure (canonical)
 
 A skill is a directory. Only `SKILL.md` is required. Every other file is optional and serves a precise role per the official docs:

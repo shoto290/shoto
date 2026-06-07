@@ -1,6 +1,6 @@
 ---
 name: inventory-conventions
-description: 'Read-only inventory specialist that maps code conventions and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before writing new code to match house style — maps the repo''s naming, structure, and idiom conventions with one sample each for error handling, logging, and tests. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything. Not for the external community best practice — use explore:explore-conventions.'
 permissionMode: default
 skills: [core:base]
 color: cyan

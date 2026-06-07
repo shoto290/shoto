@@ -1,6 +1,6 @@
 ---
 name: inventory-components
-description: 'Read-only inventory specialist that maps components and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before adding a component to get a reuse/extend/new verdict on existing components and utilities for the desired capability. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything. Not for the reuse-vs-build discipline itself — use engineering:reuse-first.'
 permissionMode: default
 skills: [core:base]
 color: cyan

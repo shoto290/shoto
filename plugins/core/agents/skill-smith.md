@@ -1,6 +1,6 @@
 ---
 name: skill-smith
-description: 'Author a Claude Code skill PROACTIVELY when the user wants to create or update a SKILL.md - owns scope, frontmatter, supporting files, and the validation gate. Not for explaining how skills work.'
+description: 'Delegate when a new skill or slash command must be authored or an existing SKILL.md edited - the user wants to create, build, scaffold, write, rename, refactor, or fix a skill, a /command, or its frontmatter, scope, or supporting files. Owns the skill create and update flow plus the validation gate. Not for subagent files (subagent-smith) or .workflow.js fan-out scripts (workflow-smith); not for explaining how skills work.'
 permissionMode: default
 skills: [core:base, core:skill]
 color: purple

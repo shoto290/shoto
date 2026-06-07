@@ -1,7 +1,7 @@
 ---
 name: design-systems-craft
 description: 'Build, structure, and scale a design system - design tokens, component variants, and atomic-design naming and governance.'
-when_to_use: 'When creating or restructuring a design system, tokens, or a component library, or naming and documenting components.'
+when_to_use: 'When creating or restructuring a design system, tokens, or a component library, or naming and documenting components. Not for the React+TS implementation of tokens/theming - use design-engineer:design-systems.'
 ---
 
 # Design Systems Craft

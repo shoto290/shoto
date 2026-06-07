@@ -1,7 +1,9 @@
 ---
 name: motion
 description: Animation and micro-interactions that serve meaning — easing, transitions, performance, and reduced-motion in React + TypeScript. Use for motion that communicates state changes, spatial relationships, and continuity. Keywords — animation, motion, transition, easing, micro-interaction, prefers-reduced-motion.
-when_to_use: "animate this", "add a transition", "add a micro-interaction", "make motion feel good", "respect reduced motion".
+when_to_use: >-
+  "animate this", "add a transition", "add a micro-interaction", "make motion
+  feel good", "respect reduced motion".
 ---
 
 # Motion

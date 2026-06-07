@@ -1,7 +1,7 @@
 ---
 name: explore-conventions
 description: 'Research the external best practice for a technology, reconcile it against how this repo does it, and recommend a fit. READ-ONLY.'
-when_to_use: 'Use to learn the community convention for something and how it compares to this repo''s current patterns.'
+when_to_use: 'Use to learn the community convention for something and how it compares to this repo''s current patterns. Not for cataloguing THIS repo''s existing conventions — use inventory:inventory-conventions.'
 argument-hint: '[topic or tech]'
 allowed-tools: Read, Glob, Grep, Bash, WebFetch, WebSearch, AskUserQuestion
 ---

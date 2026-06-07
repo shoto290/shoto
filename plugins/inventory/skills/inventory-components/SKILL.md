@@ -1,7 +1,7 @@
 ---
 name: inventory-components
 description: Inventories existing components/utilities for a desired capability and returns the anchored contract with a REUSE / EXTEND / NEW verdict.
-when_to_use: Use before adding a component to decide whether to reuse, extend, or build new.
+when_to_use: Use before adding a component to decide whether to reuse, extend, or build new. Not for the reuse-vs-build decision discipline itself — use engineering:reuse-first.
 argument-hint: '[target path or scope — optional; defaults to the whole repo]'
 context: fork
 agent: inventory-components

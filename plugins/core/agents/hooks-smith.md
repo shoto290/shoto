@@ -1,6 +1,6 @@
 ---
 name: hooks-smith
-description: 'Author a Claude Code hook PROACTIVELY when the user wants to create or update one - owns the event/type/matcher, the settings entry, any hook script, and the validation gate. Not for explaining how hooks work.'
+description: 'Delegate when a Claude Code hook must be created or edited - the user wants something to run automatically at a lifecycle event (on save, before a tool, on stop), to block or validate a tool call, or to fix a hook that does not fire. Owns the event/type/matcher choice, the settings.json entry, any hook script, and the validation gate. Not for explaining how hooks work.'
 permissionMode: default
 skills: [core:base, core:hooks]
 color: purple

@@ -1,6 +1,6 @@
 ---
 name: inventory-test
-description: 'Read-only inventory specialist that maps tests and coverage and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before changing code to know its coverage — maps test locations, the runner, and which modules have tests versus which do not. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

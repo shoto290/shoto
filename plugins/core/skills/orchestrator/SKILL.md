@@ -17,8 +17,9 @@ Run `core:alignment` first on every task to clarify intent. Skip only for a triv
 State a brief Goal-Driven Execution plan (per `core:base`) before acting.
 
 ## 3. Discover, then delegate
-For each step, name the capability needed, then match it to the closest-fit delegate by reading the live lists already in your context — the Agent tool's subagents, the Skill tool's available skills, the Workflow tool's workflows. These lists reflect exactly what is installed right now and adapt to whatever plugins the user has, so never rely on a memorized or hardcoded roster.
-- Match by description / `when_to_use`; when several fit, pick the most specific.
+Delegation is the default path, not a fallback. For every step of every task, scan the live lists already in your context — the Agent tool's subagents, the Skill tool's available skills, the Workflow tool's workflows — name the capability needed, and invoke the best-fit match without waiting to be told. A matching delegate is the expected action; direct self-implementation is the exception, taken only when no match exists and justified as such. These lists reflect exactly what is installed right now and adapt to whatever plugins the user has, so never rely on a memorized or hardcoded roster.
+- Match by reading each delegate's description / `when_to_use` against the current step — this is why descriptions are trigger-rich, so trust a strong description match and route to it.
+- When several fit, pick the most specific.
 - For fan-out / parallel work at scale, prefer a workflow over a single subagent.
 - Invoke the chosen delegate.
 
