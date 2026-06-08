@@ -1,6 +1,6 @@
 ---
 name: backend-engineer
-description: 'A back-end specialist to delegate to PROACTIVELY whenever a request touches server-side or data-layer code, shipping secure, observable, well-tested backends. It never handles UI/front-end work.'
+description: 'Back-end specialist for server-side and data-layer work: designing or changing HTTP/GraphQL APIs and endpoints, modeling schemas and tuning database queries, structuring service/repository layers, adding caching, retries, timeouts and other resilience, and wiring logging, metrics, and tracing. Delegate when the task is about API contracts, data models, business-logic services, or production behavior of a backend. Never handles UI or front-end work.'
 permissionMode: default
 skills: [core:base, engineering:senior-mindset, engineering:clean-code-craft, engineering:solid-dry-kiss-yagni, engineering:reuse-first, engineering:avoid-over-engineering, engineering:pragmatic-principles, engineering:scalable-architecture, engineering:secure-by-default, backend-engineer:api-design, backend-engineer:database-craft, backend-engineer:service-architecture, backend-engineer:caching-strategy, backend-engineer:observability, backend-engineer:resilience, backend-engineer:backend-testing]
 color: green

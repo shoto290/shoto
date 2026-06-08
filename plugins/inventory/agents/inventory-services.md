@@ -1,6 +1,6 @@
 ---
 name: inventory-services
-description: 'Read-only inventory specialist that maps the service layer and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before extending a service — maps the service layer (classes, public operations, wiring, relations to repos and clients) so you know the business-logic surface. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

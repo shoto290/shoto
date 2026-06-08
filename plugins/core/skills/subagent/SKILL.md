@@ -1,13 +1,20 @@
 ---
 name: subagent
-description: 'Understand, create, or update a Claude Code subagent with its own context, tools, and prompt.'
-when_to_use: 'Use to write or edit a subagent file in .claude/agents/ - tools, permissions, preloaded skills, memory, or lifecycle hooks.'
+description: Create or update a Claude Code subagent.
 argument-hint: '[agent-name]'
 ---
 
 # Agents
 
 A **subagent** is a Markdown file with YAML frontmatter that defines a specialized AI assistant. It runs in its own isolated context window with a custom system prompt, restricted tools, and independent permissions. Claude delegates to it automatically when its `description` matches the task, or you invoke it explicitly with `@agent-<name>`, natural language, or `claude --agent <name>`.
+
+## Trigger-rich descriptions
+
+A subagent's `description` must (a) lead with the capability (what it does), (b) then name the concrete situations and contexts that should trigger delegation (the words a user would type or the state the repo is in), (c) add a disambiguating "not for X — use Y instead" clause whenever a sibling overlaps. Never use injunction keywords (`use PROACTIVELY`, `MUST`, `ALWAYS`, `IMPORTANT`) — they do not make delegation fire more reliably. Exemplar to imitate: `plugins/git/agents/git-flow.md` — "Delegate when shipping current work end-to-end through git: commit, rebase onto the default branch, then open a PR…" — capability first, scenario-grounded, zero injunction keywords.
+
+## Preload safety
+
+A skill listed in a subagent `skills:` array has its **full body injected at startup** (preloaded), so the agent already holds it without auto-invocation. A preloaded skill MUST stay model-invocable: never set `disable-model-invocation: true` on a skill you preload — preloading draws from the same pool the model can auto-invoke, so a disabled skill is silently dropped from the preload. Prefer preloading skills that carry minimal discovery metadata (short `description`, no `when_to_use`) — their body rides in via preload, so they need no roster footprint.
 
 ## Subagent file structure (canonical)
 

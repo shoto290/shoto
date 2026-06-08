@@ -1,6 +1,6 @@
 {
   "name": "workflow",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Dynamic multi-agent workflows for Claude Code — fan out subagents at scale and return only the final result. Ships /evolve (inventory the repo, plan and apply skill/subagent/hook/plugin/MCP changes) and /deep-review (multi-lens diff review → validate → optional auto-fix) and /onboard (run a project interview to generate a committed project orchestrator — plus an optional per-user operator-profile skill — that each user opts into locally via settings.local.json).",
   "author": {
     "name": "shoto290",

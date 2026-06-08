@@ -1,7 +1,6 @@
 ---
 name: senior-mindset
-description: "Senior-developer judgment and mindset: surface tradeoffs, ask before guessing, take accountability, and bias toward the simplest defensible choice. Background convention a dev agent applies while writing or reviewing code."
-when_to_use: Background discipline preloaded by dev agents; reach for it when deciding how to approach a coding task, weighing tradeoffs, or reviewing whether a change reflects senior judgment.
+description: Senior-developer judgment - surface tradeoffs, ask before guessing.
 ---
 
 # Senior Mindset

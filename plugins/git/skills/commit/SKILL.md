@@ -1,7 +1,6 @@
 ---
 name: commit
-description: 'Creates one git commit with a Conventional Commit title from current changes; auto-stages, skips secrets, confirms first. Never pushes.'
-when_to_use: Use to create one Conventional Commit from the current uncommitted changes.
+description: 'Creates one Conventional Commit from current changes; never pushes.'
 argument-hint: '(none — operates on current uncommitted changes)'
 allowed-tools: Bash, Read, AskUserQuestion
 ---

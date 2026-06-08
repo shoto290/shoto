@@ -1,7 +1,6 @@
 ---
 name: component-craft
-description: 'Build accessible, reusable, well-typed React components - component API design, typed variants, and interactive states.'
-when_to_use: 'When building a component, designing a component API, adding variants, or making a component reusable or accessible.'
+description: Build accessible, reusable, well-typed React components.
 ---
 
 # Component Craft

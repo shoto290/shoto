@@ -1,13 +1,23 @@
 ---
 name: skill
-description: Create or update a Claude Code skill (a SKILL.md that extends Claude's capabilities). Handles both new skills and updates to existing ones; walks through scope, frontmatter, supporting files, and testing.
-when_to_use: Use when the user wants to create, build, scaffold, write, modify, edit, refactor, rename, improve, fix, or change a skill, slash command, /command, or /name.
+description: Create or update a Claude Code skill (SKILL.md).
 argument-hint: '[skill-name]'
 ---
 
 # Skill
 
 A skill is a `SKILL.md` file with YAML frontmatter + markdown instructions. Users invoke it with `/skill-name`; Claude auto-loads it when the `description` matches the request.
+
+## Trigger-rich descriptions
+
+`description` and `when_to_use` must (a) lead with the capability (what it does), (b) then name the concrete situations, symptoms, and contexts that should trigger it (the words a user would actually type or the state the repo is in), (c) add a disambiguating "not for X — use Y instead" clause whenever a sibling overlaps. Never use injunction keywords (`use PROACTIVELY`, `MUST`, `ALWAYS`, `IMPORTANT`) — they do not make a description match better. Exemplar to imitate: `plugins/git/agents/git-flow.md` — "Delegate when shipping current work end-to-end through git: commit, rebase onto the default branch, then open a PR…" — capability first, scenario-grounded, zero injunction keywords.
+
+## Preload & context cost
+
+- `description` + `when_to_use` are always-on roster cost: combined, capped at 1,536 chars, and shown in the model's skill listing every turn. The `SKILL.md` body loads only when the skill is invoked.
+- `disable-model-invocation: true` removes the skill from the always-on roster (zero auto-invoke cost) but also blocks preloading into subagents — preloading draws from the same pool the model can auto-invoke. A skill is either preloadable or out of the roster, never both.
+- Omitting `description` does not remove the skill from the roster — Claude Code falls back to the first paragraph of the body (often longer). Roster membership is governed by `disable-model-invocation`, not by whether a description exists.
+- A skill that is only ever preloaded into an agent needs no rich discovery metadata: give it a short explicit `description` and no `when_to_use` (its full body is injected via preload). Discovery-only skills keep a rich `description` plus `when_to_use`.
 
 ## Skill structure (canonical)
 

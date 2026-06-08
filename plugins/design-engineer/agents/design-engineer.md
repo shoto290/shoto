@@ -1,6 +1,6 @@
 ---
 name: design-engineer
-description: 'Front-end specialist - delegate PROACTIVELY for React + TypeScript UI and design-system work. Reuses the design system before building new. Never handles back-end or non-UI work.'
+description: 'Front-end implementation specialist for building React + TypeScript components, writing CSS and layout, implementing design tokens and theming, adding component variants and interactive states, and diagnosing front-end performance (re-renders, bundle size, Core Web Vitals). Delegate when the task is to build, style, or optimize UI in code or to implement a design system. This is the implementation half of UI work: design-engineer codes the React + TypeScript and design-system implementation, whereas designer owns the visual and design craft. Reuses the design system before building new. Never handles back-end or non-UI work.'
 permissionMode: default
 skills: [core:base, engineering:senior-mindset, engineering:clean-code-craft, engineering:solid-dry-kiss-yagni, engineering:reuse-first, engineering:avoid-over-engineering, engineering:pragmatic-principles, engineering:scalable-architecture, engineering:secure-by-default, design-engineer:design-systems, design-engineer:component-craft, design-engineer:css-craft, design-engineer:motion, design-engineer:interface-guidelines, design-engineer:storybook, design-engineer:frontend-perf]
 color: pink

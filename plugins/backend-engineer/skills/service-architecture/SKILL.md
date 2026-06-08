@@ -1,7 +1,6 @@
 ---
 name: service-architecture
-description: 'Structure backend code with senior judgment: layered repository/service/controller separation, DI, and DDD bounded contexts.'
-when_to_use: 'When laying out a service, drawing module boundaries, deciding monolith vs microservice, or asking where logic belongs.'
+description: 'Layered backend structure: repository/service/controller, DI.'
 ---
 
 # Service Architecture

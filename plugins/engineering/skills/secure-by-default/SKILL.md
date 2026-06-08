@@ -1,7 +1,6 @@
 ---
 name: secure-by-default
-description: 'Secure-by-default coding: validate all external input, least privilege, safe defaults, careful secret handling, and never trusting data crossing a trust boundary. Grounded in OWASP/secure-coding fundamentals.'
-when_to_use: 'Reach for it whenever code handles external input, auth, secrets, file/DB/HTTP access, or any trust boundary — to apply secure defaults while writing or reviewing.'
+description: Secure-by-default coding - validate input, least privilege, safe defaults.
 ---
 
 # Secure by Default

@@ -1,7 +1,6 @@
 ---
 name: resilience
-description: 'Build backends that fail gracefully under partial failure: circuit breakers, timeouts, and idempotent retries with backoff.'
-when_to_use: 'When calling external services or queues, adding retries or timeouts, handling downstream failure, or hardening a critical path.'
+description: 'Graceful failure: circuit breakers, timeouts, retries.'
 ---
 
 # Resilience

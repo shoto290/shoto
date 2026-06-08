@@ -1,7 +1,6 @@
 ---
 name: observability
-description: 'Make backends observable by default: the three pillars of logs, metrics, and traces with correlation IDs and SLO-driven alerting.'
-when_to_use: 'When adding structured logging, metrics, or tracing, defining an SLO, setting up alerts, or debugging a distributed request.'
+description: 'Logs, metrics, and traces with SLO-driven alerting.'
 ---
 
 # Observability

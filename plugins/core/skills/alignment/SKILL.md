@@ -1,7 +1,6 @@
 ---
 name: alignment
-description: "Open a task by clarifying intent — ask the maximum set of useful clarifying questions inline via AskUserQuestion to align 100% on what the user actually wants, then hand control straight back. Produces NO written artifact; it only resolves ambiguity before any work starts."
-when_to_use: "Run FIRST, before any real work, whenever a task could be interpreted more than one way or any requirement is unstated — scope, target files, output format, constraints, acceptance criteria, edge cases. The orchestrator subagent always launches this skill first. Invoke explicitly via /core:alignment or Skill({skill:\"core:alignment\"}). Skip only for fully unambiguous trivial tasks (typo, one-line rename)."
+description: Clarify task intent up front via inline questions.
 ---
 
 # Alignment

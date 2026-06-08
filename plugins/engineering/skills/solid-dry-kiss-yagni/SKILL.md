@@ -1,7 +1,6 @@
 ---
 name: solid-dry-kiss-yagni
-description: The four core design principles — SOLID, DRY, KISS, YAGNI — with concrete TypeScript examples and when each one applies (and when it does not).
-when_to_use: Reach for it when structuring modules/classes, deciding whether to abstract or duplicate, or judging if a design is too clever or too speculative.
+description: The four core design principles - SOLID, DRY, KISS, YAGNI.
 ---
 
 # SOLID, DRY, KISS, YAGNI

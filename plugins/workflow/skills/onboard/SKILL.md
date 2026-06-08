@@ -1,7 +1,7 @@
 ---
 name: onboard
 description: 'Set up a committed project orchestrator from a short stack-and-conventions interview, and optionally a per-user operator profile.'
-when_to_use: 'Use to configure the project orchestrator or personalize one for yourself, not to add skills or hooks (use evolve) or generate a CLAUDE.md (use /init).'
+when_to_use: 'When you want to set up the project orchestrator or personalize an operator profile — interview the stack and conventions to build a committed project orchestrator, optionally a per-user profile. Not to add skills or hooks (use evolve) or generate a CLAUDE.md (use /init).'
 argument-hint: '[--show]'
 allowed-tools: [AskUserQuestion, Read, Glob, Bash, Agent]
 ---

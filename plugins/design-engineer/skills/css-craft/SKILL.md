@@ -1,7 +1,6 @@
 ---
 name: css-craft
-description: Modern CSS mastery for layout, responsive design, and maintainable styling architecture.
-when_to_use: Use for any component layout, responsive behavior, or styling-architecture decision.
+description: Modern CSS for layout, responsive design, and styling architecture.
 ---
 
 # CSS Craft

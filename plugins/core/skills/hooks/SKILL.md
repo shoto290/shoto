@@ -1,7 +1,6 @@
 ---
 name: hooks
-description: 'Understand, create, or update Claude Code hooks that run at lifecycle events.'
-when_to_use: 'Use to learn how hooks work, or to write, edit, scope, or debug a hook in settings.json.'
+description: Create, update, or debug Claude Code lifecycle hooks.
 argument-hint: '[event-or-pattern]'
 ---
 

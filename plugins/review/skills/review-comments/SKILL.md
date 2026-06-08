@@ -1,7 +1,7 @@
 ---
 name: review-comments
 description: 'Triages PR comments into a verdict list (FIX, FIX-STYLE, INTENTIONAL, OUT-OF-SCOPE, DISCUSS). Read-only; output feeds review:review-fix.'
-when_to_use: Use to triage PR review comments into per-comment fix decisions.
+when_to_use: When you need to triage PR comments — turn a batch of review feedback into a per-comment verdict list (FIX, FIX-STYLE, INTENTIONAL, OUT-OF-SCOPE, DISCUSS) before deciding what to change.
 argument-hint: "[paste PR comments or @PR-url]"
 allowed-tools: Read, Glob, Grep, AskUserQuestion
 ---

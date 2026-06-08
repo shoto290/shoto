@@ -1,7 +1,6 @@
 ---
 name: paper-craft
-description: 'Design on the Paper.design canvas - HTML/CSS artboards, code-to-design and design-to-code - via the Paper MCP.'
-when_to_use: 'When designing in Paper.design or moving between live code and the canvas via the Paper MCP.'
+description: Designing on the Paper.design canvas via the Paper MCP.
 ---
 
 # Paper Craft

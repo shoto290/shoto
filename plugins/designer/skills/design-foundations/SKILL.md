@@ -1,7 +1,6 @@
 ---
 name: design-foundations
-description: 'Visual fundamentals of UI design - typographic scale, color and palettes, spacing systems, grids, and visual hierarchy.'
-when_to_use: 'When establishing or auditing type, color, spacing, layout, or visual hierarchy on a screen.'
+description: Visual fundamentals of UI design.
 ---
 
 # Design Foundations

@@ -1,7 +1,6 @@
 ---
 name: frontend-perf
-description: Front-end performance for React/Next — rendering, bundle size, and Core Web Vitals. Covers React performance, needless re-renders, bundle size and code splitting, layout shift (CLS), LCP, INP, and RSC. Use to diagnose and fix slow UI, oversized bundles, and poor web-vitals scores.
-when_to_use: Triggers — "make it faster", "reduce bundle size", "fix a slow render / too many re-renders", "improve Core Web Vitals / LCP / CLS / INP". Use for any React + Next.js performance diagnosis or optimization.
+description: React/Next performance — rendering, bundle size, Core Web Vitals.
 ---
 
 # Frontend Perf

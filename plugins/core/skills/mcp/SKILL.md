@@ -1,7 +1,6 @@
 ---
 name: mcp
-description: 'Recommend, configure, and debug project-level MCP servers Claude connects to.'
-when_to_use: 'Use to add, choose, or debug an MCP server in .mcp.json - transport, scope, secrets. For plugin-bundled MCP, route to core:plugin.'
+description: Configure and debug project-level MCP servers.
 argument-hint: '[recommend | add <server> | debug | explain]'
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: subagent-smith
-description: 'Author a Claude Code subagent PROACTIVELY when the user wants to create or update one - owns scope, frontmatter, the markdown system prompt, and the validation gate. Not for explaining how subagents work.'
+description: 'Delegate when a subagent definition must be authored or edited - the user wants to create, build, scaffold, write, rename, or fix an agent file under .claude/agents/ or a plugin agents/ dir, tune its description so delegation fires, lock down its tools or permissions, or preload skills. Owns the subagent create and update flow plus the seven-field validation gate. Not for SKILL.md files (skill-smith) or .workflow.js fan-out scripts (workflow-smith); not for explaining how subagents work.'
 permissionMode: default
 skills: [core:base, core:subagent]
 color: purple

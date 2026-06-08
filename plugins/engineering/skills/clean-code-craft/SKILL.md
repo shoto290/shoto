@@ -1,7 +1,6 @@
 ---
 name: clean-code-craft
-description: 'Clean-code craft: explicit self-documenting naming, the scope-length naming rule, short single-responsibility functions, readable control flow, refactoring discipline, and no dead code or comments.'
-when_to_use: 'Reach for it when naming things, writing or refactoring functions, simplifying control flow, or deciding whether code is readable enough to ship.'
+description: Clean-code craft - naming, small functions, readable control flow.
 ---
 
 # Clean Code Craft

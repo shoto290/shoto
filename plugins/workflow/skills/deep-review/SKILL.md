@@ -1,7 +1,7 @@
 ---
 name: deep-review
 description: 'Multi-agent code review that fans out diff-review agents by lens over the branch diff, triages findings, and optionally auto-fixes them.'
-when_to_use: 'Use to review the current branch diff from multiple angles in parallel, optionally applying the safe fixes afterward.'
+when_to_use: 'When you want a multi-lens parallel review of the whole branch — fan out diff-review agents by lens over the branch diff, triage the findings, and optionally apply the safe fixes. Not for a single-pass inline review of the current diff — use review:review-diff.'
 argument-hint: "[--auto-fix] [--base <branch>]"
 allowed-tools: [AskUserQuestion, Workflow, Read, Bash]
 ---

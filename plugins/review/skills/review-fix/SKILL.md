@@ -1,7 +1,7 @@
 ---
 name: review-fix
 description: 'Applies review:review-comments decisions by delegating each FIX or FIX-STYLE item to its own subagent, then runs auto-detected verification.'
-when_to_use: Use to apply the FIX and FIX-STYLE decisions from review-comments.
+when_to_use: When you need to apply fix decisions — take the FIX and FIX-STYLE items from review:review-comments and implement each one, then run verification.
 argument-hint: "[paste /review:review-comments output]"
 allowed-tools: Agent, Read, Bash, Glob, Grep
 ---

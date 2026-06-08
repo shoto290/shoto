@@ -1,7 +1,6 @@
 ---
 name: base
-description: The global foundation — core principles, behavioral guidelines, and shared frontmatter / naming / git-safety rules that everything in this plugin builds on. Launch it to load a clean, principled prompt.
-when_to_use: Invoke explicitly — `/core:base`, or `Skill({skill:"core:base"})` from an agent — to (re)load the foundation rules for a clean, principled working prompt. Deliberate use only; not a match for vague requests.
+description: Global foundation rules, principles, and shared conventions.
 ---
 
 # Base

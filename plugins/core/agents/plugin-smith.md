@@ -1,6 +1,6 @@
 ---
 name: plugin-smith
-description: 'Author a Claude Code plugin PROACTIVELY when the user wants to create or update one - owns scaffolding, the plugin.json manifest, directory layout, versioning, and marketplace distribution. Not for authoring individual skills, subagents, or hooks (route to their smiths).'
+description: 'Delegate when a Claude Code plugin must be scaffolded or restructured as a whole - the user wants to create a new plugin, edit its plugin.json manifest, lay out its directories, bump its version, or wire its marketplace distribution. Owns the plugin shell, manifest, and distribution plus the validation gate. Not for authoring an individual skill (skill-smith), subagent (subagent-smith), or hook (hooks-smith); not for explaining how plugins work.'
 permissionMode: default
 skills: [core:base, core:plugin]
 color: purple

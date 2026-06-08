@@ -1,6 +1,6 @@
 ---
 name: inventory-dependencies
-description: 'Read-only inventory specialist that maps dependencies and returns the unified anchored contract. Never modifies files; never asks the user anything.'
+description: 'Use before changing dependencies or coupling — maps external libraries, internal coupling, dependency-direction violations, and unused or oversized deps. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything.'
 permissionMode: default
 skills: [core:base]
 color: cyan

@@ -1,6 +1,6 @@
 ---
 name: workflow-smith
-description: 'Author a Claude Code workflow PROACTIVELY when the user wants to create or update one - owns the distribution model, the .workflow.js orchestration script, any wrapper SKILL.md, and the validation gate. Not for explaining how workflows work.'
+description: 'Delegate when a .workflow.js fan-out script must be created or edited - the user wants to parallelize agents at scale, build or change an orchestration that fans out subagents across phases, add a stage or schema, or wire its distribution model and wrapper SKILL.md. Owns the workflow create and update flow plus the validation gate. Not for a single SKILL.md (skill-smith) or a standalone subagent file (subagent-smith); not for explaining how workflows work.'
 permissionMode: default
 skills: [core:base, core:workflow]
 color: purple

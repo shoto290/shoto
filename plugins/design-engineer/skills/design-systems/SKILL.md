@@ -1,7 +1,6 @@
 ---
 name: design-systems
-description: 'Build, extend, and refactor a React + TypeScript design system - design tokens, semantic theming, and light/dark mode.'
-when_to_use: 'When adding or restructuring tokens, setting up theming or dark mode, or migrating hardcoded values to tokens.'
+description: Token-driven React + TypeScript design system and theming.
 ---
 
 # Design Systems
