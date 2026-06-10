@@ -1,6 +1,6 @@
 ---
 name: paper-craft
-description: Designing on the Paper.design canvas via the Paper MCP.
+description: 'Designing on the Paper.design canvas via the Paper MCP.'
 ---
 
 # Paper Craft
@@ -47,12 +47,58 @@ The `paper` server is wired into this plugin at `http://127.0.0.1:29979/mcp` (no
 
 **Default approach:**
 
-1. **Orient** — call `get_guide` first, then `get_tree_summary` and/or `get_screenshot` to understand the current canvas before touching anything.
-2. **Edit** — make changes via `write_html`, `update_styles`, `create_artboard`, and the other write tools.
+1. **Orient** — call `get_guide` first, then `get_tree_summary` and/or `get_screenshot` before touching anything.
+2. **Edit** — for mockup tasks, follow "## Mockup Flow" below; for direct edits to existing work, make surgical changes via `update_styles`, `set_text_content`, `write_html`.
 3. **Finalize** — call `finish_working_on_nodes` when done.
+
+## Mockup Flow
+
+Never build high-fidelity first. Every mockup task runs detect → draft → checkpoint → refine.
+
+### Detect The Mode (seconds, not minutes)
+
+Run BEFORE drafting:
+
+1. If a Figma MCP server is connected, call `get_libraries` / `search_design_system` (tool detail in `designer:figma-craft`) — components or variables found means design-system mode sourced from Figma.
+2. Else check the repo for Storybook — a `.storybook/` directory or `*.stories.(tsx|ts|jsx|js|mdx)` files — found means design-system mode sourced from Storybook.
+3. Neither found, or the user asked for quick/rough/wireframes — wireframe mode.
+
+Then confirm in ONE line with a single yes/no question, e.g. "Found your design system in Storybook — I'll draft low-fi first, then refine with your real components. OK, or pure wireframes?" One question, then go; never a long interview.
+
+### Draft Pass (low-fi, all screens)
+
+Identical in both modes:
+
+- One artboard per screen.
+- Grayscale boxes with simple borders, system font, placeholder text ("Heading", "Body copy", "CTA") — no brand colors, imagery, or polish.
+- One `write_html` per screen capturing layout structure and hierarchy only.
+- Draft ALL requested screens before refining any.
+
+### Checkpoint (feedback before fidelity)
+
+After the draft pass, `get_screenshot` every artboard, show the user, and ask 2-3 focused questions (layout right? anything missing? which screen to refine first?). Do NOT start refining without the user's direction. If direction is ambiguous, lay at most two variants side by side (per Spatial Design) rather than guessing.
+
+### Refine Pass (targeted edits, never rewrites)
+
+- Apply feedback screen by screen in the user's priority order.
+- Iterate on EXISTING nodes — prefer `update_styles`, `set_text_content`, `duplicate_nodes`, `move_nodes`.
+- Rewrite a subtree with `write_html` only when the structure fundamentally changes.
+- After each round, screenshot → confirm → next; `finish_working_on_nodes` per completed screen.
+
+## Mockup Modes
+
+| Mode | Behavior |
+| :-- | :-- |
+| **Wireframe mode** | Stays low-fi end to end; refinement means layout, flow, and content-structure changes, never visual polish. |
+| **Design-system mode** | Drafts low-fi exactly like wireframe mode, then the refine pass applies the product's REAL tokens and components: Figma source — `get_variable_defs` + `get_design_context` via `designer:figma-craft`; Storybook source — read story files for component names, props, and states, and pull token values from the repo (CSS variables, Tailwind config, theme files); map names 1:1 (Figma `Button/Primary` or Storybook `Button` story → the mockup's button styles). |
+
+The draft pass is always low-fi; the mode only changes what the refine pass reaches for.
 
 ## Pitfalls
 
 - **Treating Paper like a static mockup tool** — it is live HTML/CSS, not a flat picture. Design with real structure and data.
 - **Ignoring the live-code round-trip** — code-to-design only pays off when you push the real change back, not a redline.
 - **Editing blindly** — never write to the canvas before reading the tree and the guide. Orient with `get_guide` + `get_tree_summary` / `get_screenshot` first.
+- **Going high-fidelity on the first pass** — draft low-fi and checkpoint before investing in polish; cheap drafts make feedback cheap.
+- **Rewriting artboards to apply small feedback** — use `update_styles` / `set_text_content` / `duplicate_nodes` on existing nodes; full `write_html` rewrites are for structural changes only.
+- **Guessing the design system** — detect (Figma MCP, then Storybook in the repo) and confirm the mode in one line before drafting.
