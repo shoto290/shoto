@@ -1,5 +1,6 @@
 ---
 name: skill
+user-invocable: false
 description: Create or update a Claude Code skill (SKILL.md).
 argument-hint: '[skill-name]'
 ---

@@ -1,5 +1,6 @@
 ---
 name: workflow
+user-invocable: false
 description: Create or update a .workflow.js orchestration script.
 argument-hint: '[workflow name or description of what to orchestrate]'
 allowed-tools: [Agent, AskUserQuestion, Read, Glob, Grep]

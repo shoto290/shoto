@@ -1,5 +1,6 @@
 ---
 name: base
+user-invocable: false
 description: Global foundation rules, principles, and shared conventions.
 ---
 

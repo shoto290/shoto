@@ -1,5 +1,6 @@
 ---
 name: subagent
+user-invocable: false
 description: Create or update a Claude Code subagent.
 argument-hint: '[agent-name]'
 ---

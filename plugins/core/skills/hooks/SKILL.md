@@ -1,5 +1,6 @@
 ---
 name: hooks
+user-invocable: false
 description: Create, update, or debug Claude Code lifecycle hooks.
 argument-hint: '[event-or-pattern]'
 ---
