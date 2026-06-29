@@ -1,13 +1,13 @@
 ---
 name: rebase
-description: 'Rebases the current branch onto the default branch; never pushes.'
+description: 'Rebases the current branch onto the default branch, auto-resolving trivial conflicts and asking only when it matters; never pushes.'
 argument-hint: '[base-branch]'
 allowed-tools: Bash, Read, AskUserQuestion, Edit
 ---
 
 # rebase
 
-Rebase the current feature branch onto the default branch (typically `main`), with interactive per-conflict prompts and an automatic backup branch so nothing is lost if the rebase goes sideways. Complements `/git:create` (rebase locally → then open a squash-merge PR with a clean linear history). The design follows the "golden rule of rebasing" from Pro Git ([git-scm.com](https://git-scm.com/book/fr/v2/Les-branches-avec-Git-Rebaser-Rebasing)): rebase locally before pushing; never rebase commits that are already shared.
+Rebase the current feature branch onto the default branch (typically `main`), with confidence-gated conflict resolution (trivial conflicts resolved automatically, the rest escalated to you) and an automatic backup branch so nothing is lost if the rebase goes sideways. Complements `/git:create` (rebase locally → then open a squash-merge PR with a clean linear history). The design follows the "golden rule of rebasing" from Pro Git ([git-scm.com](https://git-scm.com/book/fr/v2/Les-branches-avec-Git-Rebaser-Rebasing)): rebase locally before pushing; never rebase commits that are already shared.
 
 ## Prerequisites
 
@@ -103,7 +103,7 @@ git rebase origin/<base>
 
 If this completes without conflicts, skip to step 9.
 
-### 8. Conflict loop (per file)
+### 8. Conflict loop (confidence-gated triage)
 
 While `git status` reports `rebase in progress` (detect via `git status --porcelain | grep -E '^(UU|AA|DD|AU|UA|UD|DU)'`):
 
@@ -114,17 +114,28 @@ a. List conflicted files:
    ```
 
 b. For EACH conflicted file (one at a time, do not batch):
-   - Read the file via the `Read` tool to see the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).
-   - Present to the user, for that file:
+   - Read the file via the `Read` tool to see the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`), then CLASSIFY every conflict hunk in it. A file qualifies for auto-resolution only if EVERY hunk is high-confidence per the whitelist below. If ANY hunk is must-ask (or you cannot classify it with high confidence), the WHOLE file escalates to the per-file `AskUserQuestion`.
+
+   **High-confidence whitelist (auto-resolve)** — qualifies only when the merged result is objectively derivable without judging intent:
+   - **Additive / non-overlapping** — both sides only INSERT lines into the conflict region and neither modifies or deletes a line the other also touches (e.g. both add different import lines, or both append distinct entries). Resolve via the `Edit` tool to produce the UNION: keep both sides' added lines in a sensible order, de-duplicated, with all conflict markers removed; then `git add <file>`. Do NOT use `git checkout --ours`/`--theirs` here — it would drop one side's additions.
+   - **Pure whitespace / formatting** — the two sides are identical after normalizing whitespace, indentation, and trailing newlines. Resolve with `git checkout --ours <file> && git add <file>` (content is semantically identical, so either side is fine; pick ours).
+   - **Regenerable lockfile** — the conflicted file is a dependency lockfile (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `Cargo.lock`, `Gemfile.lock`, `poetry.lock`, `composer.lock`, `go.sum`). Resolve by taking the base side and regenerating from the merged manifest: `git checkout --theirs <lockfile> && git add <lockfile>`, then if the matching manifest changed in this branch, re-run the lockfile's generator (e.g. `npm install`, `pnpm install`, `yarn install`, `cargo build`, `bundle install`) when it is safely available. If no safe generator is available, keep the base side and FLAG the file in the summary as "needs regeneration". Never hand-merge a lockfile.
+
+   **Must-ask (escalate to `AskUserQuestion`)** — any of: overlapping edits (both sides modified or deleted the SAME line); delete-vs-modify (status `DU`/`UD` — one side deleted, the other changed); add-add with differing content (`AA` where the two versions are not whitespace-identical); OR ANY hunk you cannot classify into the whitelist with high confidence. Borderline ⇒ escalate. This is the safety default.
+
+   When a file escalates, present to the user, for that file:
      - The "ours" hunk (your branch's version — what was between `<<<<<<<` and `=======`).
      - The "theirs" hunk (the version from `<base>` — between `=======` and `>>>>>>>`).
      - Surrounding context so the user can judge.
-   - Ask via `AskUserQuestion`:
+
+   Then ask via `AskUserQuestion`:
      - (a) Keep ours — the change from your branch (Recommended when unsure — your branch's intent is preserved)
      - (b) Keep theirs — the version from `<base>`
      - (c) I'll describe the merge — collect plain-text instructions from the user, then apply via `Edit` and show the result for confirmation before moving on
      - (d) Abort and restore — run `git rebase --abort`, then tell the user the backup branch is intact and how to use `git reset --hard <backup-name>` if they want to walk back further
    - For (a): resolve with `git checkout --ours <file> && git add <file>` (Bash). For (b): `git checkout --theirs <file> && git add <file>`. For (c): use `Edit` to write the resolved content, then `git add <file>`. For (d): stop the whole skill.
+
+   For every auto-resolved file, record a one-line entry for the step 9 summary.
 
 c. Once every conflicted file in the current step is resolved (no more `U` entries in `git status`):
 
@@ -146,6 +157,11 @@ Compare the commit count to what was saved in step 2.
 
 - If the count is identical → say so: `Replay complete: N commits replayed cleanly.`
 - If the count dropped → warn loudly: `WARNING: was N commits, now M commits. Some commits may have been dropped or squashed. Inspect the diff vs. the backup branch before pushing.`
+
+Then print the auto-resolve summary (the transparency mechanism — keep it concise):
+
+- A header count line: `Auto-resolved N conflict(s) · escalated M to you.`
+- One recorded entry per auto-resolved file (`<file> — <category> — <what it did> (<short reason>)`). If N is 0, note `No conflicts were auto-resolved.` instead.
 
 Always show the cumulative diff summary vs. the backup:
 
@@ -187,4 +203,5 @@ Always print, even when (b) was chosen at step 10:
 - NEVER auto-stash dirty changes — stop and ask the user instead.
 - NEVER rebase when the working tree is dirty.
 - ALWAYS create the backup branch BEFORE running `git rebase`.
-- ALWAYS resolve conflicts one file at a time with an explicit `AskUserQuestion` per file. Never batch.
+- ONLY auto-resolve conflicts in the conservative whitelist (additive/non-overlapping → union merge, pure whitespace/formatting, regenerable lockfiles). Everything else — and anything borderline — escalates to an explicit per-file `AskUserQuestion`. Never auto-resolve a semantic guess.
+- ALWAYS report every auto-resolved file in the end-of-run summary so the user can review what was decided for them.
