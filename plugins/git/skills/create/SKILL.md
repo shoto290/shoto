@@ -2,7 +2,7 @@
 name: create
 description: 'Opens a pull request and pushes the current branch.'
 argument-hint: '(none — operates on the current branch)'
-allowed-tools: Bash, Read, AskUserQuestion
+allowed-tools: Bash, Read
 ---
 
 # create
@@ -39,9 +39,7 @@ Run these together:
 
 ### 4. Pre-flight checks
 
-- If `git status --porcelain` is non-empty, warn about uncommitted changes and ask via `AskUserQuestion`:
-  - (a) Continue without committing
-  - (b) Abort so the user can commit first
+- If `git status --porcelain` is non-empty, note the uncommitted changes in the output and proceed — the PR is built from commits already ahead of `<base>`; uncommitted changes are left in the working tree.
 - If `git log <base>..HEAD` is empty, stop with: `No commits ahead of <base>; nothing to create a PR for.`
 
 ### 5. Determine the Conventional Commit type
@@ -85,14 +83,7 @@ Fill in the skeleton in [template.md](./template.md); apply the wording rules in
 - no file paths, no function names, no technical jargon
 - WHAT and WHY, not HOW
 
-### 9. Confirm with the user
-
-Show the drafted title and body via `AskUserQuestion`. Options:
-
-- (a) Create as-is
-- (b) Adjust — collect changes, redraft, confirm again
-
-### 10. Push and create the PR
+### 9. Push and create the PR
 
 Push the current branch (never `main`, `master`, or `<base>`):
 
@@ -112,7 +103,7 @@ EOF
 )"
 ```
 
-### 11. Print the result
+### 10. Print the result
 
 Output the resulting PR URL and title.
 

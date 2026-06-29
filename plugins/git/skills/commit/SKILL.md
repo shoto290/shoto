@@ -2,7 +2,7 @@
 name: commit
 description: 'Creates one Conventional Commit from current changes; never pushes.'
 argument-hint: '(none — operates on current uncommitted changes)'
-allowed-tools: Bash, Read, AskUserQuestion
+allowed-tools: Bash, Read
 ---
 
 # commit
@@ -43,9 +43,7 @@ In order:
 
   If `gh` is unavailable or the call fails, fall back to `main`. Store as `<base>`.
 
-- If the current branch equals `main`, `master`, or `<base>`, warn and ask via `AskUserQuestion`:
-  - (a) Abort (Recommended)
-  - (b) Continue anyway
+- If the current branch equals `main`, `master`, or `<base>`, stop with: `On <branch> — refusing to commit on a protected branch. Switch to a feature branch and retry.` Never auto-create a commit on a protected branch.
 
 ### 4. Auto-stage
 
@@ -76,14 +74,7 @@ Format: `type(scope): description` or `type: description`.
 - describes WHAT changed, not HOW
 - single-line title only — no extended body (one commit per call; re-invoke for further work)
 
-### 7. Confirm with the user
-
-Show the drafted title via `AskUserQuestion`. Options:
-
-- (a) Commit as drafted (Recommended)
-- (b) Adjust — collect a new title from the user, validate against the constraints (length, format), re-confirm.
-
-### 8. Create the commit
+### 7. Create the commit
 
 ```bash
 git commit -m "<title>"
@@ -93,7 +84,7 @@ Do not pass `--no-verify`, `--amend`, or `--no-gpg-sign` under any circumstance.
 
 If a pre-commit hook fails: show the hook's output, surface the failing command, and stop. Do not retry, do not amend, do not bypass.
 
-### 9. Print the result
+### 8. Print the result
 
 Output the short hash (`git rev-parse --short HEAD`) and the committed title. If the branch has commits ahead of `<base>`, suggest `/git:create` as the next step.
 
@@ -105,7 +96,7 @@ Output the short hash (`git rev-parse --short HEAD`) and the committed title. If
 - NEVER use `--no-verify`, `--amend`, or `--no-gpg-sign`.
 - NEVER push after the commit — pushing is `/git:create`'s job.
 - Exactly one commit per invocation. If the user wants several logical commits, they re-invoke the skill.
-- NEVER commit on `main`, `master`, or the resolved default branch without explicit user confirmation (step 3).
+- NEVER commit on `main`, `master`, or the resolved default branch — the skill auto-aborts on protected branches (step 3).
 
 ## Reference
 
