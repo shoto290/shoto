@@ -1,5 +1,6 @@
 ---
 name: plugin
+user-invocable: false
 description: Author, package, and distribute a Claude Code plugin.
 argument-hint: '[action — e.g. "new", "validate", "migrate"]'
 ---

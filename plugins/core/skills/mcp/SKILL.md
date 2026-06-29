@@ -1,5 +1,6 @@
 ---
 name: mcp
+user-invocable: false
 description: Configure and debug project-level MCP servers.
 argument-hint: '[recommend | add <server> | debug | explain]'
 ---

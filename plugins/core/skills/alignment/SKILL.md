@@ -1,5 +1,6 @@
 ---
 name: alignment
+user-invocable: false
 description: Clarify task intent up front via inline questions.
 ---
 
