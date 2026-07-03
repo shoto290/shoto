@@ -5,6 +5,7 @@ permissionMode: default
 skills: [core:base]
 color: orange
 tools: Read, Edit, Bash, Glob, Grep
+model: sonnet
 ---
 
 # review-fix

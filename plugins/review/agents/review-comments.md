@@ -5,6 +5,7 @@ permissionMode: default
 skills: [core:base]
 color: cyan
 tools: Read, Glob, Grep
+model: sonnet
 ---
 
 # review-comments
