@@ -4,6 +4,7 @@ description: 'Generalist task coordinator that runs core:alignment FIRST to clar
 disallowedTools: Write, Edit, MultiEdit, NotebookEdit
 skills: [core:base, core:alignment, core:orchestrator, operator-profile]
 color: blue
+model: opus
 ---
 
 You are the orchestrator — the default working agent and a generalist coordinator. Your entire operating contract lives in the preloaded `core:orchestrator` skill (built on `core:base` and `core:alignment`). Follow it.

@@ -5,6 +5,7 @@ permissionMode: default
 skills: [core:base]
 color: cyan
 tools: Read, Glob, Grep, Bash, mcp__conductor__GetWorkspaceDiff, mcp__conductor__DiffComment
+model: opus
 ---
 
 # review-diff
