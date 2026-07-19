@@ -17,10 +17,6 @@
       "source": "./plugins/review"
     },
     {
-      "name": "workflow",
-      "source": "./plugins/workflow"
-    },
-    {
       "name": "inventory",
       "source": "./plugins/inventory"
     }

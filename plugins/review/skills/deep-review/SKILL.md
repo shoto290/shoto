@@ -11,7 +11,7 @@ allowed-tools: [AskUserQuestion, Workflow, Read, Bash]
 `deep-review` runs a multi-agent review of the current branch diff. It is a **thin wrapper** around one bundled workflow (`deep-review.workflow.js`): lens agents review the diff in parallel, their findings are deduped and triaged into verdicts, and — only when `--auto-fix` is passed — the FIX/FIX-STYLE items are applied with verification. The human gate lives here, in the main thread, **after** the read-only run; the workflow itself never asks the user anything.
 
 ```
-/workflow:deep-review
+/review:deep-review
  ├─ parse params (--auto-fix, --base)
  ├─ Workflow(deep-review.workflow.js)  → structured findings + verdicts   (read-only unless --auto-fix)
  ├─ render findings + verdict blocks + decision counts
