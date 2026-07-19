@@ -1,6 +1,6 @@
 ---
 name: inventory-conventions
-description: 'Use before writing new code to match house style — maps the repo''s naming, structure, and idiom conventions with one sample each for error handling, logging, and tests. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything. Not for the external community best practice — use explore:explore-conventions.'
+description: 'Use before writing new code to match house style — maps the repo''s naming, structure, and idiom conventions with one sample each for error handling, logging, and tests. Returns the unified anchored contract; read-only — never modifies files, never asks the user anything. Not for the external community best practice.'
 permissionMode: default
 skills: [core:base]
 color: cyan
