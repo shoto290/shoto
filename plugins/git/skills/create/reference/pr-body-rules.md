@@ -42,7 +42,7 @@ Include it when the change adds, moves, or removes a module, or crosses a bounda
 - Solid arrow for a live dependency, dotted for one that was removed.
 - Quote every node label, as in `P["login/page.tsx"]`, so slashes and dots do not break the parse.
 - Cap it at roughly twelve nodes; past that collapse a subsystem into one node.
-- Color the four change states with `classDef` — added, changed, removed, blocker. Never decorative; the color reinforces the `+` `~` `-` prefix rather than replacing it.
+- Color the change states with `classDef` — added, changed, removed, blocker, and `ctx` for unchanged context. Never decorative; the color reinforces the `+` `~` `-` prefix rather than replacing it.
 
 Example:
 
@@ -63,6 +63,17 @@ flowchart LR
   class LEG del
   class U,DB ctx
 ```
+
+## Blocker callout
+
+When the branch is not safe to merge, open the body with a GitHub alert callout, above the Summary:
+
+```
+> [!CAUTION]
+> Webhook signature verification is stubbed. Do not deploy.
+```
+
+One or two sentences, naming what is unsafe and what must happen first. Use it ONLY for a genuine merge or deploy blocker — never for a note or a caveat. GitHub strips mermaid from email and mobile notifications but keeps the callout, so this is the only blocker channel that survives every surface.
 
 ## Optional — Test plan (opt-in)
 
