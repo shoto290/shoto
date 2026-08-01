@@ -15,7 +15,7 @@ This skill covers the **plugin-level** concerns: manifest, layout, local testing
 - [skills/subagent/SKILL.md](../subagent/SKILL.md) — for sub-agent definitions
 - [skills/hooks/SKILL.md](../hooks/SKILL.md) — for hook handlers
 - [skills/mcp/SKILL.md](../mcp/SKILL.md) — for project-level MCP servers (`.mcp.json` at the repo root, `claude mcp add`). This skill owns MCP **bundled inside a plugin** (`.mcp.json` at the plugin root, `mcpServers` in `plugin.json`).
-- [skills/evolve/SKILL.md](../evolve/SKILL.md) — when a change spans multiple artifact types
+- [skills/evolve/SKILL.md](../evolve/SKILL.md) — when a change spans multiple artifact types; it returns a plan only, then author each entry with the skills above
 
 ## Plugin vs Standalone `.claude/`
 
@@ -103,7 +103,7 @@ Plugins compose existing artifact types — they don't redefine them. To author 
 | Skill | `skills/<name>/SKILL.md` | [skills/skill/SKILL.md](../skill/SKILL.md) |
 | Sub-agent | `agents/<name>.md` | [skills/subagent/SKILL.md](../subagent/SKILL.md) |
 | Hook | `hooks/hooks.json` | [skills/hooks/SKILL.md](../hooks/SKILL.md) |
-| Multi-artifact change | spans `skills/`, `agents/`, `hooks/` | [skills/evolve/SKILL.md](../evolve/SKILL.md) |
+| Multi-artifact change | spans `skills/`, `agents/`, `hooks/` | [skills/evolve/SKILL.md](../evolve/SKILL.md) — plans only; author each entry with the skills above |
 
 Plugin-level notes:
 
