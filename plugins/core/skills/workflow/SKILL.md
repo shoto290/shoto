@@ -73,7 +73,7 @@ These are enforced by `workflow-smith` and stated to the user. Full list: [refer
 
 Any authored workflow that mutates files can finish by reviewing its own diff, reusing the bundled deep-review + apply-fixes workflows rather than re-implementing review logic. The pattern has two parts.
 
-1. **Wrapper injects the script paths via args.** The wrapper skill cannot let the sandboxed script resolve cross-skill sibling paths (no fs/`__dirname`), so it passes them in the args object. The exact injection shape used by evolve:
+1. **Wrapper injects the script paths via args.** The wrapper skill cannot let the sandboxed script resolve cross-skill sibling paths (no fs/`__dirname`), so it passes them in the args object. The injection shape:
 
 ```
 Workflow({
