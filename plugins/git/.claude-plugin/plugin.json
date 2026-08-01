@@ -1,7 +1,8 @@
 {
   "name": "git",
   "description": "Git and pull-request workflows: commit changes, create PRs, and rebase branches onto the default branch with safety backups.",
-  "version": "0.10.0",
+  "version": "0.11.0",
+  "dependencies": ["core"],
   "author": {
     "name": "shoto290"
   },

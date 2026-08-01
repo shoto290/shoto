@@ -1,6 +1,7 @@
 {
   "name": "review",
-  "version": "0.5.0",
+  "version": "0.6.0",
+  "dependencies": ["core"],
   "description": "Code review automation — review the workspace diff against bug criteria, triage PR comments into verdicts, and apply the confirmed fixes with verification; ships the review subagents (review-diff / review-comments / review-fix) and the /deep-review workflow (multi-lens diff review → validate → optional auto-fix).",
   "author": {
     "name": "shoto290",

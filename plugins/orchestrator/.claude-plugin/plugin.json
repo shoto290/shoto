@@ -1,7 +1,8 @@
 {
   "name": "orchestrator",
   "description": "Runtime foundation for the shoto marketplace: the orchestrator agent and its generalist fallback writer, the base, alignment, and orchestrator skills they run on, and /onboard to set up a committed project orchestrator.",
-  "version": "0.17.0",
+  "version": "0.18.0",
+  "dependencies": ["core"],
   "author": {
     "name": "shoto290"
   },
