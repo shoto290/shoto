@@ -86,7 +86,7 @@ This repo exists to build skills, sub-agents, and hooks for Claude Code. **Use t
 | Skill (`plugins/<plugin>/skills/<name>/SKILL.md`) | `/core:skill` or the `skill-architect` sub-agent |
 | Sub-agent (`plugins/<plugin>/agents/<name>.md`) | `/core:subagent` or the `subagent-architect` sub-agent |
 | Hook (`.claude/hooks/*`) | `/core:hooks` skill |
-| Coordinated multi-artifact change | `/core:evolve` (plans across skill / sub-agent / hook) |
+| Coordinated multi-artifact change | `/core:evolve` to get the plan, then the matching author above for each entry |
 
 The architects own frontmatter, scope selection, and the validation gate. Don't bypass them when scaffolding new artifacts.
 
