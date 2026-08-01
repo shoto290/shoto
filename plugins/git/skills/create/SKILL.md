@@ -7,7 +7,7 @@ allowed-tools: Bash, Read
 
 # create
 
-Open a pull request for the current branch with a Conventional Commit title and a short, non-developer-friendly changelog body.
+Open a pull request for the current branch with a Conventional Commit title, a short non-developer-friendly summary, and a mermaid canvas of what moved.
 
 ## Prerequisites
 
@@ -76,12 +76,14 @@ Format: `type(scope): description` or `type: description`.
 
 ### 8. Draft the body
 
-Fill in the skeleton in [template.md](./template.md); apply the wording rules in [reference/pr-body-rules.md](./reference/pr-body-rules.md). The Summary is written for a non-developer audience:
+Fill in the skeleton in [template.md](./template.md); apply the wording rules in [reference/pr-body-rules.md](./reference/pr-body-rules.md). The body has two audiences. The Summary is written for a non-developer audience:
 
 - 1 to 4 bullets max
 - one short sentence each, starting with an imperative verb
 - no file paths, no function names, no technical jargon
 - WHAT and WHY, not HOW
+
+`## Changes` is the reviewer's half: a mermaid `flowchart LR` canvas of what the change did to the tree, with `+`, `~`, `-` prefixes on changed nodes. Include it only when the change moves structure; skip it for a single-file edit, a version bump, or a config tweak. Canvas rules in [reference/pr-body-rules.md](./reference/pr-body-rules.md).
 
 ### 9. Push and create the PR
 
@@ -93,15 +95,24 @@ git push -u origin HEAD
 
 Create the PR:
 
-```bash
+````bash
 gh pr create --base <base> --title "<title>" --body "$(cat <<'EOF'
 ## Summary
 
 - bullet 1
 - bullet 2
+
+## Changes
+
+```mermaid
+flowchart LR
+  subgraph DIR["dir/"]
+    N["+ new-module/"]
+  end
+```
 EOF
 )"
-```
+````
 
 ### 10. Print the result
 
@@ -111,7 +122,7 @@ Output the resulting PR URL and title.
 
 - NEVER add a "Generated with Claude Code" footer to the PR body.
 - NEVER add `Co-authored-by` lines.
-- The Summary section is for non-developers — no code refs, no file paths, no function names, no internal jargon.
+- The Summary section is for non-developers — no code refs, no file paths, no function names, no internal jargon. The Changes canvas is exempt; it is for reviewers.
 - NEVER push to a branch named `main`, `master`, or the resolved default branch — push only the current feature branch.
 - NEVER force-push.
 
