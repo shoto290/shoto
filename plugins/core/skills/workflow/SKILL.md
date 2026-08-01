@@ -87,7 +87,7 @@ Workflow({
 })
 ```
 
-The deep-review + apply-fixes scripts live in the workflow plugin (`plugins/workflow/skills/deep-review/scripts/`). A workflow bundled in a DIFFERENT plugin must reference them by the path the wrapper can resolve at its plugin root, or the user must have the workflow plugin installed — state this as a prerequisite; do not over-engineer cross-plugin resolution.
+The deep-review + apply-fixes scripts live in the review plugin (`plugins/review/skills/deep-review/scripts/`). A workflow bundled in a DIFFERENT plugin must reference them by the path the wrapper can resolve at its plugin root, or the user must have the review plugin installed — state this as a prerequisite; do not over-engineer cross-plugin resolution.
 
 2. **The script runs deep-review READ-ONLY, then calls apply-fixes directly.** Because `workflow()` nesting is ONE LEVEL DEEP, the script must NOT trigger deep-review's own `--auto-fix` path (that would call `workflow(apply-fixes)` at a second level and throw). Instead it:
    - (a) reads `deepReviewScriptPath` / `applyFixesScriptPath` / `base` from the parsed args (skip the review chain silently if `deepReviewScriptPath` is absent);

@@ -17,32 +17,8 @@
       "source": "./plugins/review"
     },
     {
-      "name": "workflow",
-      "source": "./plugins/workflow"
-    },
-    {
-      "name": "design-engineer",
-      "source": "./plugins/design-engineer"
-    },
-    {
-      "name": "inventory",
-      "source": "./plugins/inventory"
-    },
-    {
-      "name": "engineering",
-      "source": "./plugins/engineering"
-    },
-    {
-      "name": "explore",
-      "source": "./plugins/explore"
-    },
-    {
-      "name": "backend-engineer",
-      "source": "./plugins/backend-engineer"
-    },
-    {
-      "name": "designer",
-      "source": "./plugins/designer"
+      "name": "orchestrator",
+      "source": "./plugins/orchestrator"
     }
   ]
 }

@@ -45,7 +45,7 @@ Map real repo signals to servers — never recommend a server for a service the 
 
 ### 1. Scan the repo for signals
 
-Delegate the repo signal scan to [explore:explore](../../../explore/skills/explore/SKILL.md) (`explore:explore`) rather than reading source files directly from this flow. Ask it to surface: dependency manifests (`package.json`, `pyproject.toml`, `go.mod`, …), framework/ORM usage, database drivers, the git remote host, IaC and container files (`docker-compose.yml`, K8s manifests, Terraform), and monitoring SDKs. To discover canonical mappings for other intents, invoke `core:skills-suggest`.
+Scan the repo for these signals: dependency manifests (`package.json`, `pyproject.toml`, `go.mod`, …), framework/ORM usage, database drivers, the git remote host, IaC and container files (`docker-compose.yml`, K8s manifests, Terraform), and monitoring SDKs. To discover canonical mappings for other intents, invoke `core:skills-suggest`.
 
 ### 2. Map signals to the catalog
 
