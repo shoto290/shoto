@@ -95,6 +95,7 @@ The architects own frontmatter, scope selection, and the validation gate. Don't 
 - **Check before creating** — Search for existing skills/agents/hooks before adding new ones. Reuse over duplication.
 - **One concern per commit** — Each commit addresses a single logical change.
 - **Keep the manifest in sync** — When adding or renaming a skill/agent, update the relevant `plugins/<plugin>/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
+- **Declare hard dependencies** — If a plugin's agent preloads a skill from another plugin, or one of its skills requires another plugin as a mandatory step, list that plugin in `dependencies` in `plugins/<plugin>/.claude-plugin/plugin.json`. Use the bare plugin name, never a version range — this repo publishes no `<plugin>--v<version>` git tags, and an unmatched range disables the plugin. Only hard edges count: optional or prose-only mentions are not dependencies, and `core` is the foundation so it declares none.
 - **Match `name:` to the path** — A skill at `plugins/<plugin>/skills/foo/SKILL.md` must have `name: foo`. Same for agents.
 
 ## Enforced Rules

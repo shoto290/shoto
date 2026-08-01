@@ -10,6 +10,8 @@ A Claude Code marketplace hosting plugins for **building Claude Code itself**.
 /plugin install <plugin>@shoto
 ```
 
+`core` is required. Every other plugin declares it in `dependencies`, so it installs automatically.
+
 ## Plugins
 
 | Plugin | Description |
