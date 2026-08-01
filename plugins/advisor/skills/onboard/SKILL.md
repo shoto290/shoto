@@ -60,7 +60,7 @@ If not inside a git repo, report that and **stop**.
 
 Find any executant this skill previously committed to the repo:
 
-- `Glob` `.claude/agents/*.md`; `Read` each and select those that carry **both** signatures: a `## Project profile` block in the body AND `advisor:executant` in the frontmatter `skills:` list. The second signature is required — a repo can hold both a `<repo>-orchestrator` and a `<repo>-executant` wrapper, and both carry a `## Project profile` block, so the profile block alone does not disambiguate.
+- `Glob` `.claude/agents/*.md`; `Read` each and select those that carry **both** signatures: a `## Project profile` block in the body AND, in the frontmatter `skills:` list, an entry whose **bare name** (the part after the colon) is `executant` — this skill's own contract skill, as captured from the live source in §2. Both signatures are required: other onboarding commands can write their own profile-carrying wrappers into the same directory, so the profile block alone does not disambiguate. Match the bare name rather than the full `namespace:name` so a wrapper generated under an earlier plugin namespace stays detectable.
 - If **exactly one** → that is the existing project executant; capture its `name:` and its `## Project profile` block.
 - If **multiple** → ask via `AskUserQuestion` which one is the target.
 - If **none** → this is a fresh creation; skip the §4 gate and go straight to the PROJECT interview (§5).
@@ -152,13 +152,13 @@ If the source declared `model` or `disallowedTools`, include the mirrored lines;
 
 ## 9. Build the operator-profile skill content
 
-Produced **only** when §6 ran with personalize=**yes** AND the user chose **Reconfigure** or it is a fresh personal profile. Assemble the user-scope skill from the operator profile resolved in §6. This file is SHARED with `/orchestrator:onboard` — the rendering below must stay byte-identical between the two skills, or the two commands flip-flop the same file:
+Produced **only** when §6 ran with personalize=**yes** AND the user chose **Reconfigure** or it is a fresh personal profile. Assemble the user-scope skill from the operator profile resolved in §6. This file is user-scope and may be written by any onboarding command that offers a personal profile, so the rendering below must stay neutral and stable and must never be personalized to this command — otherwise re-running a different one flip-flops the same file:
 
 ```
 ---
 name: operator-profile
-description: "The operator's personal working profile — role, seniority, stack, tone, language, and output preferences. Preloaded into orchestrators to shape HOW Claude communicates and decides for this user."
-when_to_use: "Auto-loaded as background context whenever an orchestrator or executant agent runs; not a manual command. Re-run /orchestrator:onboard or /advisor:onboard and choose to personalize to (re)generate it."
+description: "The operator's personal working profile — role, seniority, stack, tone, language, and output preferences. Preloaded into agents to shape HOW Claude communicates and decides for this user."
+when_to_use: "Auto-loaded as background context whenever an agent that preloads it runs; not a manual command. Re-run this project's onboarding command and choose to personalize to (re)generate it."
 user-invocable: false
 ---
 
@@ -171,7 +171,7 @@ user-invocable: false
 Apply this profile to every task: shape tone, verbosity and output format to it. This profile refines HOW you communicate and decide — it never overrides the agent's operating contract.
 ```
 
-This skill MUST stay **preloadable**: never add `disable-model-invocation: true` here. `user-invocable: false` hides it from the `/` menu while leaving it loadable by name from the executant's mirrored `skills:` list — a future editor must not add `disable-model-invocation`, or the agent can no longer preload it.
+This skill MUST stay **preloadable**: never add `disable-model-invocation: true` here. `user-invocable: false` hides it from the `/` menu while leaving it loadable by name from the executant's mirrored `skills:` list — a future editor must not add `disable-model-invocation`, or the executant can no longer preload it.
 
 ## 10. Confirm write + commit
 
@@ -198,7 +198,7 @@ The executant is the writer, so this skill performs every write itself with `Wri
    This directory is what arms the self-gating Stop hook: the hook is a no-op until it exists, so there is nothing else to wire per repo. It lives OUTSIDE the repo, is keyed by the repo slug, and is never committed.
 4. Merge into `<repo>/.claude/settings.local.json`: set the top-level key `"agent": "<name>"`. Read the existing JSON first when the file is present; if absent, create it as `{ "agent": "<name>" }`. ADD/REPLACE only the `agent` key and PRESERVE all sibling keys (e.g. `ultracode`) — never replace the whole object. Replacement safety:
    - no `agent` key yet, or already equal to `<name>` → write it (or no-op) silently;
-   - `agent` set to ANY other value (e.g. a `<repo>-orchestrator` wrapper) → **STOP** and ask via `AskUserQuestion`, surfacing the current value; replace it only on confirmation. If declined, leave the file untouched and say so in the §12 report.
+   - `agent` set to ANY other value → **STOP** and ask via `AskUserQuestion`, surfacing the current value; replace it only on confirmation. If declined, leave the file untouched and say so in the §12 report.
 5. Ensure `.gitignore` covers `.claude/settings.local.json` (append the line if missing). The agent file is NOT gitignored.
 6. If the user chose **Proceed & commit**: run a targeted commit — `git add .claude/agents/<name>.md` plus `.gitignore` ONLY if it changed, then `git commit` with a Conventional Commit message: `feat(advisor): add <name> project executant` (fresh) or `chore(advisor): reconfigure <name>` (reconfigure). NEVER `git add` `settings.local.json`; NEVER `git add` anything under `~/.claude/`, including the ledger. No co-author line, no "Generated with Claude Code".
 
@@ -219,7 +219,7 @@ State that nothing was staged from the ledger — it lives outside the repo — 
 
 - **Commits the executant, never the opt-in.** The executant agent is a committed project artifact; `.claude/settings.local.json` is the per-user opt-in — never committed, always gitignored.
 - **The ledger lives outside the repo.** `~/.claude/advisor/state/<slug>/` is durable per-user state keyed by the repo slug: never staged, never committed, never overwritten when it already exists — and its mere existence is what arms the self-gating review hook.
-- **The personal profile is a separate per-user skill.** Flow B writes a USER-SCOPE `operator-profile` skill to `~/.claude/skills/`, never committed, always preloaded by name via the mirrored `skills:` list — shared with `/orchestrator:onboard`, so its rendering stays identical from either entry point, and graceful (skipped with a debug warning) when the user never created it.
+- **The personal profile is a separate per-user skill.** Flow B writes a USER-SCOPE `operator-profile` skill to `~/.claude/skills/`, never committed, always preloaded by name via the mirrored `skills:` list — its rendering stays neutral, so any onboarding command that writes it produces the same file, and graceful (skipped with a debug warning) when the user never created it.
 - **No hardcoding.** Behavior, skills, and the body sentence are always read live from the installed advisor executant (§2); only identity and the `## Project profile` block are personalized.
 - **The skill writes directly.** The executant IS the writer, so there is no delegation and no subagent hop — every write and the commit happen here.
 - **Re-runnable with a first-question gate.** An existing executant → Keep as-is (skip the project interview, still arm the ledger and personalize) or Reconfigure (rewrite the committed file in place).

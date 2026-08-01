@@ -50,7 +50,7 @@ This skill owns the interviews, sourcing, name resolution, and rendering. All fi
 
 Find any orchestrator this skill previously committed to the repo:
 
-- `Glob` `.claude/agents/*.md`; `Read` each and select those whose body contains a `## Project profile` block AND whose frontmatter `skills:` list does **not** contain `advisor:executant`. The exclusion is required: a repo can also hold an `/advisor:onboard` wrapper, which carries a `## Project profile` block too — the mirrored `skills:` list is what tells the two apart, and an advisor wrapper must never be selected here. Excluding the advisor signature rather than requiring the current `orchestrator:orchestrator` one keeps wrappers generated under an earlier plugin namespace (e.g. `core:orchestrator`) detectable.
+- `Glob` `.claude/agents/*.md`; `Read` each and select those whose body contains a `## Project profile` block AND whose frontmatter `skills:` list contains an entry whose **bare name** (the part after the colon) is `orchestrator` — this skill's own contract skill, as captured live in §2. Match the bare name, **not** the full `namespace:name`: that keeps wrappers generated under an earlier plugin namespace (e.g. `core:orchestrator`) detectable. Other onboarding commands can write their own profile-carrying wrappers into the same directory; requiring this skill's own contract skill in the mirrored `skills:` list is what keeps them out.
 - If **exactly one** → that is the existing project orchestrator; capture its `name:` and its `## Project profile` block.
 - If **multiple** → ask via `AskUserQuestion` which one is the target.
 - If **none** → this is a fresh creation; skip the §4 gate and go straight to the PROJECT interview (§5).
@@ -148,8 +148,8 @@ Produced **only** when §6 ran with personalize=**yes** AND the user chose **Rec
 ```
 ---
 name: operator-profile
-description: "The operator's personal working profile — role, seniority, stack, tone, language, and output preferences. Preloaded into orchestrators to shape HOW Claude communicates and decides for this user."
-when_to_use: "Auto-loaded as background context whenever an orchestrator or executant agent runs; not a manual command. Re-run /orchestrator:onboard or /advisor:onboard and choose to personalize to (re)generate it."
+description: "The operator's personal working profile — role, seniority, stack, tone, language, and output preferences. Preloaded into agents to shape HOW Claude communicates and decides for this user."
+when_to_use: "Auto-loaded as background context whenever an agent that preloads it runs; not a manual command. Re-run this project's onboarding command and choose to personalize to (re)generate it."
 user-invocable: false
 ---
 
