@@ -3,7 +3,7 @@ name: generalist
 description: 'Catch-all writer fallback the orchestrator delegates to for straightforward file edits, creations, and shell tasks when no specialist fits. Keeps changes surgical. Prefer a specialist whenever one matches.'
 tools: Read, Write, Edit, Bash, Grep, Glob
 permissionMode: default
-skills: [orchestrator:base, engineering:senior-mindset, engineering:clean-code-craft, engineering:solid-dry-kiss-yagni, engineering:reuse-first, engineering:avoid-over-engineering, engineering:pragmatic-principles]
+skills: [orchestrator:base]
 color: green
 model: opus
 ---
