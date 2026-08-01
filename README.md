@@ -15,7 +15,6 @@ Markdown and JSON artifacts, plus a few shell hook scripts and `.workflow.js` fa
 Restart Claude Code after installing for the new slash commands and subagents to appear.
 
 ```bash
-/plugin install core@shoto
 /plugin install git@shoto
 /plugin install review@shoto
 
@@ -24,6 +23,8 @@ Restart Claude Code after installing for the new slash commands and subagents to
 # or
 /plugin install advisor@shoto
 ```
+
+`core` is a hard dependency of every other plugin and installs automatically — you never install it by hand.
 
 ## Plugins
 
@@ -116,7 +117,7 @@ Selection rules: match on `description` / `when_to_use`; when several fit, pick 
 | `orchestrator` | Default agent and coordinator. `disallowedTools: Write, Edit, MultiEdit, NotebookEdit`, `model: opus`. Never auto-delegated — it is wired as the default, not invoked by another agent. |
 | `generalist` | Catch-all fallback **writer**. `tools: Read, Write, Edit, Bash, Grep, Glob`, `model: opus`. Restates the task and its success check, searches for existing patterns before writing, makes the smallest surgical change, and is instructed to STOP and name the missing capability when a task needs real expertise instead of forcing it through. Also the executor `/orchestrator:onboard` delegates all of its own writes to. |
 
-`generalist` preloads six `engineering:*` craft skills that ship in the `engineering` plugin of [shoto-subagents](https://github.com/shoto290/shoto-subagents). They are **not** auto-installed — the orchestrator manifest declares no dependencies. Without them the generalist simply loses those skills (skills load by name and are skipped gracefully). Installing `engineering@shoto-subagents` alongside is recommended.
+`generalist` preloads only `orchestrator:base`, so it carries the marketplace's shared conventions and nothing out-of-marketplace.
 
 ### Setup
 
@@ -337,4 +338,4 @@ Subagents: `review-diff` (`opus`), `review-comments` (`sonnet`), `review-fix` (`
 /plugin install <plugin>@shoto-subagents
 ```
 
-They are ordinary subagents, so the orchestrator routes to them by `description` match with no wiring step — installing one *is* the integration. `orchestrator:generalist` preloads six `engineering:*` skills, so install `engineering@shoto-subagents` alongside **orchestrator**. Advisor does not use them: its four craft skills ship in `advisor` itself.
+They are ordinary subagents, so the orchestrator routes to them by `description` match with no wiring step — installing one *is* the integration. Advisor does not use them: its four craft skills ship in `advisor` itself.
