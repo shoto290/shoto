@@ -34,27 +34,34 @@ A mermaid canvas showing what the change did to the tree. Reviewer-facing — th
 Include it when the change adds, moves, or removes a module, or crosses a boundary. Skip it for a single-file edit, a copy change, a version bump, or a config tweak — never draw a canvas for one fact.
 
 - Fenced `mermaid` block using `flowchart LR`.
+- Use `TD` instead when the tree is deeper than it is wide.
+- Shape carries type, orthogonal to color: `([entry point])`, `[(datastore)]`, `{{external service}}`, plain rectangle for the rest.
+- Grey unchanged context nodes with a `ctx` class so the delta stands out. Include them only when they orient the reviewer.
 - One `subgraph` per top-level directory.
 - Prefix every changed node with `+`, `~`, or `-`. Show the delta only, never the whole repo.
 - Solid arrow for a live dependency, dotted for one that was removed.
 - Quote every node label, as in `P["login/page.tsx"]`, so slashes and dots do not break the parse.
 - Cap it at roughly twelve nodes; past that collapse a subsystem into one node.
+- Color the four change states with `classDef` — added, changed, removed, blocker. Never decorative; the color reinforces the `+` `~` `-` prefix rather than replacing it.
 
 Example:
 
 ```mermaid
 flowchart LR
-  subgraph API["api/"]
-    AUTH["+ auth/"]
-    MW["~ middleware/session.ts"]
-    LEG["- cart/legacy-pay.ts"]
-  end
-  subgraph WEB["web/"]
-    LOGIN["+ app/login/page.tsx"]
-  end
-  LOGIN --> AUTH
-  AUTH --> MW
-  MW -.->|removed| LEG
+  U(["user"]) --> LOGIN["+ app/login/page.tsx"]
+  LOGIN --> AUTH["+ auth/<br/>argon2id"]
+  AUTH --> MW["~ middleware/session.ts"]
+  AUTH --> DB[("users · pg")]
+  MW -.->|removed| LEG["- cart/legacy-pay.ts"]
+
+  classDef add fill:#166534,stroke:#22c55e,color:#fff
+  classDef chg fill:#854d0e,stroke:#eab308,color:#fff
+  classDef del fill:#450a0a,stroke:#991b1b,color:#d4d4d4
+  classDef ctx fill:#27272a,stroke:#52525b,color:#a1a1aa
+  class AUTH,LOGIN add
+  class MW chg
+  class LEG del
+  class U,DB ctx
 ```
 
 ## Optional — Test plan (opt-in)

@@ -35,13 +35,26 @@ Keep tables under about twelve rows and aggregate the tail. Columns hold data, n
 
 When the answer is about how parts connect or how the tree changed, draw it as a fenced `mermaid` block using `flowchart LR`. NEVER fall back to an ASCII directory tree for structure.
 
+- `flowchart LR` by default; `TD` when the graph is deeper than it is wide.
 - One `subgraph` per boundary — layer for flows (frontend, api, data, external), top-level directory for structure.
 - Label every edge with what crosses it, not with a verb: `creds`, `access 15m`, `httpOnly cookie`.
 - Solid arrow for the live path, dotted for the secondary, deferred, or removed one.
 - Mark the broken, missing, or deferred node inside the diagram. NEVER leave a failure to the prose alone.
 - Prefix every changed node with `+`, `~`, or `-`. Show the delta only, never the whole repo.
+- Shape carries type, orthogonal to color: `([entry point])`, `[(datastore)]`, `{{external service}}`, plain rectangle for the rest.
+- Add one metric as a second label line with `<br/>`, as in `["+ payments/<br/>idempotent"]`, instead of a separate table.
 - Quote every node label, as in `P["login/page.tsx"]`, so slashes and dots do not break the parse.
 - Cap it at roughly twelve nodes; past that collapse a subsystem into one node.
+
+Color only these states, never decoratively. Color reinforces the `+` `~` `-` prefix; it NEVER replaces it. Grey an unchanged node with `ctx` when it orients the reader, so the delta stands out. Opaque fills with an explicit text color stay readable in light and dark, and in GitHub PR bodies.
+
+```
+classDef add fill:#166534,stroke:#22c55e,color:#fff
+classDef chg fill:#854d0e,stroke:#eab308,color:#fff
+classDef del fill:#450a0a,stroke:#991b1b,color:#d4d4d4
+classDef blocker fill:#b91c1c,stroke:#fca5a5,color:#fff,stroke-width:3px
+classDef ctx fill:#27272a,stroke:#52525b,color:#a1a1aa
+```
 
 Linear sequences go in the arrow flow, not a canvas.
 
