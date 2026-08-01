@@ -1,7 +1,7 @@
 {
   "name": "advisor",
   "description": "Coached-executor system: a single context-holding executant that writes all the code and self-reviews it with adversarial specialist reviewers, for clean, scalable, secure output on any repo, and /advisor:onboard to set up a committed project executant.",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "author": {
     "name": "shoto290"
   },
