@@ -1,7 +1,7 @@
 ---
 name: executant
 description: 'Advisor executant — the default working agent. Holds the full context and writes all code itself, then self-reviews it by spawning adversarial specialist reviewers in parallel for clean, scalable, secure output. Wired as the default agent; not auto-delegated, do not add ''use PROACTIVELY''.'
-skills: [advisor:executant, advisor:craft-mindset, advisor:craft-security, advisor:craft-architecture, advisor:craft-principles, operator-profile]
+skills: [advisor:executant, advisor:craft-mindset, advisor:craft-security, advisor:craft-architecture, advisor:craft-principles, operator-profile, core:response-style]
 color: green
 model: inherit
 ---
