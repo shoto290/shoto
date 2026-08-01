@@ -8,13 +8,13 @@ allowed-tools: [AskUserQuestion, Agent, Workflow, TaskOutput, Read, Glob, Grep, 
 
 # Evolve
 
-`evolve` plans and applies a coordinated set of skill/subagent/hook/MCP changes for a capability. It **plans inline** in the main thread by spawning read-only subagents (inventory + planner), runs the approval gate, then **applies** — inline via subagents for small plans, or via the bundled `evolve-apply` workflow for big plans. The approval gate lives here, in the main thread, **between** planning and applying.
+`evolve` plans and applies a coordinated set of skill/subagent/hook/MCP changes for a capability. It **plans inline** in the main thread by spawning read-only subagents (repo scanners + planner), runs the approval gate, then **applies** — inline via subagents for small plans, or via the bundled `evolve-apply` workflow for big plans. The approval gate lives here, in the main thread, **between** planning and applying.
 
 ```
 /evolve
  ├─ clarify capability + target (AskUserQuestion)
  ├─ PLAN inline (main thread):
- │    ├─ spawn read-only inventory:inventory-context subagents in PARALLEL (one per surface)
+ │    ├─ spawn read-only general-purpose scan subagents in PARALLEL (one per surface)
  │    └─ spawn ONE planner subagent → fenced JSON PLAN   (read-only)
  ├─ render plan + APPROVE / EDIT / CANCEL gate (AskUserQuestion)
  ├─ APPLY (size-gated):
@@ -55,43 +55,43 @@ Weave the answers into one refined `capability` string and a `surfaces` list.
 
 Plan inline in the main thread by spawning read-only subagents. **No files are written during planning.**
 
-### Step a — Inventory (parallel, read-only)
+### Step a — Scan (parallel, read-only)
 
-Spawn read-only `inventory:inventory-context` subagents **in parallel** — issue multiple `Agent` calls in ONE message, one per surface in scope. Each subagent maps its surface under `targetRoot` and returns a read-only anchored contract. **None of them may modify any file.** Use these prompt strings, substituting `targetRoot`:
+Spawn read-only `general-purpose` scan subagents **in parallel** — issue multiple `Agent` calls in ONE message, one per surface in scope. Each subagent maps its surface under `targetRoot` and returns a read-only anchored contract. **None of them may modify any file.** Use these prompt strings, substituting `targetRoot`:
 
-- **skills** — `Agent({ agentType: "inventory:inventory-context", … })`:
-  > Read-only inventory. Do NOT modify any file.
+- **skills** — `Agent({ agentType: "general-purpose", … })`:
+  > Read-only scan. Do NOT modify any file.
   >
   > Scan every skill under `<targetRoot>` (skills/*/SKILL.md). For each, read the YAML frontmatter and capture: name, description, argument-hint, disable-model-invocation, user-invocable, context, agent. Note whether the body implements a create/update flow (look for "detect intent", "create flow", "update flow"). List description overlaps that could conflict with new auto-triggering artifacts.
   >
   > Return surface="skills" with one item per skill (name, path, summary, detail) and any constraints. Structured output only.
 
-- **subagents** — `Agent({ agentType: "inventory:inventory-context", … })`:
-  > Read-only inventory. Do NOT modify any file.
+- **subagents** — `Agent({ agentType: "general-purpose", … })`:
+  > Read-only scan. Do NOT modify any file.
   >
   > Scan every subagent under `<targetRoot>` (agents/*.md). For each, read the frontmatter and capture: name, description, tools, model. Flag whether each description is broad (auto-trigger risk) or narrow (focused).
   >
   > Return surface="subagents" with one item per agent (name, path, summary, detail) and any constraints. Structured output only.
 
-- **hooks** — `Agent({ agentType: "inventory:inventory-context", … })`:
-  > Read-only inventory. Do NOT modify any file.
+- **hooks** — `Agent({ agentType: "general-purpose", … })`:
+  > Read-only scan. Do NOT modify any file.
   >
   > Read settings.json and settings.local.json under `<targetRoot>` (and .claude/ if present). Parse the hooks block: for each hook capture event, matcher, type, and command/prompt. List permissions.allow and permissions.deny entries as constraints, and flag any global config that would conflict with the requested capability.
   >
   > Return surface="hooks" with one item per hook (name, path, summary, detail) and constraints holding the permission entries. Structured output only.
 
-- **plugins** — `Agent({ agentType: "inventory:inventory-context", … })`:
-  > Read-only inventory. Do NOT modify any file.
+- **plugins** — `Agent({ agentType: "general-purpose", … })`:
+  > Read-only scan. Do NOT modify any file.
   >
   > Scan plugin manifests under `<targetRoot>` (.claude-plugin/plugin.json) and any MCP config (.mcp.json, mcpServers in plugin.json or settings). For each plugin/MCP server capture its name, path, and what it provides.
   >
   > Return surface="plugins" with one item per plugin/MCP server (name, path, summary, detail) and any constraints. Structured output only.
 
-Collect every returned inventory contract.
+Collect every returned surface contract.
 
 ### Step b — Plan (one planner subagent)
 
-Spawn ONE planner subagent via `Agent({ agentType: "general-purpose", … })`, passing `capability` + `targetRoot` + `repoType` + `surfaces` + the gathered inventory contracts, with the merged classify + plan instructions below. It must return **ONLY** a fenced ```json block matching the PLAN shape — no prose around it.
+Spawn ONE planner subagent via `Agent({ agentType: "general-purpose", … })`, passing `capability` + `targetRoot` + `repoType` + `surfaces` + the gathered surface contracts, with the merged classify + plan instructions below. It must return **ONLY** a fenced ```json block matching the PLAN shape — no prose around it.
 
 > ## Planner
 >
@@ -101,8 +101,8 @@ Spawn ONE planner subagent via `Agent({ agentType: "general-purpose", … })`, p
 >
 > Surfaces in scope: `<surfaces joined by ", ">`.
 >
-> Existing inventory (read-only):
-> `<JSON of gathered inventory contracts>`
+> Existing surfaces (read-only):
+> `<JSON of gathered surface contracts>`
 >
 > First, classify the capability into one or more artifact entries using these rules:
 > - Reusable workflow with a /name entry point → skill.
@@ -212,7 +212,7 @@ Render the REPORT:
 
 ## Critical principles
 
-- **Owns inline planning and the apply size-gate.** This skill runs inventory + planning inline via read-only subagents and decides the apply route by executable-entry count. Only big-plan execution is delegated to the `evolve-apply` workflow. Clarification, the approval gate, and rendering stay here.
+- **Owns inline planning and the apply size-gate.** This skill runs surface scanning + planning inline via read-only subagents and decides the apply route by executable-entry count. Only big-plan execution is delegated to the `evolve-apply` workflow. Clarification, the approval gate, and rendering stay here.
 - **The approval gate lives in the main thread** between planning and applying.
 - **Read-only plan, then apply.** Cancelling after the plan leaves the repo untouched.
 - **Defer what an agent cannot wire.** MCP servers and secret-dependent hooks come back as `deferred` for `core:mcp` / `core:hooks` in the main thread — apply never attempts them.
