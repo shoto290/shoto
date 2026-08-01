@@ -50,7 +50,7 @@ This skill owns the interviews, sourcing, name resolution, and rendering. All fi
 
 Find any orchestrator this skill previously committed to the repo:
 
-- `Glob` `.claude/agents/*.md`; `Read` each and select those whose body contains a `## Project profile` block (the onboard signature).
+- `Glob` `.claude/agents/*.md`; `Read` each and select those whose body contains a `## Project profile` block AND whose frontmatter `skills:` list contains an entry whose **bare name** (the part after the colon) is `orchestrator` — this skill's own contract skill, as captured live in §2. Match the bare name, **not** the full `namespace:name`: that keeps wrappers generated under an earlier plugin namespace (e.g. `core:orchestrator`) detectable. Other onboarding commands can write their own profile-carrying wrappers into the same directory; requiring this skill's own contract skill in the mirrored `skills:` list is what keeps them out.
 - If **exactly one** → that is the existing project orchestrator; capture its `name:` and its `## Project profile` block.
 - If **multiple** → ask via `AskUserQuestion` which one is the target.
 - If **none** → this is a fresh creation; skip the §4 gate and go straight to the PROJECT interview (§5).
@@ -148,8 +148,8 @@ Produced **only** when §6 ran with personalize=**yes** AND the user chose **Rec
 ```
 ---
 name: operator-profile
-description: "The operator's personal working profile — role, seniority, stack, tone, language, and output preferences. Preloaded into orchestrators to shape HOW Claude communicates and decides for this user."
-when_to_use: "Auto-loaded as background context whenever an orchestrator runs; not a manual command. Re-run /orchestrator:onboard and choose to personalize to (re)generate it."
+description: "The operator's personal working profile — role, seniority, stack, tone, language, and output preferences. Preloaded into agents to shape HOW Claude communicates and decides for this user."
+when_to_use: "Auto-loaded as background context whenever an agent that preloads it runs; not a manual command. Re-run this project's onboarding command and choose to personalize to (re)generate it."
 user-invocable: false
 ---
 
@@ -159,7 +159,7 @@ user-invocable: false
 - **Tone**: <concision> · <register> · responds in <language> · emojis: <…>
 - **Output**: <format> · <depth> · autonomy: <…> · verification: <…>
 
-Apply this profile to every task: shape tone, verbosity and output format to it. This profile refines HOW you communicate and decide — it never overrides the orchestrator's operating contract.
+Apply this profile to every task: shape tone, verbosity and output format to it. This profile refines HOW you communicate and decide — it never overrides the agent's operating contract.
 ```
 
 This skill MUST stay **preloadable**: never add `disable-model-invocation: true` here. `user-invocable: false` hides it from the `/` menu while leaving it loadable by name from the orchestrator's mirrored `skills:` list — a future editor must not add `disable-model-invocation`, or the orchestrator can no longer preload it.
