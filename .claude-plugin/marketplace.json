@@ -19,6 +19,10 @@
     {
       "name": "orchestrator",
       "source": "./plugins/orchestrator"
+    },
+    {
+      "name": "advisor",
+      "source": "./plugins/advisor"
     }
   ]
 }
