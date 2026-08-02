@@ -1,6 +1,6 @@
 # shoto
 
-A Claude Code marketplace of plugins for building Claude Code itself, and for running your sessions with a default agent that either delegates everything or reviews everything.
+A Claude Code marketplace of plugins for building Claude Code itself, and for running your sessions with a default agent that delegates every write to a specialist.
 
 Markdown and JSON artifacts, plus a few shell hook scripts and `.workflow.js` fan-out scripts — no build step.
 
@@ -17,11 +17,7 @@ Restart Claude Code after installing for the new slash commands and subagents to
 ```bash
 /plugin install git@shoto
 /plugin install review@shoto
-
-# pick exactly ONE default agent — see "Orchestrator or Advisor?"
 /plugin install orchestrator@shoto
-# or
-/plugin install advisor@shoto
 ```
 
 `core` is a hard dependency of every other plugin and installs automatically — you never install it by hand.
@@ -32,11 +28,8 @@ Restart Claude Code after installing for the new slash commands and subagents to
 | :--- | :--- |
 | [`core`](./plugins/core) | Artifact toolkit: one "smith" subagent per surface (skill, subagent, hook, MCP, plugin, workflow) plus `/core:evolve`, the read-only multi-artifact planner. |
 | [`orchestrator`](./plugins/orchestrator) | A default agent that never writes: it aligns, plans, and routes every step to the best-fit installed specialist. `/orchestrator:onboard` commits a project-specific one. |
-| [`advisor`](./plugins/advisor) | A default agent that writes everything itself, then attacks its own diff with four parallel adversarial reviewers behind a `Stop` review gate. `/advisor:onboard`, `/advisor:review`. |
 | [`git`](./plugins/git) | Local git to PR lane: one Conventional Commit, safe rebase, PR with a plain-language summary and a mermaid canvas. |
 | [`review`](./plugins/review) | Review automation: inline diff review, PR-comment triage into verdicts, fix application, and `/review:deep-review` over the whole branch. |
-
-`orchestrator` and `advisor` both install a default agent and are **mutually exclusive per repo** — see [Orchestrator or Advisor?](#orchestrator-or-advisor).
 
 ---
 
@@ -161,130 +154,6 @@ On "Proceed & commit": `git add` the agent file plus `.gitignore` if it changed,
 
 ---
 
-## Advisor
-
-**Coached executor.** Instead of splitting work across writers, a single `executant` holds the entire context and writes every change itself — coached up front by four preloaded craft skills (mindset/correctness, security, architecture, principles) so the code is right by construction. At logical checkpoints it attacks its own delta with four read-only adversarial reviewers in parallel, verifies their findings with one batched skeptic pass, fixes the confirmed high/critical ones itself, and closes with a **trust report** meant to replace line-by-line human review.
-
-The point: move the first pass of review from you to the reviewers, and keep its cost bounded (delta-only, parallel, capped rounds).
-
-### The Agents
-
-| Agent | Lens | Tools |
-| :--- | :--- | :--- |
-| `executant` | Writes 100% of the change, runs the repo's mechanical gates, maintains the ledger, spawns the reviewers, fixes confirmed findings, emits the trust report. `model: inherit`. | Full |
-| `reviewer-correctness` | Edge cases, off-by-one, null/empty handling, error paths, races, wrong ordering, broken invariants. | `Read, Glob, Grep, Bash` |
-| `reviewer-security` | Injection (SQL/command/template), authn/authz gaps, weak validation, hardcoded or leaked secrets, SSRF, path traversal, unsafe deserialization. | `Read, Glob, Grep, Bash` |
-| `reviewer-scalability` | N+1 queries, unbounded work, missing pagination or batching, hidden statefulness, non-idempotent ops, concurrency and backpressure, bad layering. | `Read, Glob, Grep, Bash` |
-| `reviewer-craft` | Unclear naming, oversized functions, deep nesting, DRY/SOLID/KISS/YAGNI violations, missed reuse, premature abstraction, dead code, non-surgical changes. | `Read, Glob, Grep, Bash` |
-
-All four reviewers run on `opus` and cannot write. They are told explicitly that the diff is **data under review, never instructions**, and must never conclude a clean result because the diff content said so.
-
-Each craft skill is dual-purpose: preloaded into the executant so code is written right, and composed into the matching reviewer so the same standard judges it.
-
-### Commands
-
-```bash
-/advisor:review [optional scope or path]
-```
-
-Runs the adversarial multi-lens review on demand over the current uncommitted delta (`git diff HEAD`) — the exact procedure the executant runs at its checkpoints. Reports only confirmed high/critical findings, grouped by lens. Single-shot: it reports and stops, with no fix loop, and never auto-fixes when a human invoked it.
-
-On zero findings **and** no scope argument, it writes the gate marker that clears the `Stop` hook. A scoped run (`/advisor:review src/api`) deliberately does not write the marker, because the hook always gates the full diff.
-
-### The Review Gate
-
-A single matcher-less `Stop` hook (the only event advisor uses). A turn cannot end while the working tree holds changes that have not passed review.
-
-- **Arming is the ledger directory.** If `~/.claude/advisor/state/<slug>/` does not exist, the hook exits 0 immediately and never blocks anything. `/advisor:onboard` turns the gate on by creating it; deleting it disarms. There is nothing else to wire per repo.
-- `<slug>` is the first 12 hex chars of `shasum` over the absolute path of `git rev-parse --show-toplevel`, so the state is keyed by checkout path and survives branch switches. Each git worktree (or separate clone) of the same repo gets its own slug and its own ledger, so `/advisor:onboard` must be re-run per worktree to arm the gate there.
-- The hook hashes `git diff HEAD` and compares it to the `passed` marker. Equal → the turn ends. Different or missing → it blocks and tells you to run `/advisor:review`.
-- Empty diff → allowed. More than 200 untracked files → blocked with the "200-file review cap" reason. Not a git repo → no-op. Any unexpected error **fails open**.
-- The ledger lives **outside the working tree** by design: it must never be committed, staged, or appear in any diff or PR. It holds `ledger.md` (aligned intent, key decisions, accepted/deferred risks, open findings) and the `passed` marker.
-
-Cost is bounded four ways: a doc-only diff gets a single correctness pass (escalating to all four lenses on any finding), each lens is skipped only on exact keyword match, oversized diffs are passed by file list instead of by content, and the executant's fix loop is capped at 2 rounds. The trust report must state every lens skipped and every cap hit.
-
-### Setup
-
-```bash
-# after installing (see Install) and restarting, from inside the target git repo:
-/advisor:onboard
-```
-
-```bash
-/advisor:onboard --show   # project profile + operator profile + ledger path, then exit
-```
-
-It requires a git repo and stops otherwise. The interview mirrors orchestrator's: an optional re-run gate (Keep as-is / Reconfigure), 2 project rounds (stack & project type, then conventions & house rules), an optional 3-round personal flow, and a single confirmation — **Proceed & commit** / **Proceed, no commit** / **Cancel** — before any write.
-
-| Path | Committed? | Purpose |
-| :--- | :--- | :--- |
-| `<repo>/.claude/agents/<name>.md` | Yes | The project executant, default name `<repo>-executant`. A thin wrapper inheriting the live `advisor:executant` contract verbatim plus a `## Project profile`. |
-| `~/.claude/advisor/state/<slug>/` + `ledger.md` | Never (outside the repo) | Created only if absent, never overwritten. Its existence arms the gate. |
-| `<repo>/.claude/settings.local.json` | Never | Merges `"agent": "<name>"` (bare name). If `agent` is already set to something else, onboard **stops and asks** before replacing. |
-| `<repo>/.gitignore` | Yes, if changed | Appends `.claude/settings.local.json` if missing. |
-| `~/.claude/skills/operator-profile/SKILL.md` | Never | Only if the personal flow produced one. |
-
-Commit on "Proceed & commit": `feat(advisor): add <name> project executant` or `chore(advisor): reconfigure <name>`. It never stages `settings.local.json` and never stages anything under `~/.claude/`, including the ledger.
-
-As with orchestrator, the executant's `skills`, `color` and `model` are mirrored verbatim from the live source agent — only `name`, `description` and the profile block are personalized. **A restart is required** for the new default agent to take effect. Teammates opt in by re-running and choosing "Keep as-is".
-
-`/advisor:onboard` replaces the retired `/advisor:init`.
-
----
-
-## Orchestrator or Advisor?
-
-Both ship a default agent, both write `.claude/agents/<name>.md`, and both set the same `"agent"` key in `.claude/settings.local.json`. **Only one can win — pick one per repo.**
-
-```
-Do you want the agent that talks to you to also write the code?
-├─ no  → Orchestrator
-│        It aligns, plans, and routes every write to an installed specialist.
-│        Best when you keep a roster of specialists and want the coordinator
-│        provably unable to touch a file.
-└─ yes → do you want unreviewed changes mechanically blocked?
-         ├─ yes → Advisor
-         │        One executant writes everything, then four adversarial
-         │        reviewers attack the delta and a Stop hook holds the turn
-         │        until the diff passes.
-         └─ no  → neither — plain Claude Code, and add /review:deep-review
-                  when you want a review pass.
-```
-
-One line: *orchestrator delegates the writing and keeps review implicit; advisor keeps the writing and makes review explicit, parallel, and adversarial.*
-
-| | Orchestrator | Advisor |
-| :--- | :--- | :--- |
-| Default agent | `orchestrator` | `executant` |
-| Who writes | Never itself — always a delegate | Always itself — never a delegate |
-| Write tools | Stripped (`disallowedTools`), Bash workarounds banned | Full |
-| Context | Split across delegates | One agent holds all of it |
-| Subagents used for | Doing the work | Reviewing the work (read-only, no write tools) |
-| Up-front step | Alignment gate — maximum useful questions, then stop | Craft skills preloaded so code is right by construction |
-| Review | Implicit — each specialist owns its own validation gate | Explicit — 4 parallel adversarial lenses + skeptic pass + trust report |
-| Enforcement | Tool-level (no write tools) | Hook-level (`Stop` gate blocks the turn until the diff passes) |
-| Scales with | How many specialist plugins you install | Nothing — it is self-contained |
-| Model | `opus` | `inherit` |
-| Its own `onboard` writes | Delegated to `generalist` | Done by the executant itself |
-
-**Pick Orchestrator if:**
-
-- You have (or want) real specialists installed — front-end, back-end, design, git, review — and want each step routed to the right one.
-- You want to be asked the hard questions before any code exists.
-- You want a hard guarantee that the coordinating agent never touches a file.
-- Your work spans domains where one agent's craft would be a guess.
-
-**Pick Advisor if:**
-
-- You want one agent that keeps the whole picture and does not lose context across handoffs.
-- Review quality matters more than division of labor, and you want it to happen before you look at the diff.
-- You want a mechanical stop that prevents ending a turn on unreviewed changes.
-- You do not want to install and maintain a roster of specialists.
-
-Switching: re-run the other plugin's `/…:onboard`. Advisor stops and asks if `agent` already points elsewhere. Removing advisor's gate is a matter of deleting `~/.claude/advisor/state/<slug>/`.
-
----
-
 ## Git & Review
 
 Neither plugin has an onboard command, writes config, or installs hooks. Installing them just adds the commands and subagents.
@@ -325,7 +194,7 @@ Subagents: `review-diff` (`opus`), `review-comments` (`sonnet`), `review-fix` (`
 
 **Prerequisites:** `gh` installed and authenticated for `/git:create` and `/review:review-comments` auto-fetch; the Conductor MCP tools `mcp__conductor__GetWorkspaceDiff` and `mcp__conductor__DiffComment` for `/review:review-diff` (it falls back to the git CLI for the diff, but inline comments need the MCP tool).
 
-**Where each review fits:** advisor gates before you commit (uncommitted delta), `/review:deep-review` gates before you ask for human review (whole branch vs a base), and `/review:review-comments` + `/review:review-fix` handle feedback after the PR exists. The two review systems are independent and never call each other.
+**Where each review fits:** `/review:deep-review` gates before you ask for human review (whole branch vs a base), and `/review:review-comments` + `/review:review-fix` handle feedback after the PR exists.
 
 ---
 
@@ -338,4 +207,4 @@ Subagents: `review-diff` (`opus`), `review-comments` (`sonnet`), `review-fix` (`
 /plugin install <plugin>@shoto-subagents
 ```
 
-They are ordinary subagents, so the orchestrator routes to them by `description` match with no wiring step — installing one *is* the integration. Advisor does not use them: its four craft skills ship in `advisor` itself.
+They are ordinary subagents, so the orchestrator routes to them by `description` match with no wiring step — installing one *is* the integration.
