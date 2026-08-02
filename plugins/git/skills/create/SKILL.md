@@ -1,6 +1,7 @@
 ---
 name: create
 description: 'Opens a pull request and pushes the current branch.'
+when_to_use: 'The user asks to open a pull request or to push the current branch up for review.'
 argument-hint: '(none — operates on the current branch)'
 allowed-tools: Bash, Read
 ---
