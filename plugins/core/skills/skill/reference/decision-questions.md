@@ -142,7 +142,7 @@ See [slot-template.md](./slot-template.md) for the full slot reference.
 | Label | Implication | Recommended? |
 | :-- | :-- | :-- |
 | No | No `examples/` directory. Keeps the skill self-contained. | ✅ (default) |
-| Yes | Adds an `examples/` directory of sample expected outputs (e.g. `examples/create-output.md`). Loaded for format reference only. Anti-pattern: do NOT put prompt recipes, workflow patterns, or complete sample `SKILL.md` files here — those belong in `reference/`. |  |
+| Yes | Adds an `examples/` directory of sample expected outputs (e.g. `examples/create-output.md`), including complete sample `SKILL.md` files when the skill authors skills. Loaded for format reference only. Anti-pattern: do NOT put documentation, prompt recipes, or workflow patterns here — those belong in `reference/`. |  |
 
 See [slot-examples.md](./slot-examples.md) for the full slot reference.
 

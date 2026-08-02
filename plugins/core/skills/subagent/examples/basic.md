@@ -1,6 +1,6 @@
 ---
 name: my-agent
-description: <what this agent does + when Claude should delegate to it>
+description: <what this agent does + when Claude should delegate to it + "not for X — use Y instead" when a sibling overlaps>
 permissionMode: default
 skills: [core:base]
 color: blue

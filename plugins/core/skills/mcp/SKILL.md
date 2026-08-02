@@ -45,7 +45,7 @@ Map real repo signals to servers — never recommend a server for a service the 
 
 ### 1. Scan the repo for signals
 
-Scan the repo for these signals: dependency manifests (`package.json`, `pyproject.toml`, `go.mod`, …), framework/ORM usage, database drivers, the git remote host, IaC and container files (`docker-compose.yml`, K8s manifests, Terraform), and monitoring SDKs. To discover canonical mappings for other intents, invoke `core:skills-suggest`.
+Scan the repo for these signals: dependency manifests (`package.json`, `pyproject.toml`, `go.mod`, …), framework/ORM usage, database drivers, the git remote host, IaC and container files (`docker-compose.yml`, K8s manifests, Terraform), and monitoring SDKs.
 
 ### 2. Map signals to the catalog
 
@@ -134,5 +134,5 @@ If the user just wants to understand MCP, answer conceptually and **write nothin
 
 ## Reference
 
-- [reference/mcp-server-catalog.md](./reference/mcp-server-catalog.md) — signal → server catalog with one-line value statements and a detection-patterns table
-- [reference/transports-and-scopes.md](./reference/transports-and-scopes.md) — stdio/SSE/HTTP transports, the three scopes, team sharing, secrets-via-env, `claude --mcp-debug`
+- Read [reference/mcp-server-catalog.md](./reference/mcp-server-catalog.md) when recommending servers for a repo, to map detected signals to candidate servers with the detection-patterns table
+- Read [reference/transports-and-scopes.md](./reference/transports-and-scopes.md) when adding a server or debugging one that will not connect, to pick the transport and scope and get the team-sharing, secrets-via-env, and `claude --mcp-debug` steps

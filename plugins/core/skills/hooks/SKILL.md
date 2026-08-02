@@ -215,13 +215,13 @@ If the user is asking how hooks work rather than wiring one up, skip create/upda
 
 ## Reference
 
-- [reference/concepts.md](./reference/concepts.md) — what hooks are, why use them, where they fit vs skills/subagents/permissions
-- [reference/events.md](./reference/events.md) — catalog of every event, when it fires, whether `exit 2` blocks it
-- [reference/types.md](./reference/types.md) — `command`, `prompt`, `agent`, `http`, `mcp_tool` — fields, timeouts, trade-offs
-- [reference/matchers.md](./reference/matchers.md) — matcher semantics per event, `if` field, MCP tool patterns
-- [reference/io.md](./reference/io.md) — stdin schema, exit codes, JSON output, decision control table
-- [reference/locations.md](./reference/locations.md) — settings files, scopes, precedence, `disableAllHooks`
-- [reference/troubleshooting.md](./reference/troubleshooting.md) — hook not firing, parse errors, Stop block cap, debug log
+- Read [reference/concepts.md](./reference/concepts.md) when unsure a hook is the right tool at all, to compare it against skills, subagents, and permission rules before writing any config
+- Read [reference/events.md](./reference/events.md) when choosing which event a hook attaches to, to find the one that fires at the right moment and whether `exit 2` blocks it
+- Read [reference/types.md](./reference/types.md) when deciding between `command`, `prompt`, `agent`, `http`, and `mcp_tool`
+- Read [reference/matchers.md](./reference/matchers.md) when a hook must fire on only some occurrences of its event, to write the right `matcher`, `if` filter, or MCP tool pattern
+- Read [reference/io.md](./reference/io.md) when the hook needs to read tool input or steer what Claude does next, to get the stdin schema, exit codes, JSON output, and decision-control fields
+- Read [reference/locations.md](./reference/locations.md) when deciding which settings file holds the hook, to compare the scopes, their precedence, and `disableAllHooks`
+- Read [reference/troubleshooting.md](./reference/troubleshooting.md) when a configured hook never fires, errors, or duplicates
 
 ## Examples
 

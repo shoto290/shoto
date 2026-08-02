@@ -11,7 +11,7 @@ This catalog is consumed by [`subagent-smith`](../../../agents/subagent-smith.md
 **Question**: not asked via `AskUserQuestion`.
 **Multi-select**: n/a
 **Skip when**: always skipped as a question — applied as a validation step on the proposed name.
-**Validation rule**: lowercase letters and hyphens only (regex `^[a-z][a-z-]*$`); must start with a letter. The chosen `name` value becomes the identifier hooks receive as `agent_type` and the id used by `@agent-<name>`. Filename does **not** have to match `name:`, but by convention we keep them aligned (`<name>.md`).
+**Validation rule**: lowercase letters, digits, and hyphens only (regex `^[a-z][a-z0-9-]*$`); must start with a letter. The chosen `name` value becomes the identifier hooks receive as `agent_type` and the id used by `@agent-<name>`. Filename does **not** have to match `name:`, but by convention we keep them aligned (`<name>.md`).
 
 ### 2. Scope
 
@@ -34,19 +34,19 @@ This catalog is consumed by [`subagent-smith`](../../../agents/subagent-smith.md
 **Skip when**: always skipped.
 **Validation rule**: the agent must do **one specific job**. If the spec describes a generalist ("does everything for module X"), stop and propose splitting into focused subagents — description-based delegation fails on generalists.
 
-### 4. Description triggers
+### 4. Scope boundary
 
-**Question**: Should the description include an auto-delegation trigger phrase?
+**Question**: Which sibling agents does this one border, and where is the boundary?
 **Multi-select**: no
-**Skip when**: the user already wrote the description and an explicit trigger phrase is present.
+**Skip when**: no sibling agent in the target scope has an overlapping description.
 
 **Options**:
 
 | Label | Implication | Recommended? |
 | :-- | :-- | :-- |
-| None | The description states *what* and *when*, but Claude only delegates when the request strongly matches. Lowest risk of false-positive delegation. | ✅ (default) |
-| "Use proactively" | Adds an opt-in encouragement — Claude is more likely to delegate without being asked. Good for review / audit / cleanup agents. | |
-| "Use immediately after …" | Strongest trigger — Claude tries to delegate as soon as the named situation occurs (e.g. "use immediately after writing or modifying code"). | |
+| No overlap — omit the boundary clause | The description carries capability + situations only. Nothing to disambiguate, so nothing to add. | ✅ (default) |
+| Overlaps one sibling — append: `Not for X — use <agent> instead` | Names the one bordering agent, so the excluded case routes there instead of being guessed. Option label is built from the sibling actually found in scope. | |
+| Overlaps several — name each in one clause | A single trailing clause covering every border. Keeps the description at 1-2 sentences instead of an enumeration. | |
 
 ### 5. Tools strategy
 

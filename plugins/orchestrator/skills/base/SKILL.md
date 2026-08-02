@@ -82,15 +82,10 @@ Optional fields (`disable-model-invocation`, `allowed-tools`, `argument-hint`, �
 
 Skills compose by delegating to one another instead of re-implementing capabilities that already exist. When this skill needs a capability another skill provides, delegate via `Skill({ skill: "<name>", args: "<topic>" })`.
 
-To find the canonical skill for a free-form intent in the current context:
-
-- Invoke `orchestrator:skills-suggest` with a one-sentence description of what you need — it owns the canonical intent → skill map for the marketplace and returns the best-fit installed skill(s) with justification.
-- Invoke `orchestrator:skills-list` to see every skill installed in the current context, grouped by source (global, project, marketplace cache).
-
 Re-implementation duplicates logic, drifts over time, and bypasses the careful structure of the canonical skill. Do not re-implement.
 
 ## Reference
 
-- [reference/naming.md](./reference/naming.md) — kebab-case files and directories, `name:` must match path, headings in title case.
-- [reference/git-safety.md](./reference/git-safety.md) — destructive git operations that require explicit confirmation.
-- [reference/frontmatter.md](./reference/frontmatter.md) — YAML must parse; `name`, `description`, and `when_to_use` are mandatory for every skill.
+- Read [reference/naming.md](./reference/naming.md) when naming a file, a directory, or a `name:` field, to get the kebab-case rule and the path-matching requirement.
+- Read [reference/git-safety.md](./reference/git-safety.md) when a task reaches for force push, hard reset, branch delete, or `rm -rf`.
+- Read [reference/frontmatter.md](./reference/frontmatter.md) when writing or reviewing a frontmatter block.

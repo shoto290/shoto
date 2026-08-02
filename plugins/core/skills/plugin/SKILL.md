@@ -295,21 +295,21 @@ High-level steps (full version with the `hooks.json` `jq` example in [reference/
 
 ## Reference
 
-- [reference/manifest-schema.md](./reference/manifest-schema.md) — every `plugin.json` field including `userConfig`, `channels`, `dependencies`, `experimental.*`, and the unrecognized-fields rule.
-- [reference/structure.md](./reference/structure.md) — full plugin directory layout, path-behavior rules, single-skill plugin, `bin/`, `CLAUDE.md`.
-- [reference/distribution.md](./reference/distribution.md) — `marketplace.json` schema, version management, community submission.
-- [reference/migration.md](./reference/migration.md) — `.claude/` → plugin step-by-step with the `jq` hook example.
-- [reference/minimal-plugin.md](./reference/minimal-plugin.md) — complete `my-first-plugin` walkthrough.
-- [reference/env-vars.md](./reference/env-vars.md) — `${CLAUDE_PLUGIN_ROOT}` / `${CLAUDE_PLUGIN_DATA}` / `${CLAUDE_PROJECT_DIR}` substitution rules and mid-session update behavior.
-- [reference/persistent-data.md](./reference/persistent-data.md) — dependency-install pattern with `SessionStart` + `diff -q`, cleanup behavior.
-- [reference/scopes.md](./reference/scopes.md) — user / project / local / managed scopes.
-- [reference/caching.md](./reference/caching.md) — `~/.claude/plugins/cache`, version directories, 7-day orphan grace, symlink handling.
-- [reference/cli-commands.md](./reference/cli-commands.md) — every `claude plugin <subcommand>` with args and options.
-- [reference/user-config.md](./reference/user-config.md) — `userConfig` schema, substitution sites, sensitive-value storage.
-- [reference/channels.md](./reference/channels.md) — channel declarations bound to an MCP server.
-- [reference/dependencies.md](./reference/dependencies.md) — `dependencies` field, enable/disable behavior, auto-installed deps, prune.
-- [reference/themes.md](./reference/themes.md) — experimental color themes shipped via `experimental.themes`.
-- [reference/debugging.md](./reference/debugging.md) — `claude --debug`, common errors, hook/MCP troubleshooting, restart matrix.
+- Read [reference/manifest-schema.md](./reference/manifest-schema.md) when writing or editing `plugin.json`.
+- Read [reference/structure.md](./reference/structure.md) when laying out a plugin's directories or placing a component file.
+- Read [reference/distribution.md](./reference/distribution.md) when shipping a plugin to others, to get the `marketplace.json` schema, version management, and community submission steps.
+- Read [reference/migration.md](./reference/migration.md) when converting an existing `.claude/` directory into a plugin.
+- Read [reference/minimal-plugin.md](./reference/minimal-plugin.md) when building a first plugin from nothing.
+- Read [reference/env-vars.md](./reference/env-vars.md) when a path inside the plugin must be referenced from config or a command, to pick between `${CLAUDE_PLUGIN_ROOT}` / `${CLAUDE_PLUGIN_DATA}` / `${CLAUDE_PROJECT_DIR}` and know their substitution and mid-session update behavior.
+- Read [reference/persistent-data.md](./reference/persistent-data.md) when the plugin installs dependencies that must survive updates, to get the `SessionStart` + `diff -q` install pattern and cleanup behavior.
+- Read [reference/scopes.md](./reference/scopes.md) when deciding who should see an installed plugin.
+- Read [reference/caching.md](./reference/caching.md) when a plugin's files resolve to an unexpected path or a stale version, to understand `~/.claude/plugins/cache`, version directories, the 7-day orphan grace, and symlink handling.
+- Read [reference/cli-commands.md](./reference/cli-commands.md) when driving plugins from the terminal.
+- Read [reference/user-config.md](./reference/user-config.md) when the plugin needs a value from the user, to get the `userConfig` schema, its substitution sites, and sensitive-value storage.
+- Read [reference/channels.md](./reference/channels.md) when the plugin should inject messages from a chat service, to declare a channel bound to its MCP server.
+- Read [reference/dependencies.md](./reference/dependencies.md) when the plugin requires another plugin to work, to get the `dependencies` field, enable/disable behavior, auto-installed deps, and prune.
+- Read [reference/themes.md](./reference/themes.md) when shipping a color theme with the plugin, to get the experimental `experimental.themes` declaration and file shape.
+- Read [reference/debugging.md](./reference/debugging.md) when a plugin, hook, or MCP server does not load after install, to run `claude --debug`, match the error to its fix, and check the restart matrix.
 
 ## Examples
 

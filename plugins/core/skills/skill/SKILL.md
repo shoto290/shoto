@@ -210,8 +210,8 @@ See [reference/decision-questions.md](./reference/decision-questions.md) for the
 
 ## Slot References
 
-- [reference/slot-skill-md.md](./reference/slot-skill-md.md) — `SKILL.md` entry point: structure, body conventions, lifecycle
-- [reference/slot-template.md](./reference/slot-template.md) — `template.md`: single fill-in template
-- [reference/slot-examples.md](./reference/slot-examples.md) — `examples/`: sample expected outputs
-- [reference/slot-reference.md](./reference/slot-reference.md) — `reference.md` / `reference/`: on-demand detailed docs
-- [reference/slot-scripts.md](./reference/slot-scripts.md) — `scripts/`: executables invoked via `${CLAUDE_SKILL_DIR}`
+- Read [reference/slot-skill-md.md](./reference/slot-skill-md.md) when writing the `SKILL.md` entry point itself
+- Read [reference/slot-template.md](./reference/slot-template.md) when the skill fills in one recurring artifact, to decide whether a single `template.md` fits and how to link it
+- Read [reference/slot-examples.md](./reference/slot-examples.md) when the skill needs sample expected outputs, to get the `examples/` scope, file naming, and how Claude loads them
+- Read [reference/slot-reference.md](./reference/slot-reference.md) when the body carries detail that need not stay in context, to split it into `reference.md` / `reference/` with progressive disclosure
+- Read [reference/slot-scripts.md](./reference/slot-scripts.md) when the skill must execute code rather than describe it, to place it under `scripts/` with `${CLAUDE_SKILL_DIR}` and the required `allowed-tools`
