@@ -44,7 +44,7 @@ This skill owns the interviews, sourcing, name resolution, and rendering. All fi
 
 `Read` the matched file. From its **frontmatter**, capture the behavior-contract keys to mirror **verbatim** into the generated wrapper: `disallowedTools`, `skills`, `color`, and `model` only if it is present. From its **body**, capture the single-sentence operating instruction **verbatim** — the wrapper reuses it unchanged, before the profile block. The mirrored `skills:` list now carries `operator-profile` from upstream automatically, so the generated wrapper inherits the personal profile by name with no special-casing here.
 
-**Never hardcode the orchestrator's behavior or skills list.** Always read them live here so the generated wrapper tracks upstream changes to `orchestrator:orchestrator`. If no source matches, tell the user the `core` plugin must be installed and **stop** — there is nothing to inherit.
+**Never hardcode the orchestrator's behavior or skills list.** Always read them live here so the generated wrapper tracks upstream changes to `orchestrator:orchestrator`. If no source matches, tell the user the `orchestrator` plugin must be installed and **stop** — there is nothing to inherit.
 
 ## 3. Detect existing project orchestrator (re-run aware)
 
