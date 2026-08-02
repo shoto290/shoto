@@ -95,6 +95,8 @@ The write ban is enforced twice: the harness strips its write tools (`disallowed
 3. **Delegate** — every create/edit/restore *and its verification* (tests, build, lint, format) goes to the most specific installed specialist. The specialist owns its own validation gate.
 4. **Fall back** — `orchestrator:generalist` only when no specialist matches.
 
+Every prompt also passes through a bundled `UserPromptSubmit` hook that re-injects the `core:response-style` answer contract before Claude sees the turn, and the same script fires again on `SessionStart` with the `compact` matcher so the contract survives a compaction. The recap shape — verdict line, mermaid canvas, status table — is restated on every prompt instead of relying on it staying in context from earlier in the session. Set `SHOTO_RESPONSE_STYLE_CARD=0` to opt out of both injections.
+
 ### How It Finds Delegates
 
 There is no registry, no config file, no wiring step. The contract tells the orchestrator to scan the live lists already in its context — the Agent tool's subagents, the Skill tool's skills, the Workflow tool's workflows — name the capability the step needs, and route by `description` match. Verbatim: *"These lists reflect exactly what is installed right now and adapt to whatever plugins the user has, so never rely on a memorized or hardcoded roster."*
