@@ -1,6 +1,6 @@
 ---
 name: migration-reviewer
-description: Reviews database migration files for safety. Use immediately after a migration is written or edited.
+description: Reviews database migration files for safety. Delegate when a migration is written or edited and the user wants it checked before it runs — table locks, data loss, unbacked renames.
 permissionMode: default
 skills: [core:base]
 color: orange

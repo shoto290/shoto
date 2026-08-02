@@ -11,7 +11,7 @@ A **subagent** is a Markdown file with YAML frontmatter that defines a specializ
 
 ## Trigger-rich descriptions
 
-A subagent's `description` must (a) lead with the capability (what it does), (b) then name the concrete situations and contexts that should trigger delegation (the words a user would type or the state the repo is in), (c) add a disambiguating "not for X — use Y instead" clause whenever a sibling overlaps. Never use injunction keywords (`use PROACTIVELY`, `MUST`, `ALWAYS`, `IMPORTANT`) — they do not make delegation fire more reliably. Exemplar to imitate: `plugins/git/agents/git-flow.md` — "Delegate when shipping current work end-to-end through git: commit, rebase onto the default branch, then open a PR…" — capability first, scenario-grounded, zero injunction keywords.
+A subagent's `description` must (a) lead with the capability (what it does), (b) then name the concrete situations and contexts that should trigger delegation (the words a user would type or the state the repo is in), (c) add a disambiguating "not for X — use Y instead" clause whenever a sibling overlaps. Never use injunction keywords (`use PROACTIVELY`, `MUST`, `ALWAYS`, `IMPORTANT`) — they do not make delegation fire more reliably. Exemplar to imitate: `plugins/git/agents/git-flow.md` — "Delegate when shipping current work end-to-end through git: commit, rebase onto the default branch, then open a PR…" — capability first, scenario-grounded, zero injunction keywords. An agent wired as a session default is never auto-delegated, so its `description` carries no delegation-trigger wording at all.
 
 ## Preload safety
 
@@ -125,7 +125,7 @@ Emit all seven required fields (see [Required frontmatter](#required-frontmatter
 ```markdown
 ---
 name: <name>
-description: <what it does + when to delegate; use "proactively" / "use immediately" for auto-delegation triggers>
+description: <capability first — what it does; then the concrete situations that should trigger delegation; add "not for X — use Y instead" when a sibling overlaps>
 permissionMode: default
 skills: [core:base]
 color: <red | blue | green | yellow | purple | orange | pink | cyan>
@@ -224,7 +224,7 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 - **Seven fields are mandatory** — every create and update decides `name`, `description`, `permissionMode`, `skills`, `color`, `isolation`, `initialPrompt`. Never scaffold or edit a subagent without surfacing all seven. See [Required frontmatter](#required-frontmatter-this-marketplace).
 - **`core:base` is always preloaded** — `skills` lists `core:base` first (fully-qualified; resolves from any scope, requires the `core` plugin enabled). This applies on create and on update — add it if a target lacks it.
 - **One subagent, one job.** Description-based delegation only works when each agent's purpose is unambiguous. Generalist agents get picked for the wrong tasks.
-- **Description is the trigger.** State *what it does* AND *when to use it*. Add "use proactively" / "use immediately" for things that should fire automatically.
+- **Description is the trigger.** State *what it does* AND *when to use it*. Never use injunction keywords (`use PROACTIVELY`, `use immediately`, `MUST`, `ALWAYS`, `IMPORTANT`) — see [Trigger-rich descriptions](#trigger-rich-descriptions).
 - **Tools are blast radius.** Default-inherit gives the subagent everything the parent has, including MCP tools. Allowlist (`tools:`) is safer than denylist (`disallowedTools:`).
 - **`bypassPermissions` is dangerous.** It skips prompts including writes to `.git`, `.claude`, `.vscode`, `.idea`, `.husky`. Use only when you understand what the subagent does.
 - **CLAUDE.md and git status load** for every subagent except built-in `Explore` and `Plan`. You can't opt a custom subagent out.
@@ -243,12 +243,12 @@ If the user just wants to understand a concept, don't trigger create/update. Rou
 
 ## Reference
 
-- [reference/concepts.md](./reference/concepts.md) — what a subagent is, built-in agents, subagent vs skill vs main
-- [reference/frontmatter.md](./reference/frontmatter.md) — every YAML field, defaults, model resolution order
-- [reference/scopes.md](./reference/scopes.md) — file locations, precedence, plugins, `--agents` CLI flag
-- [reference/tools-and-permissions.md](./reference/tools-and-permissions.md) — `tools`, `disallowedTools`, `Agent(...)`, `permissionMode`, hook-based validation
-- [reference/context.md](./reference/context.md) — what loads at startup, `skills` preload, `mcpServers`, `memory`, resume, compaction
-- [reference/invocation.md](./reference/invocation.md) — automatic delegation, `@-mention`, `--agent`, foreground/background, fork mode, chaining
+- Read [reference/concepts.md](./reference/concepts.md) when unsure the work belongs in a subagent at all, to weigh subagent vs skill vs main conversation and check the built-in agents first
+- Read [reference/frontmatter.md](./reference/frontmatter.md) when writing or editing an agent's YAML block, to get every field, its default, and the model resolution order
+- Read [reference/scopes.md](./reference/scopes.md) when placing the agent file or when two agents share a name, to get the locations, precedence, plugin rules, and the `--agents` CLI flag
+- Read [reference/tools-and-permissions.md](./reference/tools-and-permissions.md) when restricting what the agent may do, to choose between `tools`, `disallowedTools`, `Agent(...)`, `permissionMode`, and hook-based validation
+- Read [reference/context.md](./reference/context.md) when deciding what the agent holds at startup and across turns, to configure `skills` preload, `mcpServers`, `memory`, resume, and compaction
+- Read [reference/invocation.md](./reference/invocation.md) when planning how the agent gets called, to compare automatic delegation, `@-mention`, `--agent`, foreground/background, fork mode, and chaining
 
 ## Example Subagents (pattern recipes)
 
@@ -260,6 +260,8 @@ Complete sample agent files to start from — copy and adapt:
 - [examples/data-scientist.md](./examples/data-scientist.md) — domain specialist with `model: sonnet` pinned
 - [examples/db-reader-hooks.md](./examples/db-reader-hooks.md) — `PreToolUse` hook gates SELECT-only SQL
 - [examples/coordinator.md](./examples/coordinator.md) — main-thread agent that restricts spawnable workers via `Agent(...)`
+
+`code-reviewer.md`, `debugger.md`, and `data-scientist.md` quote the upstream Anthropic samples verbatim — their descriptions predate this repo's description rules, so copy their structure, not their wording; the house exemplar is `plugins/git/agents/git-flow.md`.
 
 ## Output Examples
 

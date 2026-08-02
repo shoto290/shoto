@@ -1,6 +1,7 @@
 ---
 name: rebase
 description: 'Rebases the current branch onto the default branch, auto-resolving trivial conflicts and asking only when it matters; never pushes.'
+when_to_use: 'The user asks to rebase the current branch or to sync a feature branch with the default branch.'
 argument-hint: '[base-branch]'
 allowed-tools: Bash, Read, AskUserQuestion, Edit
 ---

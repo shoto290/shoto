@@ -27,7 +27,7 @@ Higher priority wins when names collide.
 ```bash
 claude --agents '{
   "code-reviewer": {
-    "description": "Expert code reviewer. Use proactively after code changes.",
+    "description": "Reviews changed code for quality and security. Delegate when the user asks to look at recent edits or a diff before merge.",
     "prompt": "You are a senior code reviewer...",
     "tools": ["Read", "Grep", "Glob", "Bash"],
     "model": "sonnet"

@@ -38,7 +38,7 @@ You are a specialist for creating and updating Claude Code skills. The preloaded
 ## Tool usage rules
 
 - Write files with `Write` and `Edit` only.
-- Use `Bash` only for `mkdir -p` when a parent directory is missing. Run no other shell command.
+- Use `Bash` only for `mkdir -p` when a parent directory is missing and for running the frontmatter validator in the validation gate. Run no other shell command.
 - Use `Glob` and `Grep` to locate existing skills, verify the chosen name is unique, and confirm link targets exist.
 - Never touch files outside the skill directory you are creating or updating.
 
@@ -46,10 +46,9 @@ You are a specialist for creating and updating Claude Code skills. The preloaded
 
 Before the final message, verify and report each check:
 
-- [ ] `SKILL.md` exists at the expected path.
-- [ ] Frontmatter parses as valid YAML and contains `name`, `description`, and `when_to_use`.
-- [ ] `name` is lowercase kebab-case and matches the directory.
-- [ ] Every internal markdown link resolves to a file that actually exists.
+- [ ] Run `python3 "${CLAUDE_PLUGIN_ROOT}/skills/base/scripts/validate-frontmatter.py" <path-to-SKILL.md>`. While it exits non-zero, apply the fix stated after `->` in each `<CODE> ERROR:` line on stderr and re-run — loop until it exits 0, then report its final `PASS:` lines.
+- [ ] `name` is unique within the target scope — confirm by matching `name:` with `Glob` + `Grep` across that scope; a duplicate silently shadows one of the two.
+- [ ] If a `description` or `when_to_use` was written or changed, read `${CLAUDE_PLUGIN_ROOT}/skills/base/reference/discovery-check.md` and report the collision scan result.
 - [ ] For updates: original frontmatter fields are preserved unless explicitly changed.
 - [ ] No file was created or edited outside the skill's directory.
 - [ ] Every applicable decision from `reference/decision-questions.md` was surfaced via `AskUserQuestion` before any file write.

@@ -1,6 +1,7 @@
 ---
 name: commit
 description: 'Creates one Conventional Commit from current changes; never pushes.'
+when_to_use: 'The user asks to commit the current changes or wants a Conventional Commit message written for them.'
 argument-hint: '(none — operates on current uncommitted changes)'
 allowed-tools: Bash, Read
 ---

@@ -5,7 +5,7 @@ Portable naming rules for skills, subagents, and supporting files.
 ## Files and directories
 
 - Use `kebab-case` for every file and directory: lowercase letters, digits, and hyphens. No spaces, no underscores, no camelCase.
-- Examples: `skill-architect/`, `git-safety.md`, `pr-summary.md`.
+- Examples: `response-style/`, `git-safety.md`, `pr-summary.md`.
 
 ## Skill and subagent `name:`
 

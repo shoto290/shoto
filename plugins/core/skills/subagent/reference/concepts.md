@@ -67,10 +67,10 @@ description: Code reviewer
 
 **Strong:**
 ```yaml
-description: Expert code review specialist. Proactively reviews code for quality, security, and maintainability. Use immediately after writing or modifying code.
+description: Reviews changed code for quality, security, and maintainability. Delegate when the user asks to look at recent edits, a diff, or a branch before merge. Not for fixing what the review finds — use `debugger` instead.
 ```
 
-The strong version states *what it does*, *when it should fire*, and uses "Proactively" / "Use immediately" as delegation triggers. The model uses these phrases as signals.
+The strong version leads with the capability, names the concrete situations a user would describe ("look at my recent edits", "check this diff"), and draws an explicit scope boundary against the sibling that owns the excluded case. It carries zero injunction keywords — "proactively", "use immediately", "MUST" do not make delegation fire more reliably.
 
 ## Where to go next
 

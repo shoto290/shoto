@@ -7,7 +7,7 @@ Claude decides to delegate based on:
 2. The `description` field in subagent configurations
 3. Current conversation context
 
-To encourage proactive delegation, include phrases like **"use proactively"** or **"use immediately"** in the `description`. The model uses these as signals.
+Delegation fires reliably when the `description` leads with the capability, names the concrete situations a user would describe, and draws a scope boundary against overlapping siblings — not from injunction keywords like **"use proactively"** or **"use immediately"**.
 
 ## Explicit invocation — three patterns
 

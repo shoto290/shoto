@@ -2,7 +2,7 @@
 
 All AI agents working in this repo must follow these instructions.
 
-This repo is the **shoto** Claude Code marketplace hosting one or more plugins under `plugins/`. It contains markdown artifacts only — no runtime, no build step.
+This repo is the **shoto** Claude Code marketplace hosting one or more plugins under `plugins/`. It contains markdown artifacts plus a few validation and orchestration scripts — no build step, no package manager.
 
 - `plugins/<plugin>/skills/<name>/SKILL.md` — skill definitions (+ supporting files)
 - `plugins/<plugin>/agents/<name>.md` — sub-agent definitions (frontmatter + body)
@@ -83,12 +83,12 @@ This repo exists to build skills, sub-agents, and hooks for Claude Code. **Use t
 
 | Artifact | Author |
 |----------|--------|
-| Skill (`plugins/<plugin>/skills/<name>/SKILL.md`) | `/core:skill` or the `skill-architect` sub-agent |
-| Sub-agent (`plugins/<plugin>/agents/<name>.md`) | `/core:subagent` or the `subagent-architect` sub-agent |
+| Skill (`plugins/<plugin>/skills/<name>/SKILL.md`) | `/core:skill` or the `skill-smith` sub-agent |
+| Sub-agent (`plugins/<plugin>/agents/<name>.md`) | `/core:subagent` or the `subagent-smith` sub-agent |
 | Hook (`.claude/hooks/*`) | `/core:hooks` skill |
 | Coordinated multi-artifact change | `/core:evolve` to get the plan, then the matching author above for each entry |
 
-The architects own frontmatter, scope selection, and the validation gate. Don't bypass them when scaffolding new artifacts.
+The smiths own frontmatter, scope selection, and the validation gate. Don't bypass them when scaffolding new artifacts.
 
 ## House Rules
 
@@ -110,8 +110,8 @@ The architects own frontmatter, scope selection, and the validation gate. Don't 
 
 | Type | Convention | Example |
 |------|------------|---------|
-| Files & directories | kebab-case | `skill-architect/` |
-| Skill / agent `name:` | kebab-case, matches path | `name: skill-architect` |
+| Files & directories | kebab-case | `response-style/` |
+| Skill / agent `name:` | kebab-case, matches path | `name: skill-smith` |
 | Headings | Title Case | `## Typical Flow` |
 
 ## Safety

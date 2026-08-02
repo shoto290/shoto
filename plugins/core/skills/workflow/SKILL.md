@@ -149,9 +149,9 @@ Same gate as create. Preserve `meta` fields and stage structure unless the user 
 
 ## Reference
 
-- [reference/dsl.md](./reference/dsl.md) — the full script DSL: `meta`, `phase`, `agent`, `parallel`, `pipeline`, `log`, `args`, `budget`, `workflow`, and structured-output schemas.
-- [reference/constraints.md](./reference/constraints.md) — the hard constraints plus the meta-facts (availability, enabling/disabling, triggering, saving a run's script).
-- [template.workflow.js](./template.workflow.js) — a ready-to-edit skeleton (meta literal + phase / pipeline / parallel / agent / schema scaffold).
+- Read [reference/dsl.md](./reference/dsl.md) when writing or editing a workflow script.
+- Read [reference/constraints.md](./reference/constraints.md) when checking a script is legal or answering how workflows are enabled, triggered, and saved.
+- Read [template.workflow.js](./template.workflow.js) when starting a new workflow from scratch.
 
 ## Examples
 

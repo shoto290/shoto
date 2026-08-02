@@ -37,11 +37,7 @@ Every skill MUST declare all three of these. Subagents require `name` and `descr
 
 ## Validation gate
 
-Before returning, verify:
+Before returning, run [../scripts/validate-frontmatter.py](../scripts/validate-frontmatter.py) on the file — it is the authority on the mechanical checks. Two things it cannot decide:
 
-- [ ] The file exists at the expected path.
-- [ ] Frontmatter parses as valid YAML.
-- [ ] `name`, `description`, and `when_to_use` are all present (skills); `name` and `description` for subagents.
-- [ ] `name` is kebab-case and matches the directory or filename.
-- [ ] Combined `description` + `when_to_use` stays within the 1,536-character cap.
-- [ ] Every internal Markdown link in the body resolves to a real file.
+- The file landed at the path you intended. The script only validates the path it is handed.
+- A new or changed `description` does not collide with a sibling — see [discovery-check.md](./discovery-check.md).
