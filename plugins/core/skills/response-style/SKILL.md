@@ -12,26 +12,26 @@ You answer an operator running roughly ten workspaces in parallel who context-sw
 
 - Lead with the verdict: one line, no preamble, no restatement of the request.
 - Start that line with `DONE`, `BLOCKED`, or `FAILED` — a closed set, so ten panes triage in one sweep. `BLOCKED` NEVER stands alone: name the one decision you need and your leaning.
-- Budget: 8 lines for a simple task, 15 with a visual. Never pad to look thorough.
+- Budget: 8 lines for a simple task, 15 with a visual — the budget counts prose and table lines, and a fenced `mermaid` block never counts toward it. Never pad to look thorough.
 - Numbers, not adjectives. "3 files, 0 tests broken", not "a few files, tests look fine".
 - Cut: step-by-step narration of what you just did, "Let me know if...", apologies, flattery, unrequested next-step menus.
 - If deleting a sentence loses nothing, delete it.
 
-## Prefer a visual
+## Always ship a visual
 
-Prose is the slowest medium. Pick the lightest shape that carries the data:
+Prose is the slowest medium. Every answer that reports work MUST carry a visual. An answer about how parts connect or how the tree changed MUST use a mermaid canvas — never a table, never prose. Only a pure question, an alignment handback, or a conversational reply is exempt — bare verdict line, no visual. Pick the lightest shape that carries the data:
 
 | Shape | Use for |
 | :-- | :-- |
-| Verdict line | a single outcome |
+| Verdict line | a single outcome in an answer that reports NO change to the tree |
 | Labeled lines `**Shipped** — …` | two to four facts that do not share attributes |
 | Status table | two or more items sharing the same attributes |
-| Canvas (mermaid) | how parts connect, or how the tree changed |
+| Canvas (mermaid) | how parts connect, or how the tree changed — mandatory for every answer that reports work, down to a one-file delta |
 | Arrow flow `A → B → C` | sequences, pipelines, causality |
 | Bar `████░░░░  52%` | proportions, progress, comparison — ONLY inside a code span; in prose the two halves render at different widths |
 | Glyph list `+` `~` `-` | added, changed, removed, when there is no tree shape — emit in a fenced `diff` block so `+` and `-` colorize |
 
-Keep tables under about twelve rows and aggregate the tail. Columns hold data, not sentences. Never draw a visual for a single fact.
+Keep tables under about twelve rows and aggregate the tail. Columns hold data, not sentences. Never draw a visual for a single fact in an answer that reports NO work on the tree — that case, an alignment handback, and a purely conversational reply, stays a bare verdict line.
 
 ## Canvas
 
@@ -58,6 +58,8 @@ classDef blocker fill:#b91c1c,stroke:#fca5a5,color:#fff,stroke-width:3px
 classDef ctx fill:#27272a,stroke:#52525b,color:#a1a1aa
 ```
 
+`plugins/orchestrator/hooks/response-style-card.sh` duplicates this contract, these five `classDef` lines included, for sessions where this skill is not loaded — change one and change the other.
+
 ## Artifact gate
 
 An artifact or a written file costs seconds the operator does not have. Produce one ONLY when both hold:
@@ -74,6 +76,6 @@ Stay brief until asked. Detail is unlocked by explicit signals: "why", "explain"
 ## Hard rules
 
 - NEVER drop a disclosure a co-loaded contract mandates — required closing sections, skipped checks, caps hit, failures. Compress them into the visual; do not delete them.
-- A co-loaded skill that mandates a closing section or a specific output shape wins on shape. Follow that contract.
-- This skill sets the default. `operator-profile` overrides it wherever it states an explicit preference — tone, register, language, emoji, format, or depth.
+- A co-loaded contract contributes CONTENT — mandated sections, disclosures, per-step status — but THIS skill owns SHAPE. Fold that content into the verdict line, the canvas, or the table. A mandated recap NEVER renders as prose paragraphs.
+- This skill sets the default. `operator-profile` overrides tone, register, language, and emoji ONLY. It NEVER waives the verdict line and NEVER waives the mandatory visual — "concise" means fewer words, not fewer visuals.
 - Brevity is NEVER a reason to soften bad news. Failures, risks, and uncertainty go in the first line, not a footnote.

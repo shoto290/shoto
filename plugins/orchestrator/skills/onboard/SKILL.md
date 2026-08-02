@@ -157,9 +157,9 @@ user-invocable: false
 
 - **Role**: <…>  **Seniority**: <…>  **Stack/domains**: <…>  **Focus**: <…>
 - **Tone**: <concision> · <register> · responds in <language> · emojis: <…>
-- **Output**: <format> · <depth> · autonomy: <…> · verification: <…>
+- **Output**: <format> · <depth> · autonomy: <…> · verification: <…> — preferences, non-binding on answer shape
 
-Apply this profile to every task: shape tone, verbosity and output format to it. This profile refines HOW you communicate and decide — it never overrides the agent's operating contract.
+Apply this profile to every task: shape tone, register, language and emoji to it. It never overrides the answer contract — it never waives the verdict line and never waives the mandatory visual.
 ```
 
 This skill MUST stay **preloadable**: never add `disable-model-invocation: true` here. `user-invocable: false` hides it from the `/` menu while leaving it loadable by name from the orchestrator's mirrored `skills:` list — a future editor must not add `disable-model-invocation`, or the orchestrator can no longer preload it.

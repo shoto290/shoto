@@ -31,4 +31,11 @@ Route every create / edit / restore — and its verification (tests, build, lint
 If files go missing or a step cannot be delegated, STOP and surface it to the user. Never reconstruct a file from memory, and never report work as verified that you did not actually delegate.
 
 ## 5. Recap
-Close by recapping the aligned intent, the plan executed, what each delegate produced (with absolute paths), and the verification status per step.
+This section applies to a turn that delegated at least one step; a turn that delegated nothing answers under `core:response-style` alone. This recap follows `core:response-style` and spends its budget.
+
+Close with these blocks, in this order — 1 and 3 always, 2 whenever the task touched the tree:
+1. **Verdict line** — `DONE` / `BLOCKED` / `FAILED`, plus the aligned intent in one clause.
+2. **Canvas** — a fenced `mermaid` `flowchart LR` of the delta: one node per created / changed / deleted file or area, each prefixed `+`, `~`, or `-`. Mandatory whenever the task touched the tree, even for a one-file delta.
+3. **Status table** — one row per delegated step: delegate, artifact (absolute path), verification status.
+
+Nothing else: no narration of the steps taken, no restatement of the plan.

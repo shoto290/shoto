@@ -6,6 +6,7 @@ This repo is the **shoto** Claude Code marketplace hosting one or more plugins u
 
 - `plugins/<plugin>/skills/<name>/SKILL.md` — skill definitions (+ supporting files)
 - `plugins/<plugin>/agents/<name>.md` — sub-agent definitions (frontmatter + body)
+- `plugins/<plugin>/hooks/hooks.json` — bundled plugin hooks (+ the scripts they call)
 - `plugins/<plugin>/.claude-plugin/plugin.json` — plugin manifest
 - `.claude-plugin/marketplace.json` — marketplace entry listing every plugin
 
@@ -85,7 +86,7 @@ This repo exists to build skills, sub-agents, and hooks for Claude Code. **Use t
 |----------|--------|
 | Skill (`plugins/<plugin>/skills/<name>/SKILL.md`) | `/core:skill` or the `skill-smith` sub-agent |
 | Sub-agent (`plugins/<plugin>/agents/<name>.md`) | `/core:subagent` or the `subagent-smith` sub-agent |
-| Hook (`.claude/hooks/*`) | `/core:hooks` skill |
+| Hook (`.claude/hooks/*` or `plugins/<plugin>/hooks/hooks.json`) | `/core:hooks` skill |
 | Coordinated multi-artifact change | `/core:evolve` to get the plan, then the matching author above for each entry |
 
 The smiths own frontmatter, scope selection, and the validation gate. Don't bypass them when scaffolding new artifacts.
@@ -97,6 +98,7 @@ The smiths own frontmatter, scope selection, and the validation gate. Don't bypa
 - **Keep the manifest in sync** — When adding or renaming a skill/agent, update the relevant `plugins/<plugin>/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
 - **Declare hard dependencies** — If a plugin's agent preloads a skill from another plugin, or one of its skills requires another plugin as a mandatory step, list that plugin in `dependencies` in `plugins/<plugin>/.claude-plugin/plugin.json`. Use the bare plugin name, never a version range — this repo publishes no `<plugin>--v<version>` git tags, and an unmatched range disables the plugin. Only hard edges count: optional or prose-only mentions are not dependencies, and `core` is the foundation so it declares none.
 - **Match `name:` to the path** — A skill at `plugins/<plugin>/skills/foo/SKILL.md` must have `name: foo`. Same for agents.
+- **The response-style card re-fires on every prompt on purpose** — `plugins/orchestrator/hooks/hooks.json` runs `response-style-card.sh` on `UserPromptSubmit`, which [reference/inject-context-on-compact.md](plugins/core/skills/hooks/reference/inject-context-on-compact.md) flags as an anti-pattern for static context. The deviation is deliberate: the answer contract is a per-turn obligation — verdict line plus mandatory mermaid canvas — that decays when injected only at session boundaries, so ~400 tokens per prompt buys enforcement. Don't "fix" it by dropping the entry for a `SessionStart` `startup|compact` matcher.
 
 ## Enforced Rules
 
