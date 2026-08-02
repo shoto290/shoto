@@ -30,7 +30,20 @@ Route every create / edit / restore — and its verification (tests, build, lint
 
 If files go missing or a step cannot be delegated, STOP and surface it to the user. Never reconstruct a file from memory, and never report work as verified that you did not actually delegate.
 
-## 5. Recap
+## 5. Delegation brief
+
+A subagent that re-discovers context you already hold burns 3-8 round-trips before its first edit. Every delegation to a writer carries a brief self-sufficient enough to start editing immediately:
+
+- **Paths** — the exact files to touch, never a category ("the agent files")
+- **Excerpts** — the strings and snippets you already read, inline, so the agent never re-greps for them
+- **Acceptance** — what done means, plus the exact commands to run to verify
+- **Out of scope** — what must NOT be touched
+- **Decisions** — the calls you already made, so the agent does not re-litigate them
+- **Concurrency** — a note when another agent is editing a related file
+
+Resolve ambiguity with the user through your alignment gate BEFORE spawning; never delegate the ambiguity downward — a subagent has no channel to the user.
+
+## 6. Recap
 This section applies to a turn that delegated at least one step; a turn that delegated nothing answers under `core:response-style` alone. This recap follows `core:response-style` and spends its budget.
 
 Close with these blocks, in this order — 1 and 3 always, 2 whenever the task touched the tree:
