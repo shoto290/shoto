@@ -46,9 +46,10 @@ Resolve ambiguity with the user through your alignment gate BEFORE spawning; nev
 ## 6. Recap
 This section applies to a turn that delegated at least one step; a turn that delegated nothing answers under `core:response-style` alone. This recap follows `core:response-style` and spends its budget.
 
-Close with these blocks, in this order — 1 and 3 always, 2 whenever the task touched the tree:
-1. **Verdict line** — `DONE` / `BLOCKED` / `FAILED`, plus the aligned intent in one clause.
-2. **Canvas** — a fenced `mermaid` `flowchart LR` of the delta: one node per created / changed / deleted file or area, each prefixed `+`, `~`, or `-`. Mandatory whenever the task touched the tree, even for a one-file delta.
-3. **Status table** — one row per delegated step: delegate, artifact (absolute path), verification status.
+This section owns WHAT is disclosed. `core:response-style` owns the SHAPE — where a numbered block below names one, it is quoting that routing, NEVER inventing a rule here.
+
+1. **Verdict line** — always. `DONE` / `BLOCKED` / `FAILED`, the aligned intent in one clause, and the counts.
+2. **The delta** — whenever the task touched the tree: every created, changed, or deleted file, prefixed `+`, `~`, or `-`, in a fenced `diff` block. Never a canvas: a list of what changed is a list.
+3. **Status table** — one row per delegated step: delegate, artifact (absolute path), verification status. Per step, not per file — that is why it does not duplicate block 2. A single-step turn folds it into the verdict line instead. Line numbers, metrics, and full paths live in block 2 or 3, never inside a diagram.
 
 Nothing else: no narration of the steps taken, no restatement of the plan.

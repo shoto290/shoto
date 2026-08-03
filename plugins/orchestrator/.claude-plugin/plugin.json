@@ -1,7 +1,7 @@
 {
   "name": "orchestrator",
-  "description": "Runtime foundation for the shoto marketplace: the orchestrator agent and its generalist fallback writer, the base, alignment, and orchestrator skills they run on, and /onboard to set up a committed project orchestrator, plus a bundled hook that re-injects the response-style answer contract on every prompt and again after a compaction.",
-  "version": "0.20.0",
+  "description": "Runtime foundation for the shoto marketplace: the orchestrator agent and its generalist fallback writer, the base, alignment, and orchestrator skills they run on, and /onboard to set up a committed project orchestrator, plus a bundled hook that re-injects the response-style answer contract on every prompt and fires again at session start and after a compaction, where it also ships the canvas palette.",
+  "version": "0.21.0",
   "dependencies": ["core"],
   "author": {
     "name": "shoto290"
