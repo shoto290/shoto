@@ -95,7 +95,7 @@ The write ban is enforced twice: the harness strips its write tools (`disallowed
 3. **Delegate** — every create/edit/restore *and its verification* (tests, build, lint, format) goes to the most specific installed specialist. The specialist owns its own validation gate.
 4. **Fall back** — `orchestrator:generalist` only when no specialist matches.
 
-Every prompt also passes through a bundled `UserPromptSubmit` hook that re-injects the `core:response-style` answer contract before Claude sees the turn, and the same script fires again on `SessionStart` with the `compact` matcher so the contract survives a compaction. The recap shape — verdict line, mermaid canvas, status table — is restated on every prompt instead of relying on it staying in context from earlier in the session. Set `SHOTO_RESPONSE_STYLE_CARD=0` to opt out of both injections.
+Every prompt also passes through a bundled `UserPromptSubmit` hook that re-injects the `core:response-style` answer contract before Claude sees the turn, and the same script fires again on `SessionStart` with the `startup|resume|clear|compact` matcher, where it also ships the `classDef` palette so the contract survives a compaction. The recap shape — verdict line, the delta in the shape its payload calls for, status table — is restated on every prompt instead of relying on it staying in context from earlier in the session. Set `SHOTO_RESPONSE_STYLE_CARD=0` to opt out of both injections.
 
 ### How It Finds Delegates
 
