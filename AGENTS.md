@@ -100,10 +100,17 @@ The smiths own frontmatter, scope selection, and the validation gate. Don't bypa
 - **Match `name:` to the path** — A skill at `plugins/<plugin>/skills/foo/SKILL.md` must have `name: foo`. Same for agents.
 - **The response-style card re-fires on every prompt on purpose** — `plugins/orchestrator/hooks/hooks.json` runs `response-style-card.sh` on `UserPromptSubmit`, which [reference/inject-context-on-compact.md](plugins/core/skills/hooks/reference/inject-context-on-compact.md) flags as an anti-pattern for static context. The deviation is deliberate: the answer contract is a per-turn obligation — verdict line plus a mandatory visual whose shape the contract picks — that decays when injected only at session boundaries, so ~455 tokens per prompt buys enforcement. The one genuinely static part, the five `classDef` colors, rides the `SessionStart` `startup|resume|clear|compact` branch instead. Don't "fix" the rest by moving it there too.
 
+## Checks
+
+Run `bash scripts/check-repo.sh` before opening a pull request — it is the only entry point, and every failure names the file, the reason, and the fix.
+
+CI runs the same command, so a red local run is a red PR.
+
 ## Enforced Rules
 
 | Rule | Enforcement |
 |------|-------------|
+| `bash scripts/check-repo.sh` passes before a PR | BLOCKING |
 | Files in kebab-case | BLOCKING |
 | No destructive git ops without confirmation | BLOCKING |
 | No `.env` / secrets access | BLOCKING |
