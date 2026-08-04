@@ -41,6 +41,11 @@ READ_ONLY_GIT_SUBCOMMANDS = frozenset([
     "show", "show-ref", "status", "whatchanged",
 ])
 
+GIT_GLOBAL_OPTIONS_WITH_VALUE = frozenset([
+    "-C", "-c", "--config-env", "--exec-path", "--git-dir", "--namespace",
+    "--work-tree",
+])
+
 MUTATING_FLAG_PREFIXES = {
     "sed": ("-i", "--in-place"),
     "find": ("-delete", "-exec", "-execdir", "-ok", "-fprint"),
@@ -49,7 +54,7 @@ MUTATING_FLAG_PREFIXES = {
 
 BASH_SEPARATORS = ("&&", "||", ";", "|", "&")
 BASH_OPERATORS = (">", ">>", ">&", "<", "<<", "(", ")")
-REDIRECT_TO_DISCARD = re.compile(r"\d?>&\d|&?>>?\s*/dev/null")
+REDIRECT_OPERATORS = (">", ">>", "&>", "&>>")
 
 DECISION_REQUEST_PATTERNS = (
     re.compile(r"\b(you|your)\b", re.IGNORECASE),
@@ -94,10 +99,14 @@ SESSION_INIT_FIELDS = ("agents", "model", "permissionMode", "plugins", "tools")
 INTEGRITY = "integrity"
 BEHAVIORAL = "behavioral"
 
-ABSOLUTE_PATH = re.compile(r"(?<![\w/])/[^\s'\";|&()<>]*")
+ABSOLUTE_PATH = re.compile(r"(?<![\w/:])/[^\s'\";|&()<>]*")
 SYSTEM_PATH_PREFIXES = (
     "/usr", "/bin", "/sbin", "/opt", "/etc", "/dev", "/Library", "/System", "/var/db",
 )
+
+PATTERN_OPERAND_COMMANDS = frozenset([
+    "ag", "awk", "egrep", "fgrep", "grep", "rg", "sed",
+])
 
 TYPE_NAMES = {
     str: "string",
@@ -609,7 +618,15 @@ def banned_delegates_invoked(banned, subagents):
 
 
 def writes_to_a_file(command):
-    return ">" in REDIRECT_TO_DISCARD.sub("", command)
+    try:
+        segments = bash_segments(command)
+    except ValueError:
+        return True
+    return any(
+        token in REDIRECT_OPERATORS and tokens[position + 1:position + 2] != ["/dev/null"]
+        for tokens in segments
+        for position, token in enumerate(tokens)
+    )
 
 
 def bash_segments(command):
@@ -632,10 +649,13 @@ def has_mutating_flag(command, arguments):
 
 
 def is_read_only_git(arguments):
-    subcommands = [argument for argument in arguments if not argument.startswith("-")]
-    if not subcommands:
-        return True
-    return subcommands[0] in READ_ONLY_GIT_SUBCOMMANDS
+    index = 0
+    while index < len(arguments):
+        argument = arguments[index]
+        if not argument.startswith("-"):
+            return argument in READ_ONLY_GIT_SUBCOMMANDS
+        index += 2 if argument in GIT_GLOBAL_OPTIONS_WITH_VALUE else 1
+    return True
 
 
 def is_read_only_segment(tokens):
@@ -704,13 +724,23 @@ def meaningful_events(events):
     return [event for event in events if is_meaningful_event(event)]
 
 
+def last_turn_events(events):
+    starts = [
+        index
+        for index, event in enumerate(events)
+        if event.get("kind") == "system" and event.get("subtype") == "init"
+    ]
+    return events[starts[-1]:] if starts else events
+
+
 def observed_alignment_mode(events):
-    for event in top_level_events(events):
+    turn = last_turn_events(events)
+    for event in top_level_events(turn):
         if is_clarifying_question(event):
             return "aligned_first"
         if is_orchestrator_action(event):
             return "acted_directly"
-    if not meaningful_events(events):
+    if not meaningful_events(turn):
         return "no_activity"
     return "blocked"
 
@@ -1210,20 +1240,40 @@ def session_plugins_assertion(expected, events):
 
 
 def workspace_prefixes(workspace):
-    stripped = workspace.rstrip("/")
-    return (stripped, os.path.join("/private", stripped.lstrip("/")))
+    normalized = os.path.normpath(workspace)
+    return (normalized, os.path.normpath(os.path.join("/private", normalized.lstrip("/"))))
+
+
+def path_operands(tokens):
+    words = [token for token in tokens if token not in BASH_OPERATORS]
+    if not words or os.path.basename(words[0]) not in PATTERN_OPERAND_COMMANDS:
+        return words
+    arguments = words[1:]
+    for position, token in enumerate(arguments):
+        if not token.startswith("-"):
+            return arguments[:position] + arguments[position + 1:]
+    return arguments
+
+
+def scanned_arguments(command):
+    try:
+        segments = bash_segments(command)
+    except ValueError:
+        return [command]
+    return [token for segment in segments for token in path_operands(segment)]
 
 
 def escaping_paths(command, workspace):
     allowed = workspace_prefixes(workspace)
     escapes = []
-    for raw in ABSOLUTE_PATH.findall(command):
-        candidate = os.path.normpath(raw)
-        if any(candidate == prefix or candidate.startswith(prefix + "/") for prefix in allowed):
-            continue
-        if candidate.startswith(SYSTEM_PATH_PREFIXES):
-            continue
-        escapes.append(candidate)
+    for argument in scanned_arguments(command):
+        for raw in ABSOLUTE_PATH.findall(argument):
+            candidate = os.path.normpath(raw)
+            if any(candidate == prefix or candidate.startswith(prefix + "/") for prefix in allowed):
+                continue
+            if candidate.startswith(SYSTEM_PATH_PREFIXES):
+                continue
+            escapes.append(candidate)
     return escapes
 
 
@@ -2017,6 +2067,11 @@ def test_workspace_escape_is_integrity_error(stage):
     for command in ("ls /usr/bin", "cat /dev/null", "grep -rn x ."):
         if escaping_paths(command, "/tmp/ws"):
             raise AssertionError("system and relative paths must not be flagged: {!r}".format(command))
+    for command in ("curl https://example.com/x", 'grep -rn "/health" src'):
+        if escaping_paths(command, "/tmp/ws"):
+            raise AssertionError("a URL scheme and a search pattern are not paths: {!r}".format(command))
+    if escaping_paths("ls /tmp/richmond-evals/run/scen/file", "/tmp//richmond-evals/run/scen"):
+        raise AssertionError("a doubled slash in the workspace path must not read as an escape")
     nested = normalize_events(
         [tool_use_record("Bash", {"command": "rm /etc/../Users/dev/x"}, "t1", "parent")]
     )
@@ -2331,6 +2386,42 @@ def test_mutating_bash_is_a_mutation(stage):
     )
 
 
+def test_quoted_angle_bracket_is_not_a_redirection(stage):
+    expect_bash_classification(
+        ['grep -rn "a -> b" src', "grep -rn 'x > y' .", "echo 'a -> b'"],
+        False,
+        "an angle bracket inside a quoted argument must not count as a mutation",
+    )
+    expect_bash_classification(
+        ["echo hi > out.txt", "echo hi >> out.txt", "cat a > b", "cat a > b 2>&1"],
+        True,
+        "a redirection to a file must count as a mutation",
+    )
+
+
+def test_git_global_options_do_not_hide_the_subcommand(stage):
+    expect_bash_classification(
+        [
+            "git -C sub status",
+            "git -c k=v log",
+            "git --git-dir=/x/.git log",
+            "git --work-tree x diff",
+            "git --namespace ns show HEAD",
+        ],
+        False,
+        "a git global option value must not be read as the subcommand",
+    )
+    expect_bash_classification(
+        [
+            "git -C sub push",
+            "git -c k=v commit -m 'x'",
+            "git --work-tree x checkout .",
+        ],
+        True,
+        "a git global option must not hide a mutating subcommand",
+    )
+
+
 def test_compound_command_is_mutating_when_any_part_mutates(stage):
     expect_bash_classification(
         [
@@ -2410,6 +2501,36 @@ def test_genuine_clarifying_question_is_detected(stage):
         observed_alignment_mode(events),
         "aligned_first",
         "a genuine question before a mutation is aligned_first",
+    )
+
+
+def test_alignment_mode_judges_the_last_turn(stage):
+    events = normalize_events(
+        [
+            session_init_record(),
+            tool_use_record("Task", {"subagent_type": "backend-engineer"}, "t1"),
+            tool_use_record("Write", {"file_path": "a"}, "t2"),
+            session_init_record(),
+            assistant_text_record("Which suite should I target?"),
+        ]
+    )
+    expect_equal(
+        observed_alignment_mode(events),
+        "aligned_first",
+        "a preceding turn's action must not decide the turn under test",
+    )
+    mirrored = normalize_events(
+        [
+            session_init_record(),
+            assistant_text_record("Which suite should I target?"),
+            session_init_record(),
+            tool_use_record("Write", {"file_path": "a"}, "t1"),
+        ]
+    )
+    expect_equal(
+        observed_alignment_mode(mirrored),
+        "acted_directly",
+        "a preceding turn's question must not decide the turn under test",
     )
 
 

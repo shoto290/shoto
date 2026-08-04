@@ -9,7 +9,8 @@ RESULTS_DIR="$EVALS_DIR/results"
 VERIFY="$EVALS_DIR/verify.py"
 MAX_BUDGET_USD="${EVAL_MAX_BUDGET_USD:-2}"
 DEFAULT_AGENT_UNDER_TEST="orchestrator:orchestrator"
-WORKSPACE_ROOT="${EVAL_WORKSPACE_ROOT:-${TMPDIR:-/tmp}}/richmond-evals"
+WORKSPACE_ROOT="${EVAL_WORKSPACE_ROOT:-${TMPDIR:-/tmp}}"
+WORKSPACE_ROOT="${WORKSPACE_ROOT%/}/richmond-evals"
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 
 fail() {
@@ -213,7 +214,7 @@ deterministic_mode() {
   return 0
 }
 
-plugin_args() {
+require_plugins() {
   local scenario_file=$1
   local plugin
   while IFS= read -r plugin; do
@@ -221,6 +222,14 @@ plugin_args() {
     if [ ! -d "$REPO_ROOT/plugins/$plugin" ]; then
       fail "$scenario_file -> 'expect_plugins' names '$plugin' but plugins/$plugin does not exist; add the plugin or correct the scenario"
     fi
+  done < <(scenario_list "$scenario_file" expect_plugins)
+}
+
+plugin_args() {
+  local scenario_file=$1
+  local plugin
+  while IFS= read -r plugin; do
+    [ -n "$plugin" ] || continue
     printf '%s\n' "--plugin-dir"
     printf '%s\n' "$REPO_ROOT/plugins/$plugin"
   done < <(scenario_list "$scenario_file" expect_plugins)
@@ -306,6 +315,8 @@ live_mode() {
     write_summary "$run_dir"
     return 0
   fi
+
+  require_plugins "$scenario_file"
 
   local fixture_path="$FIXTURES_DIR/$fixture"
   [ -d "$fixture_path" ] || fail "$scenario_file -> fixture '$fixture' has no directory at $fixture_path; create the fixture or correct 'fixture'"
