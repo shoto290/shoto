@@ -1,0 +1,16 @@
+{
+  "id": "resume-contract",
+  "description": "After a --resume of the same session, the answer contract still holds: the final turn opens with a verdict token and still ships a mandatory visual, in whichever shape the contract picks for a changed-file payload. This covers the RESUME half only — compaction cannot be forced deterministically from the CLI, so it is not exercised here and no part of this scenario simulates one.",
+  "fixture": "minimal-repo",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["orchestrator", "generalist"],
+  "preceding_turns": ["Read README.md and tell me in one line what this repo does."],
+  "prompt": "Now update the Usage section of README.md so it also shows the --separator flag.",
+  "expect_alignment_mode": "acted_directly",
+  "expect_delegate": "generalist",
+  "expect_verdict_prefix": ["DONE", "BLOCKED", "FAILED"],
+  "required_response_markers_any": ["```", "| ---", "| :--", "→"],
+  "expect_mutation_state": "changed",
+  "timeout_seconds": 600,
+  "cleanup_policy": "on_pass"
+}

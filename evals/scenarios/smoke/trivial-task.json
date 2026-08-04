@@ -1,0 +1,15 @@
+{
+  "id": "trivial-task",
+  "description": "A one-word typo fix must be routed straight to the generalist writer with no clarifying question and no specialist smith spawned.",
+  "fixture": "minimal-repo",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["orchestrator", "generalist", "skill-smith", "subagent-smith", "review-fix"],
+  "prompt": "README.md misspells one word: \"consistant\" should be \"consistent\". Fix that one word.",
+  "expect_alignment_mode": "acted_directly",
+  "expect_delegate": "generalist",
+  "forbidden_delegates": ["skill-smith", "subagent-smith", "review-fix"],
+  "expect_verdict_prefix": ["DONE"],
+  "expect_mutation_state": "changed",
+  "timeout_seconds": 300,
+  "cleanup_policy": "on_pass"
+}

@@ -9,6 +9,9 @@ This repo is the **shoto** Claude Code marketplace hosting one or more plugins u
 - `plugins/<plugin>/hooks/hooks.json` — bundled plugin hooks (+ the scripts they call)
 - `plugins/<plugin>/.claude-plugin/plugin.json` — plugin manifest
 - `.claude-plugin/marketplace.json` — marketplace entry listing every plugin
+- `evals/scenarios/<group>/<id>.json` — behavioral evaluation scenarios (+ `schema.json`)
+- `evals/fixtures/<name>/` — throwaway repos copied to a workspace outside this repository for each live run
+- `evals/run.sh`, `evals/verify.py` — the evaluation runner and verifier ([evals/README.md](evals/README.md))
 
 ## SIMPLE — Core Principles (Absolute Priority)
 
@@ -105,6 +108,12 @@ The smiths own frontmatter, scope selection, and the validation gate. Don't bypa
 Run `bash scripts/check-repo.sh` before opening a pull request — it is the only entry point, and every failure names the file, the reason, and the fix.
 
 CI runs the same command, so a red local run is a red PR.
+
+### Behavioral Evals
+
+`scripts/check-repo.sh` also runs the evaluation harness's offline half in full — scenario schema validation, the verifier self-tests, and the fake-transcript replay. All three are free, need no credentials, and make no network call, so they belong in CI.
+
+Live scenarios are opt-in and never run by the checks: `bash evals/run.sh <scenario-id>` calls the real model and **spends money** (capped per turn by `--max-budget-usd`, default 2, overridable with `EVAL_MAX_BUDGET_USD`). `bash evals/run.sh` with no argument is the free deterministic mode. A live run copies its fixture to a workspace outside this repository and refuses to start otherwise, so the agent under test never operates on your checkout. See [evals/README.md](evals/README.md).
 
 ## Enforced Rules
 

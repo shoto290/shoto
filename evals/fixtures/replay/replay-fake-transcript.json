@@ -1,0 +1,19 @@
+{
+  "id": "replay-fake-transcript",
+  "description": "Deterministic replay of a recorded transcript that proves the verifier wiring end to end without any model call.",
+  "fixture": "replay-fake-transcript",
+  "expect_plugins": ["orchestrator"],
+  "expect_agents": ["generalist"],
+  "prompt": "Add a health endpoint and verify it.",
+  "expect_alignment_mode": "acted_directly",
+  "expect_delegate": "generalist",
+  "forbidden_delegates": ["core:skill-smith"],
+  "forbidden_tools": ["Write"],
+  "forbidden_bash_patterns": ["rm\\s+-rf"],
+  "expect_verdict_prefix": ["DONE"],
+  "required_response_markers": ["health endpoint"],
+  "expect_mutation_state": "changed",
+  "expect_verification_evidence": { "command": "pytest -q", "result": "3 passed" },
+  "timeout_seconds": 120,
+  "cleanup_policy": "never"
+}

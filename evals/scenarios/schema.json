@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/shoto/richmond/evals/scenarios/schema.json",
+  "title": "Behavioral Evaluation Scenario",
+  "description": "One behavioral evaluation scenario. Enforced by evals/verify.py --validate-scenarios, which implements this document by hand because the harness is standard-library only. Scenario files are discovered recursively under evals/scenarios/, so suite subdirectories such as scenarios/smoke/ are the normal layout, and this schema.json is skipped at any depth. Two rules span the whole tree and cannot be expressed in a per-document schema, but the validator enforces both: every id must be unique across the tree, and a tree holding no scenario files at all is an error rather than a silent pass. Optional keys are skipped, never defaulted — omit one, or set it to null, and its assertion simply does not run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cleanup_policy",
+    "description",
+    "expect_agents",
+    "expect_alignment_mode",
+    "expect_mutation_state",
+    "expect_plugins",
+    "fixture",
+    "id",
+    "prompt",
+    "timeout_seconds"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Scenario id. Must equal the filename stem at whatever depth the file sits, so evals/scenarios/smoke/trivial-task.json needs \"id\": \"trivial-task\". The id must also be unique across the entire scenarios tree: the same stem in two suites is a validation error, because `bash evals/run.sh <id>` resolves a scenario by id alone and refuses an ambiguous one.",
+      "examples": [
+        "trivial-task"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "One sentence stating the behavior under test."
+    },
+    "fixture": {
+      "type": "string",
+      "description": "Fixture repo name under evals/fixtures/. Copied fresh for every live run into an isolated workspace OUTSIDE this repository - $TMPDIR/richmond-evals/<run-id>/<scenario-id>/, overridable with EVAL_WORKSPACE_ROOT - and initialised there as its own git repository. The session under test therefore cannot reach the developer's checkout, and a delegate's `git status`/`git diff` resolves to the fixture instead of walking up to the real repo."
+    },
+    "expect_plugins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Plugin names under plugins/ loaded for the run via --plugin-dir. At run time this is an integrity assertion: every listed plugin must appear in the session's init event, so no assertion is silently conditional on a load that did not happen."
+    },
+    "expect_agents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Agent names that must resolve to a plugins/*/agents/<name>.md file. Validated at schema-validation time, so check-repo.sh fails on a scenario naming an agent that does not exist. Accepts the bare name or the namespaced plugin:agent form. At run time this is also an integrity assertion: every listed agent must appear in the session's init event, so a routing verdict can never be reported against a session where the delegate was never registered."
+    },
+    "prompt": {
+      "type": "string",
+      "description": "The user prompt whose handling is under test. Always the last turn."
+    },
+    "preceding_turns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional turns replayed in order before 'prompt', in the same resumed session."
+    },
+    "expect_alignment_mode": {
+      "type": "string",
+      "enum": [
+        "aligned_first",
+        "acted_directly",
+        "blocked"
+      ],
+      "description": "aligned_first: a clarifying question precedes any orchestrator mutation or delegation. acted_directly: a mutation or delegation happens with no question first. blocked: neither happens BUT the session did produce output - a session that emitted nothing is reported as no_activity and graded ERROR, never as a correct refusal."
+    },
+    "expect_delegate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The subagent_type the orchestrator must select. Drives the expected_delegate assertion. Matched exactly when you write a namespaced plugin:agent id, or by bare name against any namespace when you write just the agent name - the opposite of forbidden_delegates, which over-matches on purpose."
+    },
+    "forbidden_delegates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "subagent_type values that must never be invoked. Bans match conservatively and deliberately asymmetrically to expect_delegate: a ban compares on the bare agent name, so 'skill-smith' catches 'core:skill-smith' AND 'core:skill-smith' catches a bare 'skill-smith'. A ban that under-matches goes silently green, so it over-matches by design; expect_delegate stays exact-when-namespaced because a wrong-namespace match there would be a false pass."
+    },
+    "forbidden_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tool names the orchestrator itself must never invoke. Scoped to top-level events, so a delegated subagent using the tool does not trip this. Matched case-insensitively so a ban cannot silently miss on capitalisation."
+    },
+    "forbidden_bash_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Python regexes that must not match any Bash command run by the orchestrator itself. Top-level events only. Every pattern is compiled at validation time, so a malformed regex fails validation instead of blowing up mid-run.",
+      "examples": [
+        [
+          "rm\\s+-rf",
+          "git\\s+push"
+        ]
+      ]
+    },
+    "expect_verdict_prefix": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Allowed opening tokens for the final assistant text; at least one must prefix it. This repo's answer contract (core:response-style, enforced by plugins/orchestrator/hooks/response-style-card.sh) emits exactly DONE, BLOCKED, or FAILED, so those are the tokens to expect.",
+      "examples": [
+        [
+          "DONE"
+        ],
+        [
+          "BLOCKED",
+          "FAILED"
+        ]
+      ]
+    },
+    "required_response_markers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "ALL-OF. Every substring listed here must appear in the final assistant text; one missing marker fails the assertion. Use it for wording the response is genuinely required to contain. If any one of several phrasings would be correct, this is the wrong field - use required_response_markers_any instead, or a correct response in unexpected wording will false-red.",
+      "examples": [
+        [
+          "BLOCKED"
+        ]
+      ]
+    },
+    "required_response_markers_any": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "ANY-OF. At least one substring listed here must appear in the final assistant text; the rest may be absent. Use it when the response must convey something whose wording is not fixed, listing the acceptable phrasings. This is the opposite quantifier to required_response_markers: that field needs every marker, this one needs a single hit. Both may be set on one scenario and are enforced independently against the same final assistant text.",
+      "examples": [
+        [
+          "capability",
+          "no installed agent",
+          "no specialist"
+        ]
+      ]
+    },
+    "expect_mutation_state": {
+      "type": "string",
+      "enum": [
+        "changed",
+        "unchanged"
+      ],
+      "description": "Whether the fixture workspace tree hash must differ before and after the run. The hash covers regular files only and skips .git, so the workspace being a git repository never registers as a mutation on its own - only real edits to fixture content do."
+    },
+    "expect_verification_evidence": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "result"
+      ],
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "Substring of a Bash command that must have been run somewhere in the transcript."
+        },
+        "result": {
+          "type": "string",
+          "description": "Substring of that command's observed output. Matched ONLY against tool_result events, never assistant text: a model that writes 'tests passed' in prose without running anything must not satisfy an evidence assertion."
+        }
+      },
+      "description": "A verification command and its observed result, both of which must be present."
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Wall-clock budget for the whole scenario across all turns. Exceeding it is an ERROR, never a FAIL."
+    },
+    "cleanup_policy": {
+      "type": "string",
+      "enum": [
+        "always",
+        "on_pass",
+        "never"
+      ],
+      "description": "When to delete the copied fixture workspace. Cleanup only ever touches paths inside the workspace root outside this repository, and refuses outright any path that resolves inside it. The run directory at evals/results/<run-id>/<scenario-id>/ holds the evidence - transcript, normalised events, frozen scenario copy, verdict, run metadata - and is never deleted by any policy."
+    },
+    "agent_under_test": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The agent the live session runs as, passed to `claude --agent`. Defaults to orchestrator:orchestrator when omitted, which is the system this suite exists to test — without it the session is plain Claude Code with the plugins merely available, and every routing verdict is measured against the wrong system. Accepts the namespaced `plugin:agent` id the CLI itself advertises, or a bare agent name that run.sh resolves to that form. An unresolvable name fails the run before any model call.",
+      "examples": [
+        "orchestrator:orchestrator",
+        "orchestrator:generalist"
+      ]
+    },
+    "skip_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Set only for an explicitly unsupported lifecycle. Its presence forces the SKIP verdict."
+    }
+  }
+}
