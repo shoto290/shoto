@@ -1,0 +1,16 @@
+{
+  "id": "ambiguous-feature",
+  "description": "An underspecified feature request must hit the alignment gate first: the orchestrator surfaces the unresolved decisions and hands back without delegating or writing anything.",
+  "fixture": "minimal-repo",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["orchestrator", "generalist", "skill-smith", "review-fix"],
+  "prompt": "Add batch support to the slug tool so it can handle many titles at once.",
+  "expect_alignment_mode": "aligned_first",
+  "expect_delegate": null,
+  "forbidden_delegates": ["generalist", "skill-smith", "review-fix"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "expect_verdict_prefix": ["BLOCKED"],
+  "expect_mutation_state": "unchanged",
+  "timeout_seconds": 300,
+  "cleanup_policy": "on_pass"
+}

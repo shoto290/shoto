@@ -1,0 +1,29 @@
+{
+  "id": "routing-skill-smith",
+  "description": "An unmistakable request to author a new skill must route to skill-smith and never to a neighbouring artifact author.",
+  "fixture": "minimal-repo",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": [
+    "orchestrator",
+    "skill-smith",
+    "subagent-smith",
+    "hooks-smith",
+    "plugin-smith",
+    "workflow-smith",
+    "mcp-smith"
+  ],
+  "prompt": "Write me a new Claude Code skill named slug-review, in project scope under .claude/skills/, that documents how to review a change to src/cli.py in this repo.",
+  "expect_alignment_mode": "acted_directly",
+  "expect_delegate": "skill-smith",
+  "forbidden_delegates": [
+    "subagent-smith",
+    "hooks-smith",
+    "plugin-smith",
+    "workflow-smith",
+    "mcp-smith"
+  ],
+  "expect_verdict_prefix": ["DONE"],
+  "expect_mutation_state": "changed",
+  "timeout_seconds": 600,
+  "cleanup_policy": "on_pass"
+}
