@@ -210,3 +210,15 @@ Subagents: `review-diff` (`opus`), `review-comments` (`sonnet`), `review-fix` (`
 ```
 
 They are ordinary subagents, so the orchestrator routes to them by `description` match with no wiring step — installing one *is* the integration.
+
+---
+
+## Checks
+
+One command validates the whole repo — run it before opening a pull request:
+
+```bash
+bash scripts/check-repo.sh
+```
+
+It checks skill/agent frontmatter and internal links, JSON syntax, `*.workflow.js` and `*.sh` syntax, and marketplace/plugin manifest consistency. It needs only `git`, `python3`, and `node` — no install step. CI runs the same command on every PR.
