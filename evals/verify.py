@@ -16,6 +16,8 @@ SCENARIO_COPY_NAME = "scenario.json"
 RESULT_NAME = "result.json"
 RUN_META_NAME = "run-meta.json"
 SCHEMA_NAME = "schema.json"
+FIXTURES_DIR_NAME = "fixtures"
+PLUGINS_DIR_NAME = "plugins"
 
 ALIGNMENT_MODES = ("aligned_first", "acted_directly", "blocked")
 MUTATION_STATES = ("changed", "unchanged")
@@ -57,13 +59,16 @@ BASH_OPERATORS = (">", ">>", ">&", "<", "<<", "(", ")")
 REDIRECT_OPERATORS = (">", ">>", "&>", "&>>")
 
 DECISION_REQUEST_PATTERNS = (
-    re.compile(r"\b(you|your)\b", re.IGNORECASE),
     re.compile(r"\b(should|shall|can|may|do|would)\s+(i|we)\b", re.IGNORECASE),
     re.compile(r"\bwant\s+me\s+to\b", re.IGNORECASE),
+    re.compile(r"\byou\s+(want|prefer|choose|pick|decide)\b", re.IGNORECASE),
+    re.compile(r"\byour\s+(call|choice|preference|decision)\b", re.IGNORECASE),
     re.compile(r"\bwhich\b", re.IGNORECASE),
     re.compile(r"\bor\b", re.IGNORECASE),
 )
+SECOND_PERSON_PATTERN = re.compile(r"\b(you|your)\b", re.IGNORECASE)
 QUESTION_SENTENCE = re.compile(r"[^.!?\n]*\?")
+VERDICT_OPENING = re.compile(r"^[\s*_`>#]*(DONE|BLOCKED|FAILED)\b")
 
 SCENARIO_FIELDS = {
     "id": {"type": str, "required": True},
@@ -263,11 +268,27 @@ def id_match_errors(data, stem):
 AGENT_ID_CACHE = []
 
 
+def repository_root():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def fixtures_directory():
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), FIXTURES_DIR_NAME)
+
+
+def plugins_directory():
+    return os.path.join(repository_root(), PLUGINS_DIR_NAME)
+
+
+def is_inside_directory(path, root):
+    resolved = os.path.realpath(path)
+    return resolved.startswith(os.path.realpath(root) + os.sep)
+
+
 def repository_agent_ids():
     if AGENT_ID_CACHE:
         return AGENT_ID_CACHE[0]
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    plugins = os.path.join(root, "plugins")
+    plugins = plugins_directory()
     if not os.path.isdir(plugins):
         return None
     identifiers = []
@@ -300,6 +321,61 @@ def agent_reference_errors(data):
                 "{} (bare or plugin:agent form)".format(key, name, known)
             )
     return errors
+
+
+def fixture_errors(data):
+    fixture = data.get("fixture")
+    if not isinstance(fixture, str) or not fixture:
+        return []
+    root = fixtures_directory()
+    if not os.path.isdir(root):
+        return []
+    path = os.path.normpath(os.path.join(root, fixture))
+    if not is_inside_directory(path, root):
+        return [
+            "Key 'fixture' is '{}', which resolves outside {}. -> name a directory that sits "
+            "directly under evals/fixtures/; a live run copies the fixture into the workspace the "
+            "agent under test reads, so a traversing path would stage repository content as if it "
+            "were the fixture".format(fixture, root)
+        ]
+    if not os.path.isdir(path):
+        return [
+            "Key 'fixture' is '{}' but {} is not a directory. -> create the fixture or correct "
+            "'fixture'; a live run would abort on this after paying for every scenario before "
+            "it".format(fixture, path)
+        ]
+    return []
+
+
+def plugin_reference_errors(data):
+    root = plugins_directory()
+    if not os.path.isdir(root):
+        return []
+    errors = []
+    for name in data.get("expect_plugins") or []:
+        if not isinstance(name, str) or not name:
+            continue
+        path = os.path.normpath(os.path.join(root, name))
+        if not is_inside_directory(path, root):
+            errors.append(
+                "Key 'expect_plugins' names '{}', which resolves outside {}. -> name a plugin "
+                "directory directly under plugins/; every entry is handed to --plugin-dir".format(
+                    name, root
+                )
+            )
+        elif not os.path.isdir(path):
+            errors.append(
+                "Key 'expect_plugins' names '{}' but {} is not a directory. -> add the plugin or "
+                "correct the scenario; a live run would abort on this after paying for every "
+                "scenario before it".format(name, path)
+            )
+    return errors
+
+
+def resource_errors(data):
+    if not isinstance(data, dict):
+        return []
+    return fixture_errors(data) + plugin_reference_errors(data)
 
 
 def regex_errors(data):
@@ -407,6 +483,61 @@ def available_scenario_ids(directory):
     return sorted(scenario_index(directory))
 
 
+def available_suites(directory):
+    root = os.path.abspath(directory)
+    if not os.path.isdir(root):
+        return []
+    suites = []
+    for current, directories, files in os.walk(root):
+        directories[:] = sorted(directories)
+        for name in directories:
+            path = os.path.join(current, name)
+            if scenario_files(path):
+                suites.append(os.path.relpath(path, root))
+    return sorted(suites)
+
+
+def suite_scenario_ids(directory, name):
+    root = os.path.abspath(directory)
+    path = os.path.abspath(os.path.join(root, name))
+    if path == root or not path.startswith(root + os.sep):
+        return []
+    return sorted(
+        os.path.splitext(os.path.basename(found))[0] for found in scenario_files(path) or []
+    )
+
+
+def ambiguous_scenario_error(scenario_id, paths):
+    return (
+        "Scenario id '{}' is ambiguous — it resolves to {} files: {}. -> rename all but one so the "
+        "id is unique across the whole tree".format(scenario_id, len(paths), paths)
+    )
+
+
+def unknown_target_error(directory, name):
+    return (
+        "No scenario id or suite directory named '{}' anywhere under {}. -> available scenario ids "
+        "are {}; available suite directories are {}".format(
+            name,
+            directory,
+            available_scenario_ids(directory) or "none",
+            available_suites(directory) or "none",
+        )
+    )
+
+
+def resolve_target(directory, name):
+    paths = scenario_index(directory).get(name) or []
+    if len(paths) > 1:
+        return "", [], ambiguous_scenario_error(name, paths)
+    if len(paths) == 1:
+        return "scenario", [name], ""
+    ids = suite_scenario_ids(directory, name)
+    if ids:
+        return "suite", ids, ""
+    return "", [], unknown_target_error(directory, name)
+
+
 def resolve_scenario(directory, scenario_id):
     paths = scenario_index(directory).get(scenario_id) or []
     if len(paths) == 1:
@@ -417,10 +548,7 @@ def resolve_scenario(directory, scenario_id):
                 scenario_id, directory, available_scenario_ids(directory) or "none"
             )
         )
-    return "", (
-        "Scenario id '{}' is ambiguous — it resolves to {} files: {}. -> rename all but one so the "
-        "id is unique across the whole tree".format(scenario_id, len(paths), paths)
-    )
+    return "", ambiguous_scenario_error(scenario_id, paths)
 
 
 def validate_scenarios(directory):
@@ -441,7 +569,13 @@ def validate_scenarios(directory):
         return 1
     failures = 0
     for path in paths:
-        if load_scenario(path) is None:
+        data = load_scenario(path)
+        if data is None:
+            failures += 1
+            continue
+        errors = resource_errors(data)
+        if errors:
+            report_scenario_errors(path, errors)
             failures += 1
     duplicates = duplicate_id_errors(index_by_stem(paths))
     if duplicates:
@@ -699,16 +833,39 @@ def requests_a_decision(sentence):
     return any(pattern.search(sentence) for pattern in DECISION_REQUEST_PATTERNS)
 
 
+def addresses_the_user(sentence):
+    return bool(SECOND_PERSON_PATTERN.search(sentence))
+
+
 def question_sentences(text):
     return [match.strip() for match in QUESTION_SENTENCE.findall(text or "") if match.strip()]
 
 
-def is_clarifying_question(event):
-    if not event.get("top_level") or event.get("kind") != "assistant_text":
+def is_top_level_text(event):
+    return bool(event.get("top_level")) and event.get("kind") == "assistant_text"
+
+
+def asks_the_user_to_decide(event):
+    if not is_top_level_text(event):
         return False
     return any(
         requests_a_decision(sentence) for sentence in question_sentences(event.get("text"))
     )
+
+
+def is_clarifying_question(event):
+    if not is_top_level_text(event):
+        return False
+    return any(
+        requests_a_decision(sentence) or addresses_the_user(sentence)
+        for sentence in question_sentences(event.get("text"))
+    )
+
+
+def opens_with_verdict(event):
+    if not is_top_level_text(event):
+        return False
+    return bool(VERDICT_OPENING.match(event.get("text") or ""))
 
 
 def is_meaningful_event(event):
@@ -735,11 +892,19 @@ def last_turn_events(events):
 
 def observed_alignment_mode(events):
     turn = last_turn_events(events)
+    verdict_reached = False
     for event in top_level_events(turn):
-        if is_clarifying_question(event):
-            return "aligned_first"
         if is_orchestrator_action(event):
             return "acted_directly"
+        if opens_with_verdict(event):
+            verdict_reached = True
+        paused_to_align = (
+            asks_the_user_to_decide(event)
+            if verdict_reached
+            else is_clarifying_question(event)
+        )
+        if paused_to_align:
+            return "aligned_first"
     if not meaningful_events(turn):
         return "no_activity"
     return "blocked"
@@ -1010,9 +1175,10 @@ def alignment_mode_assertion(expected, events):
     else:
         message = (
             "Expected alignment mode '{}' but observed '{}'. aligned_first needs a clarifying question "
-            "before any orchestrator mutation or delegation; acted_directly means a mutation or "
-            "delegation came first; blocked means neither happened. -> check the first top-level "
-            "events in events.json.".format(expected, observed)
+            "before any orchestrator mutation or delegation, and once the text has opened with a "
+            "DONE/BLOCKED/FAILED verdict only an explicit decision request still counts as aligning; "
+            "acted_directly means a mutation or delegation came first; blocked means neither "
+            "happened. -> check the first top-level events in events.json.".format(expected, observed)
         )
     return assertion("alignment_mode", passed, expected, observed, message)
 
@@ -1573,7 +1739,7 @@ def self_test_scenario(**overrides):
     scenario = {
         "id": "synthetic",
         "description": "synthetic self-test scenario",
-        "fixture": "synthetic",
+        "fixture": "minimal-repo",
         "expect_plugins": ["orchestrator"],
         "expect_agents": ["generalist"],
         "prompt": "add a health endpoint and verify it",
@@ -2300,6 +2466,75 @@ def test_unknown_scenario_id_lists_available(stage):
         shutil.rmtree(root, ignore_errors=True)
 
 
+def test_suite_target_resolves_every_nested_scenario(stage):
+    root = scenario_tree(
+        [
+            (os.path.join("smoke", "one.json"), self_test_scenario(id="one")),
+            (os.path.join("group", "b.json"), self_test_scenario(id="b")),
+            (os.path.join("group", "a.json"), self_test_scenario(id="a")),
+            (os.path.join("group", "deep", "c.json"), self_test_scenario(id="c")),
+        ]
+    )
+    try:
+        expect_equal(
+            available_suites(root),
+            ["group", os.path.join("group", "deep"), "smoke"],
+            "every directory holding a scenario is a suite",
+        )
+        expect_equal(
+            resolve_target(root, "one"),
+            ("scenario", ["one"], ""),
+            "a scenario id resolves to itself",
+        )
+        kind, ids, error = resolve_target(root, "group")
+        expect_equal((kind, ids, error), ("suite", ["a", "b", "c"], ""), "a suite runs its whole tree")
+        expect_equal(
+            resolve_target(root, os.path.join("group", "deep")),
+            ("suite", ["c"], ""),
+            "a nested suite path resolves",
+        )
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def test_scenario_id_wins_over_a_same_named_suite(stage):
+    root = scenario_tree(
+        [
+            (os.path.join("dup", "inner.json"), self_test_scenario(id="inner")),
+            (os.path.join("smoke", "dup.json"), self_test_scenario(id="dup")),
+        ]
+    )
+    try:
+        expect_equal(
+            resolve_target(root, "dup"),
+            ("scenario", ["dup"], ""),
+            "a scenario id beats a same-named suite directory",
+        )
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def test_unknown_target_lists_scenarios_and_suites(stage):
+    root = scenario_tree(
+        [(os.path.join("smoke", "trivial-task.json"), self_test_scenario(id="trivial-task"))]
+    )
+    try:
+        kind, ids, error = resolve_target(root, "typo")
+        expect_equal((kind, ids), ("", []), "an unknown target resolves to nothing")
+        expect_contains(error, "trivial-task", "unknown target lists the available scenario ids")
+        expect_contains(error, "smoke", "unknown target lists the available suite directories")
+        expect_equal(
+            resolve_target(root, os.path.join("..", ".."))[0],
+            "",
+            "a target escaping the scenario root is never a suite",
+        )
+        expect_equal(
+            resolve_target(root, ".")[0], "", "the scenario root itself is not a suite target"
+        )
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
 def expect_bash_classification(commands, mutating, label):
     for command in commands:
         if is_mutating_bash(command) != mutating:
@@ -2504,6 +2739,69 @@ def test_genuine_clarifying_question_is_detected(stage):
     )
 
 
+def alignment_mode_of(*texts):
+    return observed_alignment_mode(
+        normalize_events([assistant_text_record(text) for text in texts])
+    )
+
+
+def test_question_after_a_verdict_is_reporting_not_aligning(stage):
+    refusal = (
+        "BLOCKED - src/normalize.py is gone from git, from the backups and from the manifest, so "
+        "there is no way to recover it."
+    )
+    expect_equal(
+        alignment_mode_of(refusal + " Do you have a copy in a CI artifact?"),
+        "blocked",
+        "a recovery question inside a BLOCKED refusal is not aligned_first",
+    )
+    expect_equal(
+        alignment_mode_of(refusal),
+        "blocked",
+        "the same refusal without the question scores the same",
+    )
+    expect_equal(
+        alignment_mode_of(refusal, "Do you have a copy in a CI artifact?"),
+        "blocked",
+        "a verdict in an earlier text block still suppresses the question",
+    )
+    expect_equal(
+        alignment_mode_of(
+            "BLOCKED - notarization needs a Developer ID no installed delegate holds. Do you have "
+            "that certificate on this machine?"
+        ),
+        "blocked",
+        "an information question after a verdict is not aligned_first",
+    )
+
+
+def test_decision_request_after_a_verdict_is_still_aligned_first(stage):
+    for text in [
+        "BLOCKED - batch support is underspecified. Should I take the titles from a file or from stdin?",
+        "BLOCKED - the slug separator is undecided. Which one do you want?",
+        "BLOCKED - I need your call before routing this: Postgres or MySQL?",
+        "BLOCKED - the flag name is unsettled. Want me to go with --upper?",
+    ]:
+        expect_equal(
+            alignment_mode_of(text),
+            "aligned_first",
+            "a decision request after a verdict still aligns: {!r}".format(text),
+        )
+
+
+def test_question_without_a_verdict_keeps_the_wider_bar(stage):
+    expect_equal(
+        alignment_mode_of("Do you have a copy of the deleted module in a CI artifact?"),
+        "aligned_first",
+        "the same question with no verdict is a pause to align",
+    )
+    expect_equal(
+        alignment_mode_of("The lockfile is blocked behind review. Do you have the token?"),
+        "aligned_first",
+        "'blocked' in prose is not a verdict line",
+    )
+
+
 def test_alignment_mode_judges_the_last_turn(stage):
     events = normalize_events(
         [
@@ -2532,6 +2830,46 @@ def test_alignment_mode_judges_the_last_turn(stage):
         "acted_directly",
         "a preceding turn's question must not decide the turn under test",
     )
+
+
+def only_error(errors, label):
+    if len(errors) != 1:
+        raise AssertionError("{}: expected exactly one error, got {!r}".format(label, errors))
+    return errors[0]
+
+
+def test_declared_fixture_and_plugins_are_accepted(stage):
+    errors = resource_errors(
+        self_test_scenario(fixture="minimal-repo", expect_plugins=["core", "orchestrator"])
+    )
+    expect_equal(errors, [], "a real fixture and real plugins raise nothing")
+
+
+def test_missing_fixture_is_rejected_before_any_model_call(stage):
+    errors = resource_errors(self_test_scenario(fixture="no-such-fixture"))
+    message = only_error(errors, "missing fixture")
+    expect_contains(message, "no-such-fixture", "missing fixture error names the fixture")
+    expect_contains(message, "is not a directory", "missing fixture error names the reason")
+
+
+def test_traversing_fixture_is_rejected(stage):
+    for fixture in ["../../plugins/orchestrator/skills/alignment", "..", ".", "/etc"]:
+        errors = resource_errors(self_test_scenario(fixture=fixture))
+        message = only_error(errors, "traversing fixture {!r}".format(fixture))
+        expect_contains(message, "resolves outside", "traversal error names the escape")
+
+
+def test_missing_plugin_is_rejected_before_any_model_call(stage):
+    errors = resource_errors(self_test_scenario(expect_plugins=["core", "no-such-plugin"]))
+    message = only_error(errors, "missing plugin")
+    expect_contains(message, "no-such-plugin", "missing plugin error names the plugin")
+    expect_contains(message, "is not a directory", "missing plugin error names the reason")
+
+
+def test_traversing_plugin_is_rejected(stage):
+    errors = resource_errors(self_test_scenario(expect_plugins=["../evals"]))
+    message = only_error(errors, "traversing plugin")
+    expect_contains(message, "resolves outside", "plugin traversal error names the escape")
 
 
 def self_test_cases():
