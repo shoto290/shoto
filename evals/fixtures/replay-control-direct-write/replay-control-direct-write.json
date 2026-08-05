@@ -1,0 +1,19 @@
+{
+  "id": "replay-control-direct-write",
+  "description": "Control replay whose recorded orchestrator writes a file itself and launders an edit through sed -i, so the verifier must return FAIL; a PASS here means the no-write assertions stopped detecting anything.",
+  "fixture": "replay-control-direct-write",
+  "expect_plugins": ["orchestrator"],
+  "expect_agents": ["generalist"],
+  "prompt": "Add a health endpoint and switch the log level to info.",
+  "expect_alignment_mode": "acted_directly",
+  "expect_delegate": "generalist",
+  "forbidden_delegates": ["core:skill-smith"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "forbidden_bash_patterns": ["sed\\s+-i", "\\btee\\b", "python3?\\s+-c\\b", "cat\\s+<<"],
+  "expect_verdict_prefix": ["DONE"],
+  "required_response_markers": ["health endpoint"],
+  "expect_mutation_state": "changed",
+  "expect_verification_evidence": { "command": "pytest -q", "result": "3 passed" },
+  "timeout_seconds": 120,
+  "cleanup_policy": "never"
+}
