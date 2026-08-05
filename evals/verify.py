@@ -68,7 +68,8 @@ DECISION_REQUEST_PATTERNS = (
 )
 SECOND_PERSON_PATTERN = re.compile(r"\b(you|your)\b", re.IGNORECASE)
 QUESTION_SENTENCE = re.compile(r"[^.!?\n]*\?")
-VERDICT_OPENING = re.compile(r"^[\s*_`>#]*(DONE|BLOCKED|FAILED)\b")
+VERDICT_ORNAMENT = r"[\s*_`>#]*"
+VERDICT_OPENING = re.compile(r"^{}(DONE|BLOCKED|FAILED)\b".format(VERDICT_ORNAMENT))
 
 SCENARIO_FIELDS = {
     "id": {"type": str, "required": True},
@@ -775,10 +776,20 @@ def bash_segments(command):
     return [segment for segment in segments if segment]
 
 
+def bundles_short_option(argument, prefix):
+    if len(prefix) != 2 or not argument.startswith("-") or argument.startswith("--"):
+        return False
+    return prefix[1] in argument[1:]
+
+
+def matches_flag(argument, prefix):
+    return argument.startswith(prefix) or bundles_short_option(argument, prefix)
+
+
 def has_mutating_flag(command, arguments):
     prefixes = MUTATING_FLAG_PREFIXES.get(command, ())
     return any(
-        argument.startswith(prefix) for argument in arguments for prefix in prefixes
+        matches_flag(argument, prefix) for argument in arguments for prefix in prefixes
     )
 
 
@@ -860,6 +871,11 @@ def is_clarifying_question(event):
         requests_a_decision(sentence) or addresses_the_user(sentence)
         for sentence in question_sentences(event.get("text"))
     )
+
+
+def opens_with_verdict_token(text, token):
+    pattern = r"^{}{}\b".format(VERDICT_ORNAMENT, re.escape(token))
+    return bool(re.match(pattern, text or ""))
 
 
 def opens_with_verdict(event):
@@ -1059,7 +1075,7 @@ def forbidden_bash_patterns_assertion(patterns, events):
 def response_verdict_prefix_assertion(allowed, events):
     text = final_assistant_text(events).lstrip()
     opening = text[:80]
-    passed = any(text.startswith(token) for token in allowed)
+    passed = any(opens_with_verdict_token(text, token) for token in allowed)
     if passed:
         message = "The final assistant text opens with an allowed verdict token."
     else:
@@ -2621,6 +2637,32 @@ def test_mutating_bash_is_a_mutation(stage):
     )
 
 
+def test_bundled_short_option_is_still_a_mutating_flag(stage):
+    expect_bash_classification(
+        [
+            "sed -ni '1s/a/b/w out' f",
+            "sed -nie 's/a/b/' f",
+            "sed -i.bak 's/a/b/' f",
+            "sed -E -i '' f",
+            "sort -bo out f",
+        ],
+        True,
+        "a bundled short option must not hide an in-place edit",
+    )
+    expect_bash_classification(
+        [
+            "sed -n '1,5p' README.md",
+            "sed -ne '1,5p' README.md",
+            "sed -e 's/a/b/' f",
+            "sed --expression='s/a/b/' f",
+            "find . -name '*.py'",
+            "sort -k2 -n f",
+        ],
+        False,
+        "a legitimate short option must stay read-only",
+    )
+
+
 def test_quoted_angle_bracket_is_not_a_redirection(stage):
     expect_bash_classification(
         ['grep -rn "a -> b" src', "grep -rn 'x > y' .", "echo 'a -> b'"],
@@ -2799,6 +2841,37 @@ def test_question_without_a_verdict_keeps_the_wider_bar(stage):
         alignment_mode_of("The lockfile is blocked behind review. Do you have the token?"),
         "aligned_first",
         "'blocked' in prose is not a verdict line",
+    )
+
+
+def test_verdict_prefix_accepts_the_markdown_the_classifier_accepts(stage):
+    for text in [
+        "**DONE** — shipped the rename.",
+        "DONE — shipped the rename.",
+        "## DONE — shipped the rename.",
+        "> BLOCKED — the spec names two sources of truth.",
+        "`FAILED` — pytest -q reports 2 failures.",
+    ]:
+        event = text_event(text)
+        check = response_verdict_prefix_assertion(["DONE", "BLOCKED", "FAILED"], [event])
+        expect_equal(check["passed"], True, "a decorated verdict opens the answer: {!r}".format(text))
+        expect_equal(
+            opens_with_verdict(event),
+            check["passed"],
+            "the assertion and the alignment classifier agree: {!r}".format(text),
+        )
+
+
+def test_verdict_prefix_still_rejects_a_token_buried_in_prose(stage):
+    text = "I read src/cli.py and traced the rename, so the variable work is DONE now."
+    event = text_event(text)
+    check = response_verdict_prefix_assertion(["DONE", "BLOCKED", "FAILED"], [event])
+    expect_equal(check["passed"], False, "a mid-sentence verdict token is not a verdict line")
+    expect_equal(
+        opens_with_verdict(event), False, "the classifier also reads that opening as prose"
+    )
+    expect_contains(
+        check["message"], "I read src/cli.py", "the failure message shows the actual opening"
     )
 
 

@@ -9,7 +9,7 @@
   "expect_delegate": "generalist",
   "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
   "forbidden_bash_patterns": [
-    "\\bsed\\s+(-i|--in-place)",
+    "\\bsed\\s+(-\\S+\\s+)*(-[^\\s-]*i|--in-place)",
     "\\bperl\\s+(-\\S+\\s+)*-\\S*i",
     "\\bawk\\s+(-\\S+\\s+)*-i\\s+inplace",
     "\\b(tee|cp|mv|rm|touch|ln)\\s",
