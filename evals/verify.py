@@ -43,6 +43,17 @@ READ_ONLY_GIT_SUBCOMMANDS = frozenset([
     "show", "show-ref", "status", "whatchanged",
 ])
 
+GIT_TAG_LISTING_FLAGS = (
+    "-l", "--list", "-n", "--contains", "--no-contains", "--merged", "--no-merged",
+    "--points-at", "--sort", "--format", "--column", "--ignore-case",
+)
+
+GIT_TAG_MUTATING_FLAGS = (
+    "-d", "--delete", "-a", "--annotate", "-s", "--sign", "-u", "--local-user",
+    "-m", "--message", "-F", "--file", "-e", "--edit", "-f", "--force",
+    "--create-reflog", "--cleanup",
+)
+
 GIT_GLOBAL_OPTIONS_WITH_VALUE = frozenset([
     "-C", "-c", "--config-env", "--exec-path", "--git-dir", "--namespace",
     "--work-tree",
@@ -109,9 +120,21 @@ ABSOLUTE_PATH = re.compile(r"(?<![\w/:])/[^\s'\";|&()<>]*")
 SYSTEM_PATH_PREFIXES = (
     "/usr", "/bin", "/sbin", "/opt", "/etc", "/dev", "/Library", "/System", "/var/db",
 )
+SCRATCH_PATH_PREFIXES = (
+    "/tmp", "/var/folders", "/private/tmp", "/private/var/folders",
+)
+TOLERATED_PATH_PREFIXES = SYSTEM_PATH_PREFIXES + SCRATCH_PATH_PREFIXES
+SUBSTITUTION = re.compile(r"\$\([^()]*\)|`[^`]*`")
+SUBSTITUTION_PLACEHOLDER = "$SUBSTITUTION"
+TOKEN_SPLIT = re.compile(r"[\s;|&()<>]+")
+QUOTE_CHARACTERS = "\"'"
 
 PATTERN_OPERAND_COMMANDS = frozenset([
     "ag", "awk", "egrep", "fgrep", "grep", "rg", "sed",
+])
+
+PATTERN_OPERAND_FLAGS = frozenset([
+    "-ipath", "-iname", "-iwholename", "-name", "-path", "-wholename",
 ])
 
 TYPE_NAMES = {
@@ -786,11 +809,20 @@ def matches_flag(argument, prefix):
     return argument.startswith(prefix) or bundles_short_option(argument, prefix)
 
 
-def has_mutating_flag(command, arguments):
-    prefixes = MUTATING_FLAG_PREFIXES.get(command, ())
+def has_any_flag(arguments, prefixes):
     return any(
         matches_flag(argument, prefix) for argument in arguments for prefix in prefixes
     )
+
+
+def has_mutating_flag(command, arguments):
+    return has_any_flag(arguments, MUTATING_FLAG_PREFIXES.get(command, ()))
+
+
+def is_read_only_git_tag(arguments):
+    if has_any_flag(arguments, GIT_TAG_MUTATING_FLAGS):
+        return False
+    return not arguments or has_any_flag(arguments, GIT_TAG_LISTING_FLAGS)
 
 
 def is_read_only_git(arguments):
@@ -798,6 +830,8 @@ def is_read_only_git(arguments):
     while index < len(arguments):
         argument = arguments[index]
         if not argument.startswith("-"):
+            if argument == "tag":
+                return is_read_only_git_tag(arguments[index + 1:])
             return argument in READ_ONLY_GIT_SUBCOMMANDS
         index += 2 if argument in GIT_GLOBAL_OPTIONS_WITH_VALUE else 1
     return True
@@ -1426,8 +1460,23 @@ def workspace_prefixes(workspace):
     return (normalized, os.path.normpath(os.path.join("/private", normalized.lstrip("/"))))
 
 
+def without_flag_patterns(words):
+    kept = []
+    operand_of_a_flag = False
+    for token in words:
+        if operand_of_a_flag:
+            operand_of_a_flag = False
+        elif token in PATTERN_OPERAND_FLAGS:
+            operand_of_a_flag = True
+        else:
+            kept.append(token)
+    return kept
+
+
 def path_operands(tokens):
-    words = [token for token in tokens if token not in BASH_OPERATORS]
+    words = without_flag_patterns(
+        [token for token in tokens if token not in BASH_OPERATORS]
+    )
     if not words or os.path.basename(words[0]) not in PATTERN_OPERAND_COMMANDS:
         return words
     arguments = words[1:]
@@ -1441,22 +1490,81 @@ def scanned_arguments(command):
     try:
         segments = bash_segments(command)
     except ValueError:
-        return [command]
+        return [token.strip(QUOTE_CHARACTERS) for token in TOKEN_SPLIT.split(command) if token]
     return [token for segment in segments for token in path_operands(segment)]
 
 
+def prefix_matcher(prefixes):
+    return prefixes, tuple(prefix + "/" for prefix in prefixes)
+
+
+def under_prefix(path, matcher):
+    prefixes, nested = matcher
+    return path in prefixes or path.startswith(nested)
+
+
+def path_candidates(token):
+    candidates = [] if token.startswith("-") else [token]
+    if "=" in token:
+        assigned = token.partition("=")[2]
+        if assigned:
+            candidates.append(assigned)
+    return candidates
+
+
+def resolved_path(candidate, workspace):
+    if "$" in candidate or "`" in candidate:
+        return None
+    if candidate.startswith("~"):
+        expanded = os.path.expanduser(candidate)
+        return os.path.normpath(expanded) if expanded != candidate else None
+    if candidate.startswith("/"):
+        return os.path.normpath(candidate)
+    return os.path.normpath(os.path.join(workspace, candidate))
+
+
+def home_prefixes():
+    home = os.path.expanduser("~")
+    return workspace_prefixes(home) if home.startswith("/") else ()
+
+
+def sibling_workspace_prefixes(workspace):
+    root = os.path.dirname(os.path.normpath(workspace))
+    if root in ("", "/") or root in SCRATCH_PATH_PREFIXES:
+        return ()
+    return workspace_prefixes(root)
+
+
+def without_substitutions(command):
+    if "$(" not in command and "`" not in command:
+        return command
+    text, replaced = SUBSTITUTION.subn(SUBSTITUTION_PLACEHOLDER, command)
+    while replaced:
+        text, replaced = SUBSTITUTION.subn(SUBSTITUTION_PLACEHOLDER, text)
+    return text
+
+
 def escaping_paths(command, workspace):
-    allowed = workspace_prefixes(workspace)
+    contained = prefix_matcher(workspace_prefixes(workspace))
+    sibling_paths = sibling_workspace_prefixes(workspace)
+    siblings = prefix_matcher(sibling_paths)
+    tolerated = prefix_matcher(TOLERATED_PATH_PREFIXES)
+    outside = prefix_matcher(sibling_paths + home_prefixes())
     escapes = []
-    for argument in scanned_arguments(command):
-        for raw in ABSOLUTE_PATH.findall(argument):
-            candidate = os.path.normpath(raw)
-            if any(candidate == prefix or candidate.startswith(prefix + "/") for prefix in allowed):
+    for token in scanned_arguments(without_substitutions(command)):
+        for candidate in path_candidates(token):
+            resolved = resolved_path(candidate, workspace)
+            if resolved is None or under_prefix(resolved, contained):
                 continue
-            if candidate.startswith(SYSTEM_PATH_PREFIXES):
-                continue
-            escapes.append(candidate)
-    return escapes
+            if under_prefix(resolved, siblings) or not under_prefix(resolved, tolerated):
+                escapes.append(resolved)
+    for raw in ABSOLUTE_PATH.findall(command):
+        embedded = os.path.normpath(raw)
+        if under_prefix(embedded, contained):
+            continue
+        if under_prefix(embedded, outside):
+            escapes.append(embedded)
+    return list(dict.fromkeys(escapes))
 
 
 def workspace_containment_assertion(events, meta):
@@ -2259,6 +2367,79 @@ def test_workspace_escape_is_integrity_error(stage):
     )
     if workspace_containment_assertion(nested, {"workspace_path": "/tmp/ws"})["passed"]:
         raise AssertionError("a nested subagent escape must also be caught")
+
+
+def test_workspace_containment_resolves_paths(stage):
+    workspace = "/tmp/richmond-evals/run/scen"
+    home = os.path.expanduser("~")
+    for command in (
+        './check.sh 2>&1; echo "EXIT: $?"',
+        "cd /tmp/richmond-evals/run/scen && ./check.sh",
+        "R=/tmp/ws; python3 $R/src/cli.py",
+        "npx -y pkg < /dev/null > /tmp/out.txt",
+        'T=$(mktemp -d)/stubrepo; ls "$T"',
+        'echo "MATCH abs /private/var form"',
+        "python3 -c \"import json;json.load(open('$R/.claude/settings.json'))\"",
+    ):
+        found = escaping_paths(command, workspace)
+        if found:
+            raise AssertionError(
+                "a path resolving inside the workspace or into scratch must not be flagged: "
+                "{!r} -> {}".format(command, found)
+            )
+    for command in (
+        "find . -not -path '*/node_modules/*' -not -path './.git/*'",
+        "find . -path ./.git -prune -o -print",
+        "find . -iname '/etc/passwd' -o -name '*/secrets/*'",
+    ):
+        if escaping_paths(command, workspace):
+            raise AssertionError("a pattern passed to a flag is not a path: {!r}".format(command))
+    for command in (
+        "ls /tmp/richmond-evals/run/other-scenario",
+        "ls /tmp/richmond-evals/run",
+        "cd ..",
+        "cat ~/.npmrc",
+        "cat {}/.env".format(home),
+        'echo "unterminated && cat {}/.env'.format(home),
+        "find /Users/dev/real-repo -name '*.py'",
+        "cd /Users/dev/real-repo && grep -rn x .",
+    ):
+        if not escaping_paths(command, workspace):
+            raise AssertionError("a real escape must still be caught: {!r}".format(command))
+    expect_equal(
+        escaping_paths("ls ~/.claude/agents", workspace),
+        [os.path.join(home, ".claude/agents")],
+        "a tilde escape is reported as the path it resolves to",
+    )
+    expect_equal(
+        escaping_paths("ls ~/.claude ~/.claude", workspace),
+        [os.path.join(home, ".claude")],
+        "the same escape is reported once per command",
+    )
+    expect_equal(
+        escaping_paths("ls $(cat pointer)/agents", workspace),
+        [],
+        "a path built by command substitution stays unresolvable",
+    )
+
+
+def test_git_tag_is_read_only_only_when_it_lists(stage):
+    expect_bash_classification(
+        ["git tag", "git tag | tail -5", "git tag --list", "git tag -l 'v*'", "git tag -n5"],
+        False,
+        "listing tags must not count as a mutation",
+    )
+    expect_bash_classification(
+        [
+            "git tag v1.2.3",
+            "git tag -a v1.2.3 -m 'release'",
+            "git tag -d v1.2.3",
+            "git tag --delete v1.2.3",
+            "git tag -f v1.2.3 HEAD",
+        ],
+        True,
+        "creating or deleting a tag is a mutation",
+    )
 
 
 def write_tree(entries):
