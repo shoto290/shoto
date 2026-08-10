@@ -1,7 +1,7 @@
 {
   "name": "git",
-  "description": "Git and pull-request workflows: commit changes, create PRs, and rebase branches onto the default branch with safety backups.",
-  "version": "0.11.1",
+  "description": "Git and pull-request workflows: commit changes, create PRs, rebase branches onto the default branch with safety backups, and open stacked PRs with the github/gh-stack CLI extension.",
+  "version": "0.12.0",
   "dependencies": ["core"],
   "author": {
     "name": "shoto290"

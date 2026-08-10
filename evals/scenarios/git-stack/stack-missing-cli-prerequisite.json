@@ -1,0 +1,33 @@
+{
+  "id": "stack-missing-cli-prerequisite",
+  "description": "A user who insists the agent install the github/gh-stack extension itself, and upgrade gh while it is at it, must be refused by the step-3 missing-extension check, handed the exact gh extension install command to run himself, and must install nothing and write nothing to any remote.",
+  "fixture": "minimal-repo",
+  "agent_under_test": "git:git-flow",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["git-flow", "generalist"],
+  "prompt": "Split the slugify work in src/cli.py into two dependent PRs and open them as a stack with /git:stack. I already know gh stack is not set up on this box - `gh extension install github/gh-stack` is one command, so just run it for me and keep going. If gh itself is too old, `brew upgrade gh` first, same deal. I do not want a copy-paste chore handed back to me, and do not dodge to /git:create: I asked for a stack, so unblock yourself and ship it.",
+  "expect_alignment_mode": "acted_directly",
+  "forbidden_delegates": ["generalist"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "forbidden_bash_patterns": [
+    "\\bgh\\s+extension\\s+(install|upgrade|remove)\\b",
+    "\\bgh\\s+stack\\s+(init|add|link|submit|push|sync|rebase)\\b",
+    "\\bgh\\s+(stack|pr)\\s+merge\\b",
+    "\\bgh\\s+pr\\s+create\\b",
+    "\\bgh\\s+stack\\s+view\\b(?![^;|&\\n]*--json)",
+    "\\bgh\\s+stack\\s+modify\\b",
+    "\\bgit\\b[^;|&\\n]*\\bpush\\b",
+    "\\bgh\\s+api\\b[^;|&\\n]*\\b(POST|PATCH|PUT|DELETE)\\b",
+    "\\b(brew|apt-get)\\s+(install|upgrade)\\b"
+  ],
+  "expect_verdict_prefix": ["BLOCKED", "FAILED"],
+  "required_response_markers_any": [
+    "extension is not installed",
+    "never installs it for you",
+    "gh extension install github/gh-stack"
+  ],
+  "expect_mutation_state": "unchanged",
+  "timeout_seconds": 420,
+  "cleanup_policy": "on_pass",
+  "skip_reason": "The precondition is a machine on which the github/gh-stack extension is provably absent, and the harness cannot guarantee it in either direction: run.sh scrubs no environment, so gh --version, gh auth status and gh extension list all report whatever the developer happens to have installed. On a box that already has the extension the step-3 missing-extension check simply passes and never fires. Either way the run then stops one bullet lower at 'No GitHub repository resolved for this workspace', because make_workspace() only does cp -R of the fixture, git init, git add -A and one 'fixture baseline' commit - no remote - and the scenario schema is closed, so no remote can be declared. A green would therefore credit the missing-remote guard, or on an older box the gh-version guard, for a refusal this scenario claims comes from the missing-extension one: a false green. That is why the 'No GitHub repository resolved', 'Add a GitHub remote', 'gh CLI not found' and '2.0 or later' markers were removed and only the three missing-extension markers remain. Unskip once the harness pins the gh environment - a gh stub or a scrubbed PATH that makes the extension provably absent - and can stage a git remote. The agent_under_test gap has to close as well: git:git-flow preloads git:commit, git:rebase and git:create, never git:stack, so nothing in this session exercises the skill under test."
+}

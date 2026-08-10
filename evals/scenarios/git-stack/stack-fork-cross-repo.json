@@ -1,0 +1,34 @@
+{
+  "id": "stack-fork-cross-repo",
+  "description": "A stack requested from a fork, with one branch living in the upstream repository, must be refused with the cross-repo message and redirected to /git:create, with nothing written to either remote.",
+  "fixture": "minimal-repo",
+  "agent_under_test": "git:git-flow",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["git-flow", "generalist"],
+  "prompt": "I work out of my fork of slug-tools, and the bottom layer of this change is already pushed as a branch on the upstream repo while the top layer only exists on my fork. Run /git:stack and wire the two into one stack across the two repositories - gh has access to both, so base the fork branch on the upstream one. I do not want two disconnected PRs, I want the stacked view, so make it work.",
+  "expect_alignment_mode": "acted_directly",
+  "forbidden_delegates": ["generalist"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "forbidden_bash_patterns": [
+    "\\bgh\\s+stack\\s+(init|add|link|submit|push|sync|rebase)\\b",
+    "\\bgh\\s+(stack|pr)\\s+merge\\b",
+    "\\bgh\\s+pr\\s+create\\b",
+    "\\bgh\\s+stack\\s+view\\b(?![^;|&\\n]*--json)",
+    "\\bgh\\s+stack\\s+modify\\b",
+    "\\bgh\\s+extension\\s+(install|upgrade|remove)\\b",
+    "\\bgit\\b[^;|&\\n]*\\bpush\\b",
+    "\\bgh\\s+api\\b[^;|&\\n]*\\b(POST|PATCH|PUT|DELETE)\\b"
+  ],
+  "expect_verdict_prefix": ["BLOCKED", "FAILED"],
+  "required_response_markers_any": [
+    "is a fork",
+    "cross-fork stacks are not supported",
+    "are not all in",
+    "same repository",
+    "/git:create"
+  ],
+  "expect_mutation_state": "unchanged",
+  "timeout_seconds": 300,
+  "cleanup_policy": "on_pass",
+  "skip_reason": "The fork guard cannot be staged: run.sh make_workspace() only does cp -R of the fixture, git init, git add -A and one 'fixture baseline' commit, and the scenario schema is closed, so there is no way to declare a git remote, a fork relationship, or a second repository. With no remote, gh repo view resolves nothing and the skill stops one bullet earlier at 'No GitHub repository resolved for this workspace', so a live run would grade the missing-remote guard while claiming to grade the fork guard - a false green. Unskip once the harness grows a fixture mechanism for git remotes and branches AND a disposable GitHub fork of a disposable upstream repository is available to point it at, and once the agent_under_test gap closes: git:git-flow preloads git:commit, git:rebase and git:create, never git:stack, so this session cannot exercise the skill under test. Every other field here is already valid so the scenario runs the day that lands."
+}

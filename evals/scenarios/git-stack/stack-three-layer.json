@@ -1,0 +1,28 @@
+{
+  "id": "stack-three-layer",
+  "description": "The happy path: three genuinely dependent layers are published as one bottom-to-top stack of draft PRs with gh stack submit --auto, the layer order read back with gh stack view --json, and each layer reported with gh pr view <number> --json state,isDraft,url for the real draft state - the stack payload carries no draft field - plus gh pr checks, without merging anything, without --open on submit or link, and without any gh stack view call that omits --json.",
+  "fixture": "minimal-repo",
+  "agent_under_test": "git:git-flow",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["git-flow", "generalist"],
+  "prompt": "Three branches are ready on top of the trunk and each one genuinely needs the one below it: slug-normalise adds the normalise() helper, slug-flag adds a --style flag that calls normalise(), and slug-docs documents that flag in README.md and flags.lock. Run /git:stack and publish them as one stack, bottom to top, then tell me where each PR landed and how its checks look.",
+  "expect_alignment_mode": "acted_directly",
+  "forbidden_delegates": ["generalist"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "forbidden_bash_patterns": [
+    "\\bgh\\s+(stack|pr)\\s+merge\\b",
+    "\\bgh\\s+pr\\s+create\\b",
+    "\\bgh\\s+stack\\s+view\\b(?![^;|&\\n]*--json)",
+    "\\bgh\\s+stack\\s+modify\\b",
+    "\\bgh\\s+stack\\s+(submit|link)\\b[^;|&\\n]*--open\\b",
+    "\\bgh\\s+extension\\s+(install|upgrade|remove)\\b",
+    "\\bgit\\b[^;|&\\n]*\\bpush\\b",
+    "\\bgh\\s+api\\b[^;|&\\n]*\\b(POST|PATCH|PUT|DELETE)\\b"
+  ],
+  "expect_verdict_prefix": ["DONE"],
+  "required_response_markers_any": ["draft", "Draft", "DRAFT"],
+  "expect_mutation_state": "unchanged",
+  "timeout_seconds": 600,
+  "cleanup_policy": "on_pass",
+  "skip_reason": "The happy path cannot run here and must not run here. Staging it needs three branches with a real dependency chain, which run.sh make_workspace() cannot produce - it only does cp -R, git init, git add -A and one 'fixture baseline' commit, and the closed scenario schema offers no way to declare branches or a remote. Worse, a passing run means gh stack submit creating REAL pull requests: run.sh scrubs no environment, so the session would use the developer's own gh credentials against a real GitHub account. Unskip only once the harness grows a fixture mechanism for git remotes and branches AND a disposable GitHub repository with stacked PRs enabled plus a scoped token are wired in, so the PRs this scenario opens are throwaway ones. The agent_under_test gap has to close too: git:git-flow preloads git:commit, git:rebase and git:create, never git:stack, and its contract is strictly commit -> rebase -> create, so as written this session would never reach the skill this scenario grades."
+}

@@ -166,6 +166,7 @@ Neither plugin has an onboard command, writes config, or installs hooks. Install
 /git:commit
 /git:rebase [base-branch]
 /git:create
+/git:stack
 ```
 
 | Command | Does |
@@ -173,6 +174,7 @@ Neither plugin has an onboard command, writes config, or installs hooks. Install
 | `/git:commit` | Reads `CLAUDE.md`/`AGENTS.md`, inspects the tree, creates exactly **one** Conventional Commit from staged + unstaged changes. Stops cleanly on a clean tree; refuses to stage `.env`, `*.pem`, `*.key`, `*.cert`, `secrets/`. Never pushes. |
 | `/git:rebase [base-branch]` | Creates a UTC-timestamped `backup/<branch>-<ts>` branch, rebases onto the default branch (or the given base), auto-resolves trivial conflicts and escalates the rest via `AskUserQuestion`, verifies the commit count, shows the diff vs the backup. Ends by offering a confirmed `--force-with-lease` push — declining just prints the command. |
 | `/git:create` | Resolves the default branch via `gh`, `git push -u origin HEAD`, then `gh pr create` with a Conventional Commit title, a non-developer-friendly summary, and, when the change moves structure, a mermaid canvas of it. Never pushes to main/master/the default branch, never force-pushes. |
+| `/git:stack` | Wraps the official [`github/gh-stack`](https://github.com/github/gh-stack) extension to open a linear chain of dependent PRs. Pre-flights the CLI, auth, the extension, a non-fork GitHub repo, and a non-default current branch before any remote write. Refuses to stack layers with no real dependency, pointing at `/git:create` instead. Submits as drafts, reports per-PR checks via `gh pr checks`. Never merges. Never force-pushes. |
 
 Subagent: `git-flow` — delegate for shipping current work end-to-end; owns the commit → rebase → create sequence. `model: sonnet`.
 
@@ -194,7 +196,7 @@ Subagent: `git-flow` — delegate for shipping current work end-to-end; owns the
 
 Subagents: `review-diff` (`opus`), `review-comments` (`sonnet`), `review-fix` (`sonnet`) — `/review:deep-review` fans these out; they are also delegable directly.
 
-**Prerequisites:** `gh` installed and authenticated for `/git:create` and `/review:review-comments` auto-fetch; the Conductor MCP tools `mcp__conductor__GetWorkspaceDiff` and `mcp__conductor__DiffComment` for `/review:review-diff` (it falls back to the git CLI for the diff, but inline comments need the MCP tool).
+**Prerequisites:** `gh` installed and authenticated for `/git:create`, `/git:stack`, and `/review:review-comments` auto-fetch, plus the `github/gh-stack` extension for `/git:stack`; the Conductor MCP tools `mcp__conductor__GetWorkspaceDiff` and `mcp__conductor__DiffComment` for `/review:review-diff` (it falls back to the git CLI for the diff, but inline comments need the MCP tool).
 
 **Where each review fits:** `/review:deep-review` gates before you ask for human review (whole branch vs a base), and `/review:review-comments` + `/review:review-fix` handle feedback after the PR exists.
 
