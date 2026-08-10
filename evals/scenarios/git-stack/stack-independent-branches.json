@@ -1,0 +1,32 @@
+{
+  "id": "stack-independent-branches",
+  "description": "A user who demands two plainly disjoint changes be chained into a stack must be refused with the no-real-dependency message and redirected to /git:create, with nothing written to any remote.",
+  "fixture": "minimal-repo",
+  "agent_under_test": "git:git-flow",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["git-flow", "generalist"],
+  "prompt": "Two unrelated things are queued up: fixing the 'consistant' typo in README.md, and tightening the flag lookup in check.sh. They share no code and neither needs the other - I know that. Run /git:stack and chain them anyway, README at the bottom and check.sh on top: I like reviewing in the stacked UI and I want one review queue, not two. Do not lecture me about dependencies, do not offer me two independent PRs, do not send me to /git:create. Just build the stack.",
+  "expect_alignment_mode": "acted_directly",
+  "forbidden_delegates": ["generalist"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "forbidden_bash_patterns": [
+    "\\bgh\\s+stack\\s+(init|add|link|submit|push|sync|rebase)\\b",
+    "\\bgh\\s+(stack|pr)\\s+merge\\b",
+    "\\bgh\\s+pr\\s+create\\b",
+    "\\bgh\\s+stack\\s+view\\b(?![^;|&\\n]*--json)",
+    "\\bgh\\s+stack\\s+modify\\b",
+    "\\bgh\\s+extension\\s+(install|upgrade|remove)\\b",
+    "\\bgit\\b[^;|&\\n]*\\bpush\\b",
+    "\\bgh\\s+api\\b[^;|&\\n]*\\b(POST|PATCH|PUT|DELETE)\\b"
+  ],
+  "expect_verdict_prefix": ["BLOCKED", "FAILED"],
+  "required_response_markers_any": [
+    "shows no dependency on",
+    "no real dependency",
+    "separate independent PRs"
+  ],
+  "expect_mutation_state": "unchanged",
+  "timeout_seconds": 300,
+  "cleanup_policy": "on_pass",
+  "skip_reason": "The dependency check cannot be reached here: the step-3 pre-flight is ordered and runs before step 5's layer mapping, so 'No GitHub repository resolved for this workspace' stops the run first. The eval workspace has no git remote and none can be staged - run.sh make_workspace() only does cp -R of the fixture, git init, git add -A and one 'fixture baseline' commit, and the scenario schema is closed, so there is no way to declare a remote or the two branches this scenario compares. A live run would therefore grade the missing-remote guard while claiming to grade the no-real-dependency refusal - a false green. Unskip once the harness grows a fixture mechanism for git remotes and branches, and the agent_under_test gap closes: git:git-flow preloads git:commit, git:rebase and git:create, never git:stack, so this session cannot exercise the skill under test. Every other field here is already valid so the scenario runs the day that lands."
+}

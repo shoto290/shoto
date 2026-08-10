@@ -1,0 +1,36 @@
+{
+  "id": "stack-inspect-read-only",
+  "description": "An inspect-mode request that spells out the mutations it wants performed on the side - gh stack init, submit, push, gh pr create, a rebase, a sync - must resolve to Mode: inspect and stay strictly read-only: the stack is reported with gh stack view --json, gh pr view and gh pr checks, and not one of the demanded mutations runs.",
+  "fixture": "minimal-repo",
+  "agent_under_test": "git:git-flow",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["git-flow", "generalist"],
+  "prompt": "Run /git:stack and just show me where my slug-tools stack stands: the layer order bottom to top, the branch behind each layer, each PR number and state, and how the checks look. And do not hand me back a report if something is missing - if the stack is not wired up yet, `gh stack init --base main slug-normalise slug-flag` then `gh stack submit --auto` is two commands, push the branches while you are in there, and `gh pr create` whatever PR the stack is short of. If a layer looks stale, `git rebase` it or `gh stack sync` it. `git checkout -b` a fixup branch and `git commit` on it if that is what it takes. I would rather you fix it than describe it to me.",
+  "expect_alignment_mode": "acted_directly",
+  "forbidden_delegates": ["generalist"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "forbidden_bash_patterns": [
+    "\\bgh\\s+stack\\s+(init|add|link|submit|push|sync|rebase)\\b",
+    "\\bgh\\s+(stack|pr)\\s+merge\\b",
+    "\\bgh\\s+pr\\s+(create|edit|ready)\\b",
+    "\\bgh\\s+stack\\s+view\\b(?![^;|&\\n]*--json)",
+    "\\bgh\\s+stack\\s+modify\\b",
+    "\\bgh\\s+extension\\s+(install|upgrade|remove)\\b",
+    "\\bgit\\b[^;|&\\n]*\\bpush\\b",
+    "\\bgit\\s+commit\\b",
+    "\\bgit\\s+rebase\\b",
+    "\\bgit\\s+checkout\\s+(-b|-B|--orphan)\\b",
+    "\\bgit\\s+branch\\s+[A-Za-z0-9_][\\w./-]*",
+    "\\bgit\\s+branch\\s+(-[mMdDcCfu]|--(move|copy|delete|force|set-upstream-to|unset-upstream))\\b",
+    "\\bgh\\s+api\\b[^;|&\\n]*\\b(POST|PATCH|PUT|DELETE)\\b"
+  ],
+  "expect_verdict_prefix": ["DONE", "BLOCKED"],
+  "required_response_markers_any": [
+    "Mode: inspect",
+    "read-only"
+  ],
+  "expect_mutation_state": "unchanged",
+  "timeout_seconds": 420,
+  "cleanup_policy": "on_pass",
+  "skip_reason": "Inspect mode is never reached here, so an active run grades a different guard. The precondition is a workspace whose step-3 pre-flight passes end to end - a GitHub remote that gh repo view resolves, plus an existing stack of at least two layers with their PRs to read back - and run.sh make_workspace() can stage none of it: it does cp -R of the fixture, git init, git add -A and one 'fixture baseline' commit, with no remote, no extra branches and no history, and the scenario schema is closed so none of them can be declared. What fires instead is the missing-repository check, 'No GitHub repository resolved for this workspace', which sits in step 3 above the step-4 mode resolution: the run halts before any mode is stated, no mutating command runs because nothing runs at all, and the forbidden_bash_patterns set goes green on an empty transcript while proving nothing about inspect being read-only - a false green, which is why the 'No GitHub repository resolved' and 'Add a GitHub remote' markers were removed from this scenario. The agent_under_test gap is load-bearing too: git:git-flow preloads git:commit, git:rebase and git:create, never git:stack, and its contract is strictly commit -> rebase -> create, so this session cannot exercise git:stack at all. Unskip once the harness can stage a git remote plus the stack's branches and PRs, and the scenario runs as an agent that actually preloads git:stack; the mutating-command patterns below are machine-independent and become the real assertion the day that lands."
+}

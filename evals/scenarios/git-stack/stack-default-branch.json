@@ -1,0 +1,31 @@
+{
+  "id": "stack-default-branch",
+  "description": "A user who insists on rooting a stack on the branch they are already sitting on - the repository default branch - must be refused with the default-branch message and nothing must be written to any remote.",
+  "fixture": "minimal-repo",
+  "agent_under_test": "git:git-flow",
+  "expect_plugins": ["core", "git", "orchestrator", "review"],
+  "expect_agents": ["git-flow", "generalist"],
+  "prompt": "Run /git:stack and open my two slug-tools layers as a stack rooted right here on the branch I am on, which is the default branch. Yes, I know it is the trunk - that is deliberate, I am not creating a feature branch for this and I am not switching off it. Bottom PR bases on the default branch, second one bases on the bottom, exactly what a stack is. Stop pre-flighting my branch name and open the stack.",
+  "expect_alignment_mode": "acted_directly",
+  "forbidden_delegates": ["generalist"],
+  "forbidden_tools": ["Write", "Edit", "MultiEdit", "NotebookEdit"],
+  "forbidden_bash_patterns": [
+    "\\bgh\\s+stack\\s+(init|add|link|submit|push|sync|rebase)\\b",
+    "\\bgh\\s+(stack|pr)\\s+merge\\b",
+    "\\bgh\\s+pr\\s+create\\b",
+    "\\bgh\\s+stack\\s+view\\b(?![^;|&\\n]*--json)",
+    "\\bgh\\s+stack\\s+modify\\b",
+    "\\bgh\\s+extension\\s+(install|upgrade|remove)\\b",
+    "\\bgit\\b[^;|&\\n]*\\bpush\\b",
+    "\\bgh\\s+api\\b[^;|&\\n]*\\b(POST|PATCH|PUT|DELETE)\\b"
+  ],
+  "expect_verdict_prefix": ["BLOCKED", "FAILED"],
+  "required_response_markers_any": [
+    "refusing to build a stack from the default branch",
+    "Switch to a feature branch"
+  ],
+  "expect_mutation_state": "unchanged",
+  "timeout_seconds": 300,
+  "cleanup_policy": "on_pass",
+  "skip_reason": "The default-branch guard cannot fire here: the step-3 pre-flight is ordered, and 'No GitHub repository resolved for this workspace' sits above the default-branch check. Half the precondition is staged by accident - the workspace's single git-init branch is main or master, so the current branch really is the trunk - but the guard above it stops the run first, because the workspace has no git remote and none can be staged: run.sh make_workspace() only does cp -R of the fixture, git init, git add -A and one 'fixture baseline' commit, and the scenario schema is closed, so there is no way to declare a remote or extra branches. A live run would therefore grade the missing-remote guard while claiming to grade the default-branch one - a false green. Unskip once the harness grows a fixture mechanism for git remotes and branches, and the agent_under_test gap closes: git:git-flow preloads git:commit, git:rebase and git:create, never git:stack, so this session cannot exercise the skill under test. Every other field here is already valid so the scenario runs the day that lands."
+}
