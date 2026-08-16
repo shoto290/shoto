@@ -106,7 +106,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Allowed opening tokens for the final assistant text; at least one must prefix it. This repo's answer contract (core:response-style, enforced by plugins/orchestrator/hooks/response-style-card.sh) emits exactly DONE, BLOCKED, or FAILED, so those are the tokens to expect.",
+      "description": "Allowed opening tokens for the final assistant text; at least one must prefix it. This repo's answer contract (core:response-style) emits exactly DONE, BLOCKED, or FAILED, so those are the tokens to expect.",
       "examples": [
         [
           "DONE"
