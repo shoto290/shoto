@@ -8,7 +8,7 @@ allowed-tools: [AskUserQuestion, Read, Glob, Bash, Agent]
 
 # Onboard
 
-`onboard` runs **two independent flows**. **Flow A** sets up a **committed project orchestrator**: a short PROJECT interview (stack + conventions) produces a thin-wrapper agent under `.claude/agents/` that **inherits** the live `orchestrator:orchestrator` contract verbatim plus an injected `## Project profile` block; each teammate opts in locally by setting `"agent": "<name>"` in the gitignored `.claude/settings.local.json`. **Flow B** is optional and per-user: if the user wants to personalize for themselves, the SAME 3-round personal interview produces a user-scope `operator-profile` skill written to `~/.claude/skills/` — outside the repo, never committed, preloaded into orchestrators by name. The skill never writes files itself — it delegates every write and commit to a `orchestrator:generalist` subagent. On re-run, if an orchestrator already exists, the very first question is **Keep as-is vs Reconfigure**.
+`onboard` runs **two independent flows**. **Flow A** sets up a **committed project orchestrator**: a short PROJECT interview (stack + conventions) produces a thin-wrapper agent under `.claude/agents/` that **inherits** the live `orchestrator:orchestrator` contract verbatim plus an injected `## Project profile` block; each teammate opts in locally by setting `"agent": "<name>"` in the gitignored `.claude/settings.local.json`. **Flow B** is optional and per-user: if the user wants to personalize for themselves, the SAME 3-round personal interview produces a user-scope `operator-profile` skill written to `~/.claude/skills/` — outside the repo, never committed, preloaded into orchestrators by name. The skill never writes files itself — it delegates every write and commit to a `orchestrator:generalist` subagent. On re-run, if an orchestrator already exists, the very first question is **Update vs Modify vs Keep as-is**.
 
 ```
 /orchestrator:onboard
@@ -16,7 +16,7 @@ allowed-tools: [AskUserQuestion, Read, Glob, Bash, Agent]
  ├─ locate LIVE orchestrator:orchestrator (source of truth)           [§2 unchanged]
  ├─ FLOW A — PROJECT orchestrator (committed)
  │   ├─ detect existing by `## Project profile` signature
- │   │    └─ found → gate: Keep as-is | Reconfigure
+ │   │    └─ found → gate: Update | Modify | Keep as-is
  │   └─ PROJECT interview (2 rounds) → build agent (mirror + ## Project profile)
  ├─ FLOW B — personal operator-profile (optional, user-scope)
  │   ├─ gate: "personalize for yourself too?" yes | no
@@ -53,7 +53,7 @@ Also `test -f` the response-style card script at this skill's own `scripts/respo
 Find any orchestrator this skill previously committed to the repo:
 
 - `Glob` `.claude/agents/*.md`; `Read` each and select those whose body contains a `## Project profile` block AND whose frontmatter `skills:` list contains an entry whose **bare name** (the part after the colon) is `orchestrator` — this skill's own contract skill, as captured live in §2. Match the bare name, **not** the full `namespace:name`: that keeps wrappers generated under an earlier plugin namespace (e.g. `core:orchestrator`) detectable. Other onboarding commands can write their own profile-carrying wrappers into the same directory; requiring this skill's own contract skill in the mirrored `skills:` list is what keeps them out.
-- If **exactly one** → that is the existing project orchestrator; capture its `name:` and its `## Project profile` block.
+- If **exactly one** → that is the existing project orchestrator; capture its `name:`, its `description:`, and its `## Project profile` block.
 - If **multiple** → ask via `AskUserQuestion` which one is the target.
 - If **none** → this is a fresh creation; skip the §4 gate and go straight to the PROJECT interview (§5).
 
@@ -61,14 +61,15 @@ Also Read `.claude/settings.local.json` and capture any top-level `agent` value 
 
 ## 4. First-question gate (re-run only)
 
-Runs **only** when §3 found an existing orchestrator, **before** the PROJECT interview. `AskUserQuestion` with two options:
+Runs **only** when §3 found an existing orchestrator, **before** the PROJECT interview. `AskUserQuestion` with three options:
 
+- **Update** — no PROJECT interview, no questions. Re-mirror the behavior-contract frontmatter (`disallowedTools`, `skills`, `color`, and `model` when present) and the verbatim one-sentence body from the LIVE source orchestrator captured in §2, then rewrite the **same file/name** in place. The detected `## Project profile` block is carried over **verbatim** — never re-derived, never re-asked — and `name:` and `description:` are preserved from the detected file. This path also does everything **Keep as-is** does: install the script (§11 step 2), add the literal `hooks:` block from §8 when the existing frontmatter carries none, wire `settings.local.json` + `.gitignore`. It then proceeds to FLOW B (§6) and the final delegation/report.
+- **Modify** — prefill the PROJECT interview defaults from the detected `## Project profile`, proceed to §5, and rewrite the **same file/name** in place (no rename).
 - **Keep as-is** — no PROJECT interview, `## Project profile` untouched. Wire the local opt-in (the keep path of §11): merge `.claude/settings.local.json` `"agent": "<name>"` (preserve siblings); ensure `.gitignore` covers `.claude/settings.local.json`. Also install the script (§11 step 2) and, when the existing agent's frontmatter carries no `hooks:` block, add the literal block from §8 — the only edit this path makes to the agent file. This path does **NOT** stop here — it skips the PROJECT interview but STILL proceeds to FLOW B (§6) and the final delegation/report.
-- **Reconfigure** — prefill the PROJECT interview defaults from the detected `## Project profile`, proceed to §5, and rewrite the **same file/name** in place (no rename).
 
 ## 5. PROJECT interview (Flow A — 2 rounds via AskUserQuestion)
 
-Run two `AskUserQuestion` rounds. Each option set is ≤4 options; rely on the automatic free-text **Other** for anything outside the list. On a **Reconfigure** (§4), pre-select / pre-fill every option from the detected `## Project profile`.
+Run two `AskUserQuestion` rounds. Each option set is ≤4 options; rely on the automatic free-text **Other** for anything outside the list. On a **Modify** (§4), pre-select / pre-fill every option from the detected `## Project profile`.
 
 - **Round A — Stack & project type**
   1. Project type — Web app · API/Backend service · CLI/Tool · Library/SDK
@@ -113,7 +114,7 @@ Collect the answers into a single resolved **operator profile** used in §9.
 ## 7. Resolve name & location
 
 - Location is **always** `.claude/agents/<name>.md` in the repo — a committed artifact. There is no global/project question.
-- On **Reconfigure** → reuse the detected name/path; do **not** rename.
+- On **Update** or **Modify** → reuse the detected name/path; do **not** rename.
 - On **fresh** → derive the default name `<repo>-orchestrator`, where `<repo>` is the kebab-cased basename of `git rev-parse --show-toplevel`. Confirm it or let the user override via `AskUserQuestion` (with Other). The name MUST be kebab-case and unique among existing agents.
 - The `settings.local.json` `agent` value equals the **bare** `name:` — NOT plugin-namespaced, since this is not a plugin agent.
 
@@ -155,6 +156,8 @@ If the source declared `model`, include the mirrored `model` line; otherwise omi
 
 The `hooks:` block is written **literally as shown above** — it is deliberately NOT mirrored from the source agent, because `hooks:` is ignored for plugin subagents and only takes effect for a project-level agent running as the main session.
 
+On the **Update** path (§4), `name`, `description`, and the `## Project profile` block are taken **verbatim** from the detected file while everything else is re-mirrored from §2 — the same assembly, a different source for the three personalized parts.
+
 ## 9. Build the operator-profile skill content
 
 Produced **only** when §6 ran with personalize=**yes** AND the user chose **Reconfigure** or it is a fresh personal profile. Assemble the user-scope skill from the operator profile resolved in §6:
@@ -195,7 +198,7 @@ This skill MUST NOT Write/Edit itself — it may run under the no-write orchestr
 3. IF §6 produced an operator profile to write: write/overwrite `~/.claude/skills/operator-profile/SKILL.md` (expand `~`, create parent dirs). This lives OUTSIDE the repo and is **per-user** — NEVER `git add` it, NEVER add it to `.gitignore`. Skip this step entirely when personalize=no, or Keep, or Skip.
 4. Merge into `<repo>/.claude/settings.local.json`: set the top-level key `"agent": "<name>"`. If the file is absent, create it as `{ "agent": "<name>" }`. If present, ADD/REPLACE only the `agent` key and PRESERVE all sibling keys (e.g. `ultracode`) — never replace the whole object.
 5. Ensure `.gitignore` covers `.claude/settings.local.json` (append the line if missing). The agent file is NOT gitignored.
-6. If the user chose **Proceed & commit**: run a targeted commit — `git add .claude/agents/<name>.md` plus `.claude/hooks/response-style-card.sh` if step 2 copied it, plus `.gitignore` ONLY if it changed, then `git commit` with a Conventional Commit message: `feat(orchestrator): add <name> project orchestrator` (fresh) or `chore(orchestrator): reconfigure <name>` (reconfigure). NEVER `git add` `settings.local.json`; NEVER `git add` anything under `~/.claude/`. No co-author line, no "Generated with Claude Code".
+6. If the user chose **Proceed & commit**: run a targeted commit — `git add .claude/agents/<name>.md` plus `.claude/hooks/response-style-card.sh` if step 2 copied it, plus `.gitignore` ONLY if it changed, then `git commit` with a Conventional Commit message: `feat(orchestrator): add <name> project orchestrator` (fresh), `chore(orchestrator): reconfigure <name>` (Modify), or `chore(orchestrator): update <name> to the current contract` (Update). NEVER `git add` `settings.local.json`; NEVER `git add` anything under `~/.claude/`. No co-author line, no "Generated with Claude Code".
 7. Return the list of paths written/updated and the commit result (or "no commit").
 
 After the subagent returns, report what changed.
@@ -219,4 +222,4 @@ Flag that a Claude Code **restart is required** for the new default agent (and a
 - **The personal profile is a separate per-user skill.** Flow B writes a USER-SCOPE `operator-profile` skill to `~/.claude/skills/`, never committed, always preloaded by name via the mirrored `skills:` list — and graceful (skipped with a debug warning) when the user never created it.
 - **No hardcoding.** Behavior, skills, and the body sentence are always read live from the installed core orchestrator (§2); only identity and the `## Project profile` block are personalized.
 - **The skill never writes files itself.** It delegates every write and the commit to `orchestrator:generalist`, staying compatible with the no-write orchestrator contract.
-- **Re-runnable with a first-question gate.** An existing orchestrator → Keep as-is (skip the project interview, still personalize) or Reconfigure (rewrite the committed file in place).
+- **Re-runnable with a first-question gate.** An existing orchestrator → Update (re-mirror the live contract, profile carried over verbatim, no questions), Modify (re-interview from the detected defaults, rewrite the committed file in place), or Keep as-is (skip the project interview, still personalize).
