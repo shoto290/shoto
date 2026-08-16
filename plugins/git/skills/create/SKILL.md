@@ -1,19 +1,19 @@
 ---
 name: create
-description: 'Opens a pull request and pushes the current branch.'
-when_to_use: 'The user asks to open a pull request or to push the current branch up for review.'
+description: 'Commits any uncommitted changes, then opens a pull request and pushes the current branch.'
+when_to_use: 'The user asks to open a pull request or to push the current branch up for review, including when the working tree still has uncommitted changes. Not for committing without opening a pull request — use /git:commit instead.'
 argument-hint: '(none — operates on the current branch)'
 allowed-tools: Bash, Read
 ---
 
 # create
 
-Open a pull request for the current branch with a Conventional Commit title, a short non-developer-friendly summary, and a mermaid canvas of what moved.
+Commit any uncommitted changes, then open a pull request for the current branch with a Conventional Commit title, a short non-developer-friendly summary, and a mermaid canvas of what moved.
 
 ## Prerequisites
 
 - `gh` CLI installed and authenticated. If `gh auth status` fails, stop and tell the user to run `gh auth login`.
-- Current branch has at least one commit ahead of the repository's default branch.
+- Current branch has at least one commit ahead of the repository's default branch, or uncommitted changes that will be committed first.
 
 ## Steps
 
@@ -40,7 +40,9 @@ Run these together:
 
 ### 4. Pre-flight checks
 
-- If `git status --porcelain` is non-empty, note the uncommitted changes in the output and proceed — the PR is built from commits already ahead of `<base>`; uncommitted changes are left in the working tree.
+In order:
+
+- If `git status --porcelain` is non-empty, follow the [`git:commit` skill](../commit/SKILL.md) to stage and create one Conventional Commit before continuing. Its own hard stops still apply and abort this flow (secrets detected, protected branch, clean tree). After it succeeds, re-run `git log <base>..HEAD --oneline` and `git diff <base>...HEAD --stat` so the PR title and body reflect the new commit.
 - If `git log <base>..HEAD` is empty, stop with: `No commits ahead of <base>; nothing to create a PR for.`
 
 ### 5. Determine the Conventional Commit type
