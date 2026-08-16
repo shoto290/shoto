@@ -8,6 +8,8 @@ MANIFEST_VALIDATOR="scripts/check-manifests.py"
 EVAL_VERIFIER="evals/verify.py"
 EVAL_RUNNER="evals/run.sh"
 EVAL_SCENARIOS_DIR="evals/scenarios"
+RESPONSE_CARD_TEMPLATE="plugins/orchestrator/skills/onboard/scripts/response-style-card.sh"
+RESPONSE_CARD_COPY=".claude/hooks/response-style-card.sh"
 
 SCRATCH="$(mktemp -d)"
 trap 'rm -rf "$SCRATCH"' EXIT
@@ -116,6 +118,23 @@ check_eval_replay() {
   return 1
 }
 
+check_response_card_copy() {
+  local path
+  for path in "$RESPONSE_CARD_TEMPLATE" "$RESPONSE_CARD_COPY"; do
+    if [ ! -f "$path" ]; then
+      printf 'RESPONSE CARD ERROR: %s is missing -> copy %s to %s so both stay byte-identical\n' \
+        "$path" "$RESPONSE_CARD_TEMPLATE" "$RESPONSE_CARD_COPY" >&2
+      return 1
+    fi
+  done
+  if cmp -s "$RESPONSE_CARD_TEMPLATE" "$RESPONSE_CARD_COPY"; then
+    return 0
+  fi
+  printf 'RESPONSE CARD ERROR: %s and %s have drifted apart -> re-copy the template with cp %s %s\n' \
+    "$RESPONSE_CARD_TEMPLATE" "$RESPONSE_CARD_COPY" "$RESPONSE_CARD_TEMPLATE" "$RESPONSE_CARD_COPY" >&2
+  return 1
+}
+
 run_category() {
   local label=$1
   shift
@@ -133,6 +152,7 @@ run_category "json syntax" check_json
 run_category "workflow scripts" check_workflows
 run_category "shell scripts" check_shell
 run_category "manifest consistency" python3 "$MANIFEST_VALIDATOR"
+run_category "response style card copy" check_response_card_copy
 run_category "eval scenario schema" check_eval_scenarios
 run_category "eval verifier self-tests" check_eval_self_test
 run_category "eval fake-transcript replay" check_eval_replay

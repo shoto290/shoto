@@ -44,6 +44,8 @@ This skill owns the interviews, sourcing, name resolution, and rendering. All fi
 
 `Read` the matched file. From its **frontmatter**, capture the behavior-contract keys to mirror **verbatim** into the generated wrapper: `disallowedTools`, `skills`, `color`, and `model` only if it is present. From its **body**, capture the single-sentence operating instruction **verbatim** — the wrapper reuses it unchanged, before the profile block. The mirrored `skills:` list now carries `operator-profile` from upstream automatically, so the generated wrapper inherits the personal profile by name with no special-casing here.
 
+Also `test -f` the response-style card script at this skill's own `scripts/response-style-card.sh` — existence only, never `Read` its contents. If it is **missing**, continue **without the hook** — never block: omit the `hooks:` block (§8), skip the copy (§11), and report the skip (§12).
+
 **Never hardcode the orchestrator's behavior or skills list.** Always read them live here so the generated wrapper tracks upstream changes to `orchestrator:orchestrator`. If no source matches, tell the user the `orchestrator` plugin must be installed and **stop** — there is nothing to inherit.
 
 ## 3. Detect existing project orchestrator (re-run aware)
@@ -61,7 +63,7 @@ Also Read `.claude/settings.local.json` and capture any top-level `agent` value 
 
 Runs **only** when §3 found an existing orchestrator, **before** the PROJECT interview. `AskUserQuestion` with two options:
 
-- **Keep as-is** — no PROJECT interview, agent untouched. Wire the local opt-in (the keep path of §11): merge `.claude/settings.local.json` `"agent": "<name>"` (preserve siblings); ensure `.gitignore` covers `.claude/settings.local.json`. This path does **NOT** stop here — it skips the PROJECT interview but STILL proceeds to FLOW B (§6) and the final delegation/report.
+- **Keep as-is** — no PROJECT interview, `## Project profile` untouched. Wire the local opt-in (the keep path of §11): merge `.claude/settings.local.json` `"agent": "<name>"` (preserve siblings); ensure `.gitignore` covers `.claude/settings.local.json`. Also install the script (§11 step 2) and, when the existing agent's frontmatter carries no `hooks:` block, add the literal block from §8 — the only edit this path makes to the agent file. This path does **NOT** stop here — it skips the PROJECT interview but STILL proceeds to FLOW B (§6) and the final delegation/report.
 - **Reconfigure** — prefill the PROJECT interview defaults from the detected `## Project profile`, proceed to §5, and rewrite the **same file/name** in place (no rename).
 
 ## 5. PROJECT interview (Flow A — 2 rounds via AskUserQuestion)
@@ -126,6 +128,16 @@ description: "<repo>'s project orchestrator: generalist coordinator tuned to thi
 disallowedTools: <mirrored verbatim from source>
 skills: <mirrored verbatim from source>
 color: <mirrored from source>
+hooks:
+  UserPromptSubmit:
+    - hooks:
+        - type: command
+          command: sh "$CLAUDE_PROJECT_DIR/.claude/hooks/response-style-card.sh" UserPromptSubmit
+  SessionStart:
+    - matcher: "startup|resume|clear|compact"
+      hooks:
+        - type: command
+          command: sh "$CLAUDE_PROJECT_DIR/.claude/hooks/response-style-card.sh" SessionStart
 ---
 
 <verbatim one-sentence body from the source orchestrator>
@@ -140,6 +152,8 @@ Apply this profile to every task: respect this project's stack, test/lint comman
 ```
 
 If the source declared `model`, include the mirrored `model` line; otherwise omit it.
+
+The `hooks:` block is written **literally as shown above** — it is deliberately NOT mirrored from the source agent, because `hooks:` is ignored for plugin subagents and only takes effect for a project-level agent running as the main session.
 
 ## 9. Build the operator-profile skill content
 
@@ -168,7 +182,7 @@ This skill MUST stay **preloadable**: never add `disable-model-invocation: true`
 
 Before any write, one `AskUserQuestion` summarizing the planned effect of BOTH flows — the agent committed to `.claude/agents/<name>.md`; the optional `~/.claude/skills/operator-profile/SKILL.md` if §6 produced one; `settings.local.json` stays local/gitignored; `.gitignore` is ensured — with three options:
 
-- **Proceed & commit** — write everything and run the targeted commit (§11.5).
+- **Proceed & commit** — write everything and run the targeted commit (§11.6).
 - **Proceed, no commit** — write everything, skip the commit.
 - **Cancel** — stop with nothing written.
 
@@ -177,11 +191,12 @@ Before any write, one `AskUserQuestion` summarizing the planned effect of BOTH f
 This skill MUST NOT Write/Edit itself — it may run under the no-write orchestrator. Spawn **one** `orchestrator:generalist` subagent via `Agent`, passing the full resolved file content(s) from §8 (and §9 when produced) and these exact instructions:
 
 1. Write/overwrite the orchestrator markdown to `<repo>/.claude/agents/<name>.md` (create parent dirs). This is a **COMMITTED** artifact — do NOT add it to `.gitignore`.
-2. IF §6 produced an operator profile to write: write/overwrite `~/.claude/skills/operator-profile/SKILL.md` (expand `~`, create parent dirs). This lives OUTSIDE the repo and is **per-user** — NEVER `git add` it, NEVER add it to `.gitignore`. Skip this step entirely when personalize=no, or Keep, or Skip.
-3. Merge into `<repo>/.claude/settings.local.json`: set the top-level key `"agent": "<name>"`. If the file is absent, create it as `{ "agent": "<name>" }`. If present, ADD/REPLACE only the `agent` key and PRESERVE all sibling keys (e.g. `ultracode`) — never replace the whole object.
-4. Ensure `.gitignore` covers `.claude/settings.local.json` (append the line if missing). The agent file is NOT gitignored.
-5. If the user chose **Proceed & commit**: run a targeted commit — `git add .claude/agents/<name>.md` plus `.gitignore` ONLY if it changed, then `git commit` with a Conventional Commit message: `feat(orchestrator): add <name> project orchestrator` (fresh) or `chore(orchestrator): reconfigure <name>` (reconfigure). NEVER `git add` `settings.local.json`; NEVER `git add` anything under `~/.claude/`. No co-author line, no "Generated with Claude Code".
-6. Return the list of paths written/updated and the commit result (or "no commit").
+2. Copy the script with one `Bash` call — never `Read` it into context and `Write` it back: `mkdir -p <repo>/.claude/hooks && cp <src> <repo>/.claude/hooks/response-style-card.sh`. This is a **COMMITTED** artifact — do NOT add it to `.gitignore`.
+3. IF §6 produced an operator profile to write: write/overwrite `~/.claude/skills/operator-profile/SKILL.md` (expand `~`, create parent dirs). This lives OUTSIDE the repo and is **per-user** — NEVER `git add` it, NEVER add it to `.gitignore`. Skip this step entirely when personalize=no, or Keep, or Skip.
+4. Merge into `<repo>/.claude/settings.local.json`: set the top-level key `"agent": "<name>"`. If the file is absent, create it as `{ "agent": "<name>" }`. If present, ADD/REPLACE only the `agent` key and PRESERVE all sibling keys (e.g. `ultracode`) — never replace the whole object.
+5. Ensure `.gitignore` covers `.claude/settings.local.json` (append the line if missing). The agent file is NOT gitignored.
+6. If the user chose **Proceed & commit**: run a targeted commit — `git add .claude/agents/<name>.md` plus `.claude/hooks/response-style-card.sh` if step 2 copied it, plus `.gitignore` ONLY if it changed, then `git commit` with a Conventional Commit message: `feat(orchestrator): add <name> project orchestrator` (fresh) or `chore(orchestrator): reconfigure <name>` (reconfigure). NEVER `git add` `settings.local.json`; NEVER `git add` anything under `~/.claude/`. No co-author line, no "Generated with Claude Code".
+7. Return the list of paths written/updated and the commit result (or "no commit").
 
 After the subagent returns, report what changed.
 
@@ -190,6 +205,7 @@ After the subagent returns, report what changed.
 Summarize:
 
 - the committed orchestrator path and the captured `## Project profile`,
+- the copied `.claude/hooks/response-style-card.sh` path, warning that project-level frontmatter hooks are **silently skipped until the folder is accepted in the workspace-trust dialog** and that a `-p` session never counts as trusted, so the card will not fire there,
 - whether an `operator-profile` skill was written (with its `~/.claude/skills/operator-profile/SKILL.md` path) or skipped,
 - the local `settings.local.json` wiring (`"agent": "<name>"`),
 - the `.gitignore` touch, if any,

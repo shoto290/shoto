@@ -95,7 +95,7 @@ The write ban is enforced twice: the harness strips its write tools (`disallowed
 3. **Delegate** — every create/edit/restore *and its verification* (tests, build, lint, format) goes to the most specific installed specialist. The specialist owns its own validation gate.
 4. **Fall back** — `orchestrator:generalist` only when no specialist matches.
 
-Every prompt also passes through a bundled `UserPromptSubmit` hook that re-injects the `core:response-style` answer contract before Claude sees the turn, and the same script fires again on `SessionStart` with the `startup|resume|clear|compact` matcher, where it also ships the `classDef` palette so the contract survives a compaction. The recap shape — verdict line, the delta in the shape its payload calls for, status table — is restated on every prompt instead of relying on it staying in context from earlier in the session. Set `SHOTO_RESPONSE_STYLE_CARD=0` to opt out of both injections.
+When a project orchestrator is the session agent, every prompt also passes through the `UserPromptSubmit` hook declared in its frontmatter `hooks:` block — installed by `/orchestrator:onboard` — which re-injects the `core:response-style` answer contract before Claude sees the turn. The same script fires again on `SessionStart` with the `startup|resume|clear|compact` matcher, where it also ships the `classDef` palette so the contract survives a compaction. The recap shape — verdict line, the delta in the shape its payload calls for, status table — is restated on every prompt instead of relying on it staying in context from earlier in the session. Set `SHOTO_RESPONSE_STYLE_CARD=0` to opt out of both injections.
 
 ### How It Finds Delegates
 
@@ -142,11 +142,12 @@ What it writes (all writes delegated to one `orchestrator:generalist` — the sk
 | Path | Committed? | Purpose |
 | :--- | :--- | :--- |
 | `<repo>/.claude/agents/<name>.md` | Yes | The project orchestrator. Explicitly not gitignored. |
+| `<repo>/.claude/hooks/response-style-card.sh` | Yes | The script the agent's `hooks:` block runs on `UserPromptSubmit` and `SessionStart`, copied from `plugins/orchestrator/skills/onboard/scripts/response-style-card.sh`. |
 | `<repo>/.claude/settings.local.json` | Never | Merges only the top-level `"agent": "<name>"` key, preserving siblings. This is the per-user opt-in. |
 | `<repo>/.gitignore` | Yes, if changed | Ensures `.claude/settings.local.json` is listed. |
 | `~/.claude/skills/operator-profile/SKILL.md` | Never (outside the repo) | Your personal profile, only if Flow B ran. |
 
-On "Proceed & commit": `git add` the agent file plus `.gitignore` if it changed, then `feat(orchestrator): add <name> project orchestrator` (or `chore(orchestrator): reconfigure <name>`). It never stages `settings.local.json` and never stages anything under `~/.claude/`.
+On "Proceed & commit": `git add` the agent file and the hook script, plus `.gitignore` if it changed, then `feat(orchestrator): add <name> project orchestrator` (or `chore(orchestrator): reconfigure <name>`). It never stages `settings.local.json` and never stages anything under `~/.claude/`.
 
 **Nothing is hardcoded.** Onboard globs for the live `orchestrator.md` (marketplace copy first, then repo-local, then `~/.claude/agents/`) and mirrors its `disallowedTools`, `skills`, `color`, `model`, and its single operating sentence **verbatim**. Only `name`, `description`, and an injected `## Project profile` block are personalized. The generated wrapper is therefore a **snapshot** — re-run and choose Reconfigure to refresh it.
 

@@ -61,7 +61,7 @@ classDef blocker fill:#b91c1c,stroke:#fca5a5,color:#fff,stroke-width:3px
 classDef ctx fill:#27272a,stroke:#52525b,color:#a1a1aa
 ```
 
-`plugins/orchestrator/hooks/response-style-card.sh` and §6 of `plugins/orchestrator/skills/orchestrator/SKILL.md` restate this contract for sessions where this skill is not loaded — change one and change all three. The card carries the shape rules on every prompt and these five `classDef` lines once per session. `plugins/git/skills/create/` is a deliberate fork: a PR body renders at full page width and is read once, so its rules are its own.
+Four artifacts restate this contract for sessions where this skill is not loaded — change one and change all four: `plugins/orchestrator/skills/onboard/scripts/response-style-card.sh`, the template `/orchestrator:onboard` copies into a project; `.claude/hooks/response-style-card.sh`, this repo's own copy, byte-identical to the template; §6 of `plugins/orchestrator/skills/orchestrator/SKILL.md`; and this skill. The card carries the shape rules on every prompt and these five `classDef` lines once per session. `plugins/git/skills/create/` is a deliberate fork: a PR body renders at full page width and is read once, so its rules are its own.
 
 ## Artifact gate
 
